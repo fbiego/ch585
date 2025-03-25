@@ -370,8 +370,8 @@ uint16_t HidEmu_ProcessEvent(uint8_t task_id, uint16_t events)
         }
 #endif
 
-        //Get all the saved key values ​​and exit.
-        //This example will get the key values ​​after each scan, so it will only be executed once.
+        //Get all the saved key values and exit.
+        //This example will get the key values after each scan, so it will only be executed once.
         //There is only one key value to process
         while(1)
         {

@@ -3,7 +3,7 @@
  * Author             : WCH
  * Version            : V1.0
  * Date               : 2024/08/13
- * Description        : WCH Qingke V3C FreeRTOS��ֲ�ӿ�
+ * Description        : WCH Qingke V3C FreeRTOSÒÆÖ²½Ó¿Ú
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
  *******************************************************************************/

@@ -19,7 +19,7 @@ extern "C" {
 #include "wch_nfca_picc.h"
 #include "wch_nfca_picc_m1.h"
 
-#define HID_NFCA_M1_NDEF_INCLUDE_BLE_NAME               0       /* 是否包括BLE名称 */
+#define HID_NFCA_M1_NDEF_INCLUDE_BLE_NAME               0       /* 脢脟路帽掳眉脌篓BLE脙没鲁脝 */
 
 extern void hid_nfca_m1_ndef_init(void);
 

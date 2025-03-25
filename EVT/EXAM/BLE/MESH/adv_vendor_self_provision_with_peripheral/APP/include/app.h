@@ -57,54 +57,54 @@ extern "C" {
 #define ADDRESS_LEN                        2
 #define UPDATE_ADDRESS_LEN                 2
 
-// 设置配网信息命令，包含 1字节命令码+1字节控制字+4字节iv index+1字节更新标志flag
+// 脡猫脰脙脜盲脥酶脨脜脧垄脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+1脳脰陆脷驴脴脰脝脳脰+4脳脰陆脷iv index+1脳脰陆脷赂眉脨脗卤锚脰戮flag
 #define PROVISION_INFO_DATA_LEN            (PERIPHERAL_CMD_LEN + 1 + 4 + 1)
-// 设置配网信息命令应答，包含 1字节命令码+1字节状态码+4字节iv index+1字节更新标志flag
+// 脡猫脰脙脜盲脥酶脨脜脧垄脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+1脳脰陆脷脳麓脤卢脗毛+4脳脰陆脷iv index+1脳脰陆脷赂眉脨脗卤锚脰戮flag
 #define PROVISION_INFO_ACK_DATA_LEN        (PERIPHERAL_CMD_LEN + 1 + 4 + 1)
-// 设置配网命令，包含 1字节命令码+16字节网络密钥+2字节网络地址
+// 脡猫脰脙脜盲脥酶脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+16脳脰陆脷脥酶脗莽脙脺脭驴+2脳脰陆脷脥酶脗莽碌脴脰路
 #define PROVISION_DATA_LEN                 (PERIPHERAL_CMD_LEN + PROVISION_NET_KEY_LEN + ADDRESS_LEN)
-// 设置配网命令应答，包含 1字节命令码+2字节网络地址+1字节状态码
+// 脡猫脰脙脜盲脥酶脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+1脳脰陆脷脳麓脤卢脗毛
 #define PROVISION_ACK_DATA_LEN             (PERIPHERAL_CMD_LEN + ADDRESS_LEN + 1)
-// 删除节点命令，包含 1字节命令码+2字节需要删除的节点地址
+// 脡戮鲁媒陆脷碌茫脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脨猫脪陋脡戮鲁媒碌脛陆脷碌茫碌脴脰路
 #define DELETE_NODE_DATA_LEN               (PERIPHERAL_CMD_LEN + ADDRESS_LEN)
-// 删除节点命令应答，包含 1字节命令码+2字节删除的节点地址+1字节状态码
+// 脡戮鲁媒陆脷碌茫脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脡戮鲁媒碌脛陆脷碌茫碌脴脰路+1脳脰陆脷脳麓脤卢脗毛
 #define DELETE_NODE_ACK_DATA_LEN           (PERIPHERAL_CMD_LEN + ADDRESS_LEN + 1)
-// 删除存储的节点信息命令，包含 1字节命令码
+// 脡戮鲁媒麓忙麓垄碌脛陆脷碌茫脨脜脧垄脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛
 #define DELETE_NODE_INFO_DATA_LEN          (PERIPHERAL_CMD_LEN)
-// 删除存储的节点信息命令应答，包含 1字节命令码+2字节删除的节点地址
+// 脡戮鲁媒麓忙麓垄碌脛陆脷碌茫脨脜脧垄脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脡戮鲁媒碌脛陆脷碌茫碌脴脰路
 #define DELETE_NODE_INFO_ACK_DATA_LEN      (PERIPHERAL_CMD_LEN + ADDRESS_LEN)
-// 查询节点状态命令，包含 1字节命令码+2字节网络地址
+// 虏茅脩炉陆脷碌茫脳麓脤卢脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路
 #define ASK_STATUS_DATA_LEN                (PERIPHERAL_CMD_LEN + ADDRESS_LEN)
-// 查询节点状态命令应答，包含 1字节命令码+2字节网络地址+1字节状态码
+// 虏茅脩炉陆脷碌茫脳麓脤卢脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+1脳脰陆脷脳麓脤卢脗毛
 #define ASK_STATUS_ACK_DATA_LEN            (PERIPHERAL_CMD_LEN + ADDRESS_LEN + 1)
-// 数据传输命令，包含 1字节命令码+2字节网络地址+N字节内容
+// 脢媒戮脻麓芦脢盲脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+N脳脰陆脷脛脷脠脻
 #define TRANSFER_DATA_LEN                  (PERIPHERAL_CMD_LEN + ADDRESS_LEN)
-// 数据传输命令应答，包含 1字节命令码+2字节网络地址+N字节内容
+// 脢媒戮脻麓芦脢盲脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+N脳脰陆脷脛脷脠脻
 #define TRANSFER_RECEIVE_DATA_LEN          (PERIPHERAL_CMD_LEN + ADDRESS_LEN)
-// OTA查询命令，包含 1字节命令码+2字节网络地址
+// OTA虏茅脩炉脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路
 #define IMAGE_INFO_DATA_LEN                (PERIPHERAL_CMD_LEN + ADDRESS_LEN)
-// OTA查询命令应答，包含 1字节命令码+2字节网络地址+4字节image大小+2字节块大小+2字节芯片型号+1字节状态码
+// OTA虏茅脩炉脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+4脳脰陆脷image麓贸脨隆+2脳脰陆脷驴茅麓贸脨隆+2脳脰陆脷脨戮脝卢脨脥潞脜+1脳脰陆脷脳麓脤卢脗毛
 #define IMAGE_INFO_ACK_DATA_LEN            (PERIPHERAL_CMD_LEN + ADDRESS_LEN + 4 + 2 + 2 + 1)
-// OTA升级命令，包含 1字节命令码+2字节网络地址+2字节flash地址+N字节内容
+// OTA脡媒录露脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+2脳脰陆脷flash碌脴脰路+N脳脰陆脷脛脷脠脻
 #define UPDATE_DATA_LEN                    (PERIPHERAL_CMD_LEN + ADDRESS_LEN + UPDATE_ADDRESS_LEN)
-// OTA升级命令应答，包含 1字节命令码+2字节网络地址+2字节flash地址+1字节状态码
+// OTA脡媒录露脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+2脳脰陆脷flash碌脴脰路+1脳脰陆脷脳麓脤卢脗毛
 #define UPDATE_ACK_DATA_LEN                (PERIPHERAL_CMD_LEN + ADDRESS_LEN + UPDATE_ADDRESS_LEN + 1)
-// OTA校验命令，包含 1字节命令码+2字节网络地址+2字节flash地址+N字节内容
+// OTA脨拢脩茅脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+2脳脰陆脷flash碌脴脰路+N脳脰陆脷脛脷脠脻
 #define VERIFY_DATA_LEN                    (PERIPHERAL_CMD_LEN + ADDRESS_LEN + UPDATE_ADDRESS_LEN)
-// OTA校验命令应答，包含 1字节命令码+2字节网络地址+2字节flash地址+1字节状态码
+// OTA脨拢脩茅脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+2脳脰陆脷flash碌脴脰路+1脳脰陆脷脳麓脤卢脗毛
 #define VERIFY_ACK_DATA_LEN                (PERIPHERAL_CMD_LEN + ADDRESS_LEN + UPDATE_ADDRESS_LEN + 1)
-// OTA结束命令，包含 1字节命令码+2字节网络地址
+// OTA陆谩脢酶脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路
 #define END_DATA_LEN                       (PERIPHERAL_CMD_LEN + ADDRESS_LEN)
-// 设置订阅命令，包含 1字节命令码+2字节网络地址+1字节控制字+2字节网络地址
+// 脡猫脰脙露漏脭脛脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+1脳脰陆脷驴脴脰脝脳脰+2脳脰陆脷脥酶脗莽碌脴脰路
 #define SET_SUB_DATA_LEN                   (PERIPHERAL_CMD_LEN + ADDRESS_LEN + 1 + ADDRESS_LEN)
-// 设置订阅命令应答，包含 1字节命令码+2字节网络地址+1字节状态码
+// 脡猫脰脙露漏脭脛脙眉脕卯脫娄麓冒拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+2脳脰陆脷脥酶脗莽碌脴脰路+1脳脰陆脷脳麓脤卢脗毛
 #define SET_SUB_ACK_DATA_LEN               (PERIPHERAL_CMD_LEN + ADDRESS_LEN + 1)
-// 本地复位命令，包含 1字节命令码
+// 卤戮碌脴赂麓脦禄脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛
 #define LOCAL_RESET_DATA_LEN               (PERIPHERAL_CMD_LEN)
-// 本地复位命令，包含 1字节命令码+1字节状态码
+// 卤戮碌脴赂麓脦禄脙眉脕卯拢卢掳眉潞卢 1脳脰陆脷脙眉脕卯脗毛+1脳脰陆脷脳麓脤卢脗毛
 #define LOCAL_RESET_ACK_DATA_LEN           (PERIPHERAL_CMD_LEN + 1)
 
-// 状态码定义
+// 脳麓脤卢脗毛露篓脪氓
 #define STATUS_SUCCESS                     0x00
 #define STATUS_TIMEOUT                     0x01
 #define STATUS_NOMEM                       0x02
@@ -112,34 +112,34 @@ extern "C" {
 
 #define APP_MAX_TX_SIZE                    MAX(CONFIG_MESH_UNSEG_LENGTH_DEF, CONFIG_MESH_TX_SEG_DEF *BLE_MESH_APP_SEG_SDU_MAX - 8)
 
-/* 整个用户code区分成五块，4K，152K，152K，4K，136K，后四块下面分别叫做imageA（APP），imageB（OTA），imageIAP和LIB */
+/* 脮没赂枚脫脙禄搂code脟酶路脰鲁脡脦氓驴茅拢卢4K拢卢152K拢卢152K拢卢4K拢卢136K拢卢潞贸脣脛驴茅脧脗脙忙路脰卤冒陆脨脳枚imageA拢篓APP拢漏拢卢imageB拢篓OTA拢漏拢卢imageIAP潞脥LIB */
 
-/* FLASH定义 */
+/* FLASH露篓脪氓 */
 #define FLASH_BLOCK_SIZE                   EEPROM_BLOCK_SIZE
 #define IMAGE_SIZE                         152 * 1024
 
-/* imageA定义 */
+/* imageA露篓脪氓 */
 #define IMAGE_A_FLAG                       0x01
 #define IMAGE_A_START_ADD                  0x1000
 #define IMAGE_A_SIZE                       IMAGE_SIZE
 
-/* imageB定义 */
+/* imageB露篓脪氓 */
 #define IMAGE_B_FLAG                       0x02
 #define IMAGE_B_START_ADD                  (IMAGE_A_START_ADD + IMAGE_SIZE)
 #define IMAGE_B_SIZE                       IMAGE_SIZE
 
-/* imageIAP定义 */
+/* imageIAP露篓脪氓 */
 #define IMAGE_IAP_FLAG                     0x03
 #define IMAGE_IAP_START_ADD                (IMAGE_B_START_ADD + IMAGE_SIZE)
 #define IMAGE_IAP_SIZE                     4 * 1024
 
-/* 存放在DataFlash地址，不能占用蓝牙的位置 */
+/* 麓忙路脜脭脷DataFlash碌脴脰路拢卢虏禄脛脺脮录脫脙脌露脩脌碌脛脦禄脰脙 */
 #define OTA_DATAFLASH_ADD                  0x00077000 - FLASH_ROM_MAX_SIZE
 
-/* 存放在DataFlash里的OTA信息 */
+/* 麓忙路脜脭脷DataFlash脌茂碌脛OTA脨脜脧垄 */
 typedef struct
 {
-    unsigned char ImageFlag; //记录的当前的image标志
+    unsigned char ImageFlag; //录脟脗录碌脛碌卤脟掳碌脛image卤锚脰戮
     unsigned char Revd[3];
 } OTADataFlashInfo_t;
 
@@ -160,145 +160,145 @@ typedef union
 {
     struct
     {
-        uint8_t cmd;         /* 命令码 CMD_PROVISION_INFO */
-        uint8_t set_flag;    /* 控制字 为1表示设置，为0表示查询*/
+        uint8_t cmd;         /* 脙眉脕卯脗毛 CMD_PROVISION_INFO */
+        uint8_t set_flag;    /* 驴脴脰脝脳脰 脦陋1卤铆脢戮脡猫脰脙拢卢脦陋0卤铆脢戮虏茅脩炉*/
         uint8_t iv_index[4]; /* iv index */
         uint8_t flag;        /* Net key refresh flag */
-    } provision_info;        /* 配网信息命令 */
+    } provision_info;        /* 脜盲脥酶脨脜脧垄脙眉脕卯 */
     struct
     {
-        uint8_t cmd;         /* 命令码 CMD_PROVISION_INFO_ACK */
-        uint8_t status;      /* 状态码*/
+        uint8_t cmd;         /* 脙眉脕卯脗毛 CMD_PROVISION_INFO_ACK */
+        uint8_t status;      /* 脳麓脤卢脗毛*/
         uint8_t iv_index[4]; /* iv index */
         uint8_t flag;        /* Net key refresh flag */
-    } provision_info_ack;    /* 配网信息命令应答 */
+    } provision_info_ack;    /* 脜盲脥酶脨脜脧垄脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd;                            /* 命令码 CMD_PROVISION */
-        uint8_t net_key[PROVISION_NET_KEY_LEN]; /* 后续数据长度 */
-        uint8_t addr[ADDRESS_LEN];              /* 配网地址 */
-    } provision;                                /* 配网命令 */
+        uint8_t cmd;                            /* 脙眉脕卯脗毛 CMD_PROVISION */
+        uint8_t net_key[PROVISION_NET_KEY_LEN]; /* 潞贸脨酶脢媒戮脻鲁陇露脠 */
+        uint8_t addr[ADDRESS_LEN];              /* 脜盲脥酶碌脴脰路 */
+    } provision;                                /* 脜盲脥酶脙眉脕卯 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_PROVISION_ACK */
-        uint8_t addr[ADDRESS_LEN]; /* 配网地址 */
-        uint8_t status;            /* 状态码备用 */
-    } provision_ack;               /* 配网命令应答 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_PROVISION_ACK */
+        uint8_t addr[ADDRESS_LEN]; /* 脜盲脥酶碌脴脰路 */
+        uint8_t status;            /* 脳麓脤卢脗毛卤赂脫脙 */
+    } provision_ack;               /* 脜盲脥酶脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_DELETE_NODE */
-        uint8_t addr[ADDRESS_LEN]; /* 删除地址 */
-    } delete_node;                 /* 删除节点命令 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_DELETE_NODE */
+        uint8_t addr[ADDRESS_LEN]; /* 脡戮鲁媒碌脴脰路 */
+    } delete_node;                 /* 脡戮鲁媒陆脷碌茫脙眉脕卯 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_DELETE_NODE_ACK */
-        uint8_t addr[ADDRESS_LEN]; /* 发送地址 */
-        uint8_t status;            /* 状态码 */
-    } delete_node_ack;             /* 删除节点命令应答 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_DELETE_NODE_ACK */
+        uint8_t addr[ADDRESS_LEN]; /* 路垄脣脥碌脴脰路 */
+        uint8_t status;            /* 脳麓脤卢脗毛 */
+    } delete_node_ack;             /* 脡戮鲁媒陆脷碌茫脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd;    /* 命令码 CMD_DELETE_NODE_INFO */
-    } delete_node_info; /* 删除存储的节点信息命令 */
+        uint8_t cmd;    /* 脙眉脕卯脗毛 CMD_DELETE_NODE_INFO */
+    } delete_node_info; /* 脡戮鲁媒麓忙麓垄碌脛陆脷碌茫脨脜脧垄脙眉脕卯 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_DELETE_NODE_INFO_ACK */
-        uint8_t addr[ADDRESS_LEN]; /* 发送地址 */
-    } delete_node_info_ack;        /* 删除存储的节点信息命令应答 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_DELETE_NODE_INFO_ACK */
+        uint8_t addr[ADDRESS_LEN]; /* 路垄脣脥碌脴脰路 */
+    } delete_node_info_ack;        /* 脡戮鲁媒麓忙麓垄碌脛陆脷碌茫脨脜脧垄脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_ASK_STATUS */
-        uint8_t addr[ADDRESS_LEN]; /* 发送地址 */
-    } ask_status;                  /* 查询节点状态命令 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_ASK_STATUS */
+        uint8_t addr[ADDRESS_LEN]; /* 路垄脣脥碌脴脰路 */
+    } ask_status;                  /* 虏茅脩炉陆脷碌茫脳麓脤卢脙眉脕卯 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_ASK_STATUS_ACK */
-        uint8_t addr[ADDRESS_LEN]; /* 发送地址 */
-        uint8_t status;            /* 状态码备用 */
-    } ask_status_ack;              /* 查询节点状态命令应答 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_ASK_STATUS_ACK */
+        uint8_t addr[ADDRESS_LEN]; /* 路垄脣脥碌脴脰路 */
+        uint8_t status;            /* 脳麓脤卢脗毛卤赂脫脙 */
+    } ask_status_ack;              /* 虏茅脩炉陆脷碌茫脳麓脤卢脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd;                       /* 命令码 CMD_TRANSFER */
-        uint8_t addr[ADDRESS_LEN];         /* 发送地址 */
-        uint8_t data[APP_MAX_TX_SIZE - 3]; /* 数据内容*/
-    } transfer;                            /* 发送数据命令 */
+        uint8_t cmd;                       /* 脙眉脕卯脗毛 CMD_TRANSFER */
+        uint8_t addr[ADDRESS_LEN];         /* 路垄脣脥碌脴脰路 */
+        uint8_t data[APP_MAX_TX_SIZE - 3]; /* 脢媒戮脻脛脷脠脻*/
+    } transfer;                            /* 路垄脣脥脢媒戮脻脙眉脕卯 */
     struct
     {
-        uint8_t cmd;                       /* 命令码 CMD_TRANSFER_ACK */
-        uint8_t addr[ADDRESS_LEN];         /* 发送地址 */
-        uint8_t data[APP_MAX_TX_SIZE - 3]; /* 数据内容*/
-    } transfer_receive;                    /* 发送数据命令应答 */
+        uint8_t cmd;                       /* 脙眉脕卯脗毛 CMD_TRANSFER_ACK */
+        uint8_t addr[ADDRESS_LEN];         /* 路垄脣脥碌脴脰路 */
+        uint8_t data[APP_MAX_TX_SIZE - 3]; /* 脢媒戮脻脛脷脠脻*/
+    } transfer_receive;                    /* 路垄脣脥脢媒戮脻脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_IMAGE_INFO */
-        uint8_t addr[ADDRESS_LEN]; /* 发送地址 */
-    } image_info;                  /* OTA查询命令 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_IMAGE_INFO */
+        uint8_t addr[ADDRESS_LEN]; /* 路垄脣脥碌脴脰路 */
+    } image_info;                  /* OTA虏茅脩炉脙眉脕卯 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_IMAGE_INFO_ACK */
-        uint8_t addr[ADDRESS_LEN]; /* 发送地址 */
-        uint8_t image_size[4];     /* image大小 */
-        uint8_t block_size[2];     /* falsh块大小 */
-        uint8_t chip_id[2];        /* 芯片型号 */
-        uint8_t status;            /* 状态码备用 */
-    } image_info_ack;              /* OTA查询命令应答 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_IMAGE_INFO_ACK */
+        uint8_t addr[ADDRESS_LEN]; /* 路垄脣脥碌脴脰路 */
+        uint8_t image_size[4];     /* image麓贸脨隆 */
+        uint8_t block_size[2];     /* falsh驴茅麓贸脨隆 */
+        uint8_t chip_id[2];        /* 脨戮脝卢脨脥潞脜 */
+        uint8_t status;            /* 脳麓脤卢脗毛卤赂脫脙 */
+    } image_info_ack;              /* OTA虏茅脩炉脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd;                             /* 命令码 CMD_UPDATE */
-        uint8_t addr[ADDRESS_LEN];               /* 发送地址 */
-        uint8_t update_addr[UPDATE_ADDRESS_LEN]; /* 升级地址 */
-        uint8_t data[APP_MAX_TX_SIZE - 5];       /* 升级数据内容*/
-    } update;                                    /* OTA升级数据命令 */
+        uint8_t cmd;                             /* 脙眉脕卯脗毛 CMD_UPDATE */
+        uint8_t addr[ADDRESS_LEN];               /* 路垄脣脥碌脴脰路 */
+        uint8_t update_addr[UPDATE_ADDRESS_LEN]; /* 脡媒录露碌脴脰路 */
+        uint8_t data[APP_MAX_TX_SIZE - 5];       /* 脡媒录露脢媒戮脻脛脷脠脻*/
+    } update;                                    /* OTA脡媒录露脢媒戮脻脙眉脕卯 */
     struct
     {
-        uint8_t cmd;                             /* 命令码 CMD_UPDATE_ACK */
-        uint8_t addr[ADDRESS_LEN];               /* 发送地址 */
-        uint8_t update_addr[UPDATE_ADDRESS_LEN]; /* 升级地址 */
-        uint8_t status;                          /* 状态码备用 */
-    } update_ack;                                /* OTA升级数据命令应答 */
+        uint8_t cmd;                             /* 脙眉脕卯脗毛 CMD_UPDATE_ACK */
+        uint8_t addr[ADDRESS_LEN];               /* 路垄脣脥碌脴脰路 */
+        uint8_t update_addr[UPDATE_ADDRESS_LEN]; /* 脡媒录露碌脴脰路 */
+        uint8_t status;                          /* 脳麓脤卢脗毛卤赂脫脙 */
+    } update_ack;                                /* OTA脡媒录露脢媒戮脻脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd;                             /* 命令码 CMD_VERIFY */
-        uint8_t addr[ADDRESS_LEN];               /* 发送地址 */
-        uint8_t update_addr[UPDATE_ADDRESS_LEN]; /* 升级地址 */
-        uint8_t data[APP_MAX_TX_SIZE - 5];       /* 升级数据内容*/
-    } verify;                                    /* OTA验证数据命令 */
+        uint8_t cmd;                             /* 脙眉脕卯脗毛 CMD_VERIFY */
+        uint8_t addr[ADDRESS_LEN];               /* 路垄脣脥碌脴脰路 */
+        uint8_t update_addr[UPDATE_ADDRESS_LEN]; /* 脡媒录露碌脴脰路 */
+        uint8_t data[APP_MAX_TX_SIZE - 5];       /* 脡媒录露脢媒戮脻脛脷脠脻*/
+    } verify;                                    /* OTA脩茅脰陇脢媒戮脻脙眉脕卯 */
     struct
     {
-        uint8_t cmd;                             /* 命令码 CMD_VERIFY_ACK */
-        uint8_t addr[ADDRESS_LEN];               /* 发送地址 */
-        uint8_t update_addr[UPDATE_ADDRESS_LEN]; /* 升级地址 */
-        uint8_t status;                          /* 状态码备用 */
-    } verify_ack;                                /* OTA验证数据命令应答 */
+        uint8_t cmd;                             /* 脙眉脕卯脗毛 CMD_VERIFY_ACK */
+        uint8_t addr[ADDRESS_LEN];               /* 路垄脣脥碌脴脰路 */
+        uint8_t update_addr[UPDATE_ADDRESS_LEN]; /* 脡媒录露碌脴脰路 */
+        uint8_t status;                          /* 脳麓脤卢脗毛卤赂脫脙 */
+    } verify_ack;                                /* OTA脩茅脰陇脢媒戮脻脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_END */
-        uint8_t addr[ADDRESS_LEN]; /* 发送地址 */
-    } end;                         /* OTA完成命令 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_END */
+        uint8_t addr[ADDRESS_LEN]; /* 路垄脣脥碌脴脰路 */
+    } end;                         /* OTA脥锚鲁脡脙眉脕卯 */
     struct
     {
-        uint8_t cmd;                   /* 命令码 CMD_SET_SUB */
-        uint8_t addr[ADDRESS_LEN];     /* 发送地址 */
-        uint8_t add_flag;              /* 为1表示添加，为0表示删除 */
-        uint8_t sub_addr[ADDRESS_LEN]; /* 订阅地址 */
-    } set_sub;                         /* 设置订阅命令 */
+        uint8_t cmd;                   /* 脙眉脕卯脗毛 CMD_SET_SUB */
+        uint8_t addr[ADDRESS_LEN];     /* 路垄脣脥碌脴脰路 */
+        uint8_t add_flag;              /* 脦陋1卤铆脢戮脤铆录脫拢卢脦陋0卤铆脢戮脡戮鲁媒 */
+        uint8_t sub_addr[ADDRESS_LEN]; /* 露漏脭脛碌脴脰路 */
+    } set_sub;                         /* 脡猫脰脙露漏脭脛脙眉脕卯 */
     struct
     {
-        uint8_t cmd;               /* 命令码 CMD_SET_SUB_ACK */
-        uint8_t addr[ADDRESS_LEN]; /* 发送地址 */
-        uint8_t status;            /* 状态码 */
-    } set_sub_ack;                 /* 设置订阅命令应答 */
+        uint8_t cmd;               /* 脙眉脕卯脗毛 CMD_SET_SUB_ACK */
+        uint8_t addr[ADDRESS_LEN]; /* 路垄脣脥碌脴脰路 */
+        uint8_t status;            /* 脳麓脤卢脗毛 */
+    } set_sub_ack;                 /* 脡猫脰脙露漏脭脛脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t cmd; /* 命令码 CMD_LOCAL_RESET */
-    } local_reset;   /* 本地恢复出厂设置命令 */
+        uint8_t cmd; /* 脙眉脕卯脗毛 CMD_LOCAL_RESET */
+    } local_reset;   /* 卤戮碌脴禄脰赂麓鲁枚鲁搂脡猫脰脙脙眉脕卯 */
     struct
     {
-        uint8_t cmd;    /* 命令码 CMD_LOCAL_RESET */
-        uint8_t status; /* 状态码备用 */
-    } local_reset_ack;  /* 本地恢复出厂设置命令应答 */
+        uint8_t cmd;    /* 脙眉脕卯脗毛 CMD_LOCAL_RESET */
+        uint8_t status; /* 脳麓脤卢脗毛卤赂脫脙 */
+    } local_reset_ack;  /* 卤戮碌脴禄脰赂麓鲁枚鲁搂脡猫脰脙脙眉脕卯脫娄麓冒 */
     struct
     {
-        uint8_t buf[APP_MAX_TX_SIZE]; /* 数据内容*/
+        uint8_t buf[APP_MAX_TX_SIZE]; /* 脢媒戮脻脛脷脠脻*/
     } data;
 } app_mesh_manage_t;
 
