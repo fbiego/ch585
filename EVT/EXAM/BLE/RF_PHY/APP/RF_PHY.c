@@ -11,7 +11,7 @@
  *******************************************************************************/
 
 /******************************************************************************/
-/* 头文件包含 */
+/* The header file contains */
 #include "CONFIG.h"
 #include "RF_PHY.h"
 
@@ -27,13 +27,12 @@ uint8_t TX_DATA[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
 volatile uint8_t tx_end_flag=0;
 volatile uint8_t rx_end_flag=0;
 
-/*********************************************************************
- * @fn      RF_Wait_Tx_End
+/* ***************************************************************************
+ * @fn RF_Wait_Tx_End
  *
- * @brief   手动模式等待发送完成，自动模式等待发送-接收完成，必须在RAM中等待，等待时可以执行用户代码，但需要注意执行的代码必须运行在RAM中，否则影响发送
+ * @brief The manual mode waits for the sending to complete, the automatic mode waits for the sending-received completion, and must wait in RAM. User code can be executed while waiting, but it should be noted that the executed code must be run in RAM, otherwise it will affect the sending.
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 __attribute__((noinline))
 void RF_Wait_Tx_End()
@@ -44,7 +43,7 @@ void RF_Wait_Tx_End()
         i++;
         __nop();
         __nop();
-        // 约5ms超时
+        // About 5ms timeout
         if(i>(FREQ_SYS/1000))
         {
             tx_end_flag = TRUE;
@@ -52,13 +51,12 @@ void RF_Wait_Tx_End()
     }
 }
 
-/*********************************************************************
- * @fn      RF_Wait_Rx_End
+/* ***************************************************************************
+ * @fn RF_Wait_Rx_End
  *
- * @brief   自动模式等待应答发送完成，必须在RAM中等待，等待时可以执行用户代码，但需要注意执行的代码必须运行在RAM中，否则影响发送
+ * @brief The automatic mode waits for the reply to be sent to complete. It must wait in RAM. User code can be executed while waiting, but it should be noted that the executed code must be run in RAM, otherwise it will affect the sending.
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 __attribute__((noinline))
 void RF_Wait_Rx_End()
@@ -69,7 +67,7 @@ void RF_Wait_Rx_End()
         i++;
         __nop();
         __nop();
-        // 约5ms超时
+        // About 5ms timeout
         if(i>(FREQ_SYS/1000))
         {
             rx_end_flag = TRUE;
@@ -77,18 +75,17 @@ void RF_Wait_Rx_End()
     }
 }
 
-/*********************************************************************
- * @fn      RF_2G4StatusCallBack
+/* ***************************************************************************
+ * @fn RF_2G4StatusCallBack
  *
- * @brief   RF 状态回调，此函数在中断中调用。注意：不可在此函数中直接调用RF接收或者发送API，需要使用事件的方式调用
- *          在此回调中直接使用或调用函数涉及到的变量需注意，此函数在中断中调用。
+ * @brief RF state callback, this function is called in interrupt. Note: The RF reception or sending API cannot be called directly in this function, and it is necessary to use event methods to call it.
+ * Note that the variables involved in the function are directly used or called in this callback should be called, and this function is called in the interrupt.
  *
- * @param   sta     - 状态类型
- * @param   crc     - crc校验结果
- * @param   rxBuf   - 数据buf指针
+ * @param sta - Status type
+ * @param crc - crc verification result
+ * @param rxBuf - Data buf pointer
  *
- * @return  none
- */
+ * @return none */
 void RF_2G4StatusCallBack(uint8_t sta, uint8_t crc, uint8_t *rxBuf)
 {
     switch(sta)
@@ -185,16 +182,15 @@ void RF_2G4StatusCallBack(uint8_t sta, uint8_t crc, uint8_t *rxBuf)
     }
 }
 
-/*********************************************************************
- * @fn      RF_ProcessEvent
+/* ***************************************************************************
+ * @fn RF_ProcessEvent
  *
- * @brief   RF 事件处理
+ * @brief RF event handling
  *
- * @param   task_id - 任务ID
- * @param   events  - 事件标志
+ * @param task_id - Task ID
+ * @param events - Event flags
  *
- * @return  未完成事件
- */
+ * @return Unfinished Event */
 uint16_t RF_ProcessEvent(uint8_t task_id, uint16_t events)
 {
     if(events & SYS_EVENT_MSG)
@@ -240,13 +236,12 @@ uint16_t RF_ProcessEvent(uint8_t task_id, uint16_t events)
     return 0;
 }
 
-/*********************************************************************
- * @fn      RF_Init
+/* ***************************************************************************
+ * @fn RF_Init
  *
- * @brief   RF 初始化
+ * @brief RF Initialization
  *
- * @return  none
- */
+ * @return none */
 void RF_Init(void)
 {
     uint8_t    state;
@@ -254,14 +249,14 @@ void RF_Init(void)
 
     tmos_memset(&rf_Config, 0, sizeof(rfConfig_t));
     taskID = TMOS_ProcessEventRegister(RF_ProcessEvent);
-    rf_Config.accessAddress = 0x71764129; // 禁止使用0x55555555以及0xAAAAAAAA ( 建议不超过24次位反转，且不超过连续的6个0或1 )
+    rf_Config.accessAddress = 0x71764129; // 0x555555555 and 0xAAAAAAAA (recommendation is recommended not to exceed 24 bits, and not to exceed 6 consecutive 0s or 1s)
     rf_Config.CRCInit = 0x555555;
     rf_Config.Channel = 39;
     rf_Config.Frequency = 2480000;
 #if(RF_AUTO_MODE_EXAM)
     rf_Config.LLEMode = LLE_MODE_AUTO;
 #else
-    rf_Config.LLEMode = LLE_MODE_BASIC | LLE_MODE_EX_CHANNEL; // 使能 LLE_MODE_EX_CHANNEL 表示 选择 rf_Config.Frequency 作为通信频点
+    rf_Config.LLEMode = LLE_MODE_BASIC | LLE_MODE_EX_CHANNEL; // Enable LLE_MODE_EX_CHANNEL means select rf_Config.Frequency as the communication frequency point
 #endif
     rf_Config.rfStatusCB = RF_2G4StatusCallBack;
     rf_Config.RxMaxlen = 251;

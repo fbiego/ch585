@@ -23,14 +23,14 @@ tmosEvents hid_nfca_m1_ndef_event(tmosTaskID task_id, tmosEvents events)
 
 void hid_nfca_m1_ndef_init(void)
 {
-    uint8_t uid[4] = {0x12, 0x34, 0x56, 0x78};      /* 默认UID，可以自行修改 */
+    uint8_t uid[4] = {0x12, 0x34, 0x56, 0x78};      /* Default UID, can be modified by yourself */
 
 #if HID_NFCA_M1_NDEF_INCLUDE_BLE_NAME
-    uint8_t bleAttDeviceName[GAP_DEVICE_NAME_LEN];  /* 如果使用的DEVICE NAME长度不可以超出GAP_DEVICE_NAME_LEN，如果超过可以不增加BLE NAME字段 */
+    uint8_t bleAttDeviceName[GAP_DEVICE_NAME_LEN];  /* If the DEVICE NAME length used cannot exceed GAP_DEVICE_NAME_LEN, if it exceeds, the BLE NAME field can be not added. */
     uint8_t bleAttDeviceNameLen;
 #endif
 
-    /* M1只有716字节可以写入NDEF信息 */
+    /* M1 has only 716 bytes to write NDEF information */
     static const uint8_t sector_trailer0_data[] = {0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0x78, 0x77, 0x88, 0xc1, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     static const uint8_t sector_trailers_data[] = {0xd3, 0xf7, 0xd3, 0xf7, 0xd3, 0xf7, 0x7f, 0x07, 0x88, 0x40, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
@@ -43,11 +43,11 @@ void hid_nfca_m1_ndef_init(void)
 
     nfca_picc_stop();
 
-    /* 初始化NFCA PICC */
+    /* Initialize NFCA PICC */
     nfca_picc_init();
     PRINT("nfca_picc_init ok\n");
 
-    /* 初始化uid */
+    /* Initialize uid */
     nfca_picc_m1_enable(uid);
 
     __MCPY((void *)&g_nfca_picc_m1_data.sectors[0].sector_trailer, (void *)sector_trailer0_data, (void *)(sector_trailer0_data + 16));
@@ -75,7 +75,7 @@ void hid_nfca_m1_ndef_init(void)
     GGS_GetParameter(GGS_DEVICE_NAME_ATT, (void *)bleAttDeviceName);
     bleAttDeviceNameLen = tmos_strlen(bleAttDeviceName);
 
-    g_nfca_picc_m1_data.blocks[6][5] = 8 + 2 + bleAttDeviceNameLen;   /* 长度 */
+    g_nfca_picc_m1_data.blocks[6][5] = 8 + 2 + bleAttDeviceNameLen;   /* length */
 
     if(bleAttDeviceNameLen > 0)
     {
@@ -119,13 +119,13 @@ void hid_nfca_m1_ndef_init(void)
     else
 #endif
     {
-        g_nfca_picc_m1_data.blocks[6][5] = 8;   /* 长度 */
+        g_nfca_picc_m1_data.blocks[6][5] = 8;   /* length */
         g_nfca_picc_m1_data.blocks[6][13] = 0xfe;
     }
 
     nfca_picc_start();
 
-    /* 使用中，蓝牙不可以睡眠，睡眠之前必须要调用nfca_picc_stop，睡眠唤醒后再调用nfca_picc_start */
+    /* While in use, Bluetooth cannot sleep. You must call nfca_picc_stop before sleep. After waking up, you can call nfca_picc_start */
 #if HAL_SLEEP
     hid_nfca_m1_ndef_taskid = TMOS_ProcessEventRegister(hid_nfca_m1_ndef_event);
     tmos_start_reload_task(hid_nfca_m1_ndef_taskid, HID_NFCA_M1_NDEF_EVT, 2);

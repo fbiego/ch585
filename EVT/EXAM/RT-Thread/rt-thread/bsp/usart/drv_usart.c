@@ -22,7 +22,7 @@ int usart_init(void)
 {
     rt_ringbuffer_init(&rt_uart_ringbuf, rt_uart_buffer, RT_UART_RINGBUF_SIZE);
 
-    /* 配置串口0：先配置IO口模式，再配置串口 */
+    /* Configure serial port 0: first configure IO port mode, then configure serial port */
     GPIOA_SetBits(GPIO_Pin_14);
     GPIOPinRemap(ENABLE, RB_PIN_UART0);
     GPIOA_ModeCfg(GPIO_Pin_15, GPIO_ModeIN_PU);

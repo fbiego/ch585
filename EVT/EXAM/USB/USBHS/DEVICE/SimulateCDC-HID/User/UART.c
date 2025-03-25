@@ -66,10 +66,10 @@ void UART2_ParaInit( uint8_t mode )
  */
 void UART2_Init( uint8_t mode, uint32_t baudrate, uint8_t stopbits, uint8_t parity )
 {
-    /* 配置串口2：先配置IO口模式，再配置串口 */
+    /* Configure serial port 2: first configure IO port mode, then configure serial port */
     GPIOA_SetBits(GPIO_Pin_7);
-    GPIOA_ModeCfg(GPIO_Pin_6, GPIO_ModeIN_PU);      // RXD-配置上拉输入
-    GPIOA_ModeCfg(GPIO_Pin_7, GPIO_ModeOut_PP_5mA); // TXD-配置推挽输出，注意先让IO口输出高电平
+    GPIOA_ModeCfg(GPIO_Pin_6, GPIO_ModeIN_PU);      // RXD-Configure pull-up input
+    GPIOA_ModeCfg(GPIO_Pin_7, GPIO_ModeOut_PP_5mA); // TXD-Configure push-pull output, be careful to let the IO port output high level first
     UART2_BaudRateCfg(baudrate);
     R8_UART2_FCR = (2 << 6) | RB_FCR_TX_FIFO_CLR | RB_FCR_RX_FIFO_CLR | RB_FCR_FIFO_EN;
     R8_UART2_LCR = RB_LCR_WORD_SZ;

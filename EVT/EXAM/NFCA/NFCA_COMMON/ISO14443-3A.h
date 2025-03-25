@@ -1,20 +1,20 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : ISO14443-3A.h
- * Author             : WCH
- * Version            : V1.1
- * Date               : 2024/11/12
- * Description        : ISO14443-3A相关函数
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: ISO14443-3A.h
+ * Author: WCH
+ * Version: V1.1
+ * Date: 2024/11/12
+ * Description: ISO14443-3A related functions
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+ ********************************************************************************************* */
 #ifndef _ISO14443_3A_H_
 #define _ISO14443_3A_H_
 
 #include "CH58x_common.h"
 #include "wch_nfca_crypto1.h"
 
-/* NFC PICC ISO14443A快速防冲突，有些情况下，计算速度可能来不及给读卡器回复，使能IS014443A_FAST_CL可以通过提前计算数据的api来加速处理，也可以自行使用函数处理 */
-#ifndef IS014443A_FAST_CL                           /* 公用文件，请尽量在工程配置中添加该宏定义进行修改 */
+/* NFC PICC ISO14443A fast anti-collision. In some cases, the calculation speed may not be too late to reply to the card reader. Enable IS014443A_FAST_CL can be used to accelerate processing by calculating data in advance, or you can use functions to process it yourself. */
+#ifndef IS014443A_FAST_CL                           /* Public file, please try to add the macro definition in the project configuration to modify it. */
 #define IS014443A_FAST_CL                           0
 #endif
 
@@ -48,10 +48,10 @@
 #define CRC_INIT                                    0x6363
 #define CRC_INIT_R                                  0xC6C6
 
-/* 计算BCC校验码 */
+/* Calculate BCC verification code */
 #define ISO14443A_CALC_BCC(ByteBuffer)              (ByteBuffer[0] ^ ByteBuffer[1] ^ ByteBuffer[2] ^ ByteBuffer[3])
 
-/* 检查BCC校验码 */
+/* Check BCC verification code */
 #define ISO14443A_CHECK_BCC(B)                      ((B[0] ^ B[1] ^ B[2] ^ B[3]) == B[4])
 
 /*********************************************************************
@@ -104,18 +104,17 @@ extern uint8_t ISO14443ACheckOddParityBit(uint8_t *data, uint8_t *parity, uint16
  */
 extern void ISO14443ACalOddParityBit(uint8_t *data, uint8_t *out_parity, uint16_t len);
 
-/*********************************************************************
- * @fn      ISO14443ASelect
+/* ***************************************************************************
+ * @fn ISO14443ASelect
  *
- * @brief   卡片选择流程处理
+ * @brief card selection process
  *
- * @param   data        - 数据指针
- * @param   bit_count   - 数据比特数量指针
- * @param   uid         - 自身的卡片uid数据指针
- * @param   sak         - 自身的卡片sak值
+ * @param data - Data pointer
+ * @param bit_count - Data bit count pointer
+ * @param uid - its own card uid data pointer
+ * @param sak - its own card sak value
  *
- * @return  1 - 还在卡片选择流程中，0 - 卡片选择流程结束.
- */
+ * @return 1 - Still in the card selection process, 0 - The card selection process ends. */
 extern uint8_t ISO14443ASelect(uint8_t *data, uint16_t *bit_count, uint8_t *uid, uint8_t sak);
 
 #endif  /* _ISO14443_3A_H_ */

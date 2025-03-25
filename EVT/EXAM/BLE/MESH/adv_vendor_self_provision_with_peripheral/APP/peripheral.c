@@ -1,15 +1,15 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : peripheral.C
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2018/12/10
- * Description        : 外设从机多连接应用程序，初始化广播连接参数，然后广播，连接主机后，
- *                      请求更新连接参数，通过自定义服务传输数据
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : peripheral.C
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2018/12/10
+ * Description: Peripheral slave multi-connection application, initialize broadcast connection parameters, and then broadcast, and after connecting to the host,
+ * Request to update connection parameters and transfer data through custom services
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 /*********************************************************************
  * INCLUDES
@@ -646,15 +646,14 @@ static void simpleProfileChangeCB(uint8_t paramID, uint8_t *pValue, uint16_t len
     }
 }
 
-/*********************************************************************
- * @fn      Peripheral_AdvertData_Privisioned
+/* ***************************************************************************
+ * @fn Peripheral_AdvertData_Privisioned
  *
- * @brief   修改广播数据内配网标志.
+ * @brief Modify the broadcast data distribution network logo.
  *
- * @param   privisioned - 是否已配网
+ * @param privileged - Is it already available for network
  *
- * @return  none
- */
+ * @return none */
 void Peripheral_AdvertData_Privisioned(uint8_t privisioned)
 {
     uint8_t  advertising_enable;
@@ -683,13 +682,12 @@ void Peripheral_AdvertData_Privisioned(uint8_t privisioned)
     }
 }
 
-/*********************************************************************
- * @fn      Peripheral_TerminateLink
+/* ***************************************************************************
+ * @fn Peripheral_TerminateLink
  *
- * @brief   断开连接.
+ * @brief disconnect.
  *
- * @return  none
- */
+ * @return none */
 void Peripheral_TerminateLink(void)
 {
     if(peripheralConnList.connHandle != GAP_CONNHANDLE_INIT)

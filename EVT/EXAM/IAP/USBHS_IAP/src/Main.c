@@ -1,28 +1,27 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : Main.c
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2022/03/15
- * Description        : USBHS IAP例程
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: Main.c
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2022/03/15
+ * Description: USBHS IAP routine
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #include "CH58x_common.h"
 #include "iap.h"
 #include "usb_desc.h"
 
-/*********************************************************************
- * @fn      SetSysClock
+/* ***************************************************************************
+ * @fn SetSysClock
  *
- * @brief   配置系统运行时钟62.4Mhz
+ * @brief Configure the system running clock 62.4Mhz
  *
- * @param   sc      - 系统时钟源选择 refer to SYS_CLKTypeDef
+ * @param sc - System clock source selection refer to SYS_CLKTypeDef
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 void mySetSysClock()
 {
@@ -45,15 +44,14 @@ void mySetSysClock()
     sys_safe_access_disable();
 }
 
-/*********************************************************************
- * @fn      Main_Circulation
+/* ***************************************************************************
+ * @fn Main_Circulation
  *
- * @brief   IAP主循环,程序放ram中运行，提升速度.
+ * @brief The main loop of IAP, the program is put into ram to improve the speed.
  *
- * @param   None.
+ * @param None.
  *
- * @return  None.
- */
+ * @return None. */
 __HIGH_CODE
 void Main_Circulation()
 {
@@ -61,16 +59,16 @@ void Main_Circulation()
     while (1)
     {
         j++;
-        if (j > 5)//100us处理一次数据
+        if (j > 5)// 100us processing data once
         {
             j = 0;
-            USB_DevTransProcess();//采用查询方式进行usb操作，不使用中断。
+            USB_DevTransProcess();// Usb operation is performed using query method without interrupts.
         }
         DelayUs(20);
         g_tcnt++;
         if (g_tcnt > 3000000)
         {
-            //1分钟没有操作，进入app
+            // No operation in 1 minute, enter the app
             R8_USB2_CTRL = USBHS_UD_RST_SIE;
             R16_PIN_CONFIG &= ~RB_PIN_USB2_EN;
             DelayMs(10);
@@ -80,19 +78,18 @@ void Main_Circulation()
 }
 IAPDataFlashInfo_t p_image_flash;
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main()
 {
     uint16_t i;
     uint8_t  s;
 
-    mySetSysClock(); //为了精简程序体积，该函数比普通库的初始化函数有修改，只可以将时钟设置为62.4M
+    mySetSysClock(); // In order to streamline the program size, this function has been modified than the initialization function of the ordinary library. You can only set the clock to 62.4M
 
 #if USE_EEPROM_FLAG
     EEPROM_READ(IAP_FLAG_DATAFLASH_ADD, &p_image_flash, 4);
@@ -101,7 +98,7 @@ int main()
         jumpApp();
     }
 #else
-    //PB4上拉输入,作按键检测跳转用
+    // PB4 pull-up input, for key detection jump
     R32_PB_PD_DRV &= ~GPIO_Pin_4;
     R32_PB_PU |= GPIO_Pin_4;
     R32_PB_DIR &= ~GPIO_Pin_4;
@@ -111,13 +108,13 @@ int main()
         DelayMs(5);
         if (GPIOB_ReadPortPin(GPIO_Pin_4))
         {
-            //启动前判断是否进入iap，没有按键按下
+            // Before starting, determine whether to enter IAP, no button press
             jumpApp();
         }
     }
 #endif
 
-    /* USBHS初始化 */
+    /* USBHS Initialization */
     R8_USBHS_PLL_CTRL = USBHS_PLL_EN;
     R16_PIN_CONFIG |= RB_PIN_USB2_EN;
 
@@ -152,9 +149,9 @@ int main()
     R8_USB2_BASE_MODE = USBHS_UD_SPEED_HIGH;
     R8_USB2_CTRL = USBHS_UD_DEV_EN | USBHS_UD_DMA_EN | USBHS_UD_LPM_EN | USBHS_UD_PHY_SUSPENDM;
     R16_PIN_CONFIG |= RB_PIN_USB2_EN;
-    R8_USB2_INT_FG = 0xFF;                       // 清中断标志
-    R8_USB2_INT_EN = 0;                          //禁止usb中断，采用查询方式
+    R8_USB2_INT_FG = 0xFF;                       // Clear interrupt sign
+    R8_USB2_INT_EN = 0;                          // Prohibit USB interrupts and use query methods
 
-    /* 进入highcode主循环 */
+    /* Enter the highcode main loop */
     Main_Circulation();
 }

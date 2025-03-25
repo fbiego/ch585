@@ -61,17 +61,16 @@ static struct bt_mesh_indicate indicate[CONFIG_INDICATE_NUM] = {0};
 static void     ind_reset(struct bt_mesh_indicate *ind, int err);
 static uint16_t als_vendor_model_ProcessEvent(uint8_t task_id, uint16_t events);
 
-/*********************************************************************
- * @fn      tm_attr_get
+/* ***************************************************************************
+ * @fn tm_attr_get
  *
- * @brief   收到天猫精灵发出的获取属性值命令
+ * @brief received the command to obtain attribute value issued by Tmall elves
  *
- * @param   model   - 模型参数.
- * @param   ctx     - 数据参数.
- * @param   buf     - 数据内容.
+ * @param model - Model parameters.
+ * @param ctx - Data parameters.
+ * @param buf - Data content.
  *
- * @return  none
- */
+ * @return none */
 static void tm_attr_get(struct bt_mesh_model   *model,
                         struct bt_mesh_msg_ctx *ctx,
                         struct net_buf_simple  *buf)
@@ -101,17 +100,16 @@ static void tm_attr_get(struct bt_mesh_model   *model,
     }
 }
 
-/*********************************************************************
- * @fn      tm_attr_set
+/* ***************************************************************************
+ * @fn tm_attr_set
  *
- * @brief   收到天猫精灵发出的设置属性值命令
+ * @brief Received the setting attribute value command issued by Tmall elves
  *
- * @param   model   - 模型参数.
- * @param   ctx     - 数据参数.
- * @param   buf     - 数据内容.
+ * @param model - Model parameters.
+ * @param ctx - Data parameters.
+ * @param buf - Data content.
  *
- * @return  none
- */
+ * @return none */
 static void tm_attr_set(struct bt_mesh_model   *model,
                         struct bt_mesh_msg_ctx *ctx,
                         struct net_buf_simple  *buf)
@@ -142,17 +140,16 @@ static void tm_attr_set(struct bt_mesh_model   *model,
     }
 }
 
-/*********************************************************************
- * @fn      tm_attr_set_unack
+/* ***************************************************************************
+ * @fn tm_attr_set_unack
  *
- * @brief   收到天猫精灵发出的设置属性值命令（无应答）
+ * @brief received the setting attribute value command issued by Tmall elves (no response)
  *
- * @param   model   - 模型参数.
- * @param   ctx     - 数据参数.
- * @param   buf     - 数据内容.
+ * @param model - Model parameters.
+ * @param ctx - Data parameters.
+ * @param buf - Data content.
  *
- * @return  none
- */
+ * @return none */
 static void tm_attr_set_unack(struct bt_mesh_model   *model,
                               struct bt_mesh_msg_ctx *ctx,
                               struct net_buf_simple  *buf)
@@ -183,18 +180,17 @@ static void tm_attr_set_unack(struct bt_mesh_model   *model,
     APP_DBG(" ");
 }
 
-/*********************************************************************
- * @fn      tm_attr_confirm
+/* ***************************************************************************
+ * @fn tm_attr_confirm
  *
- * @brief   收到天猫精灵发出的confirm 该消息用于Vendor Model Client回复给Vendor Model Server，
- *          用于表示已收到Vendor Model Server发出的Indication
+ * @brief Received a confirm sent by Tmall Genie. This message is used to reply to the Vendor Model Client to the Vendor Model Server.
+ * Used to indicate that the indication has been received from the Vendor Model Server
  *
- * @param   model   - 模型参数.
- * @param   ctx     - 数据参数.
- * @param   buf     - 数据内容.
+ * @param model - Model parameters.
+ * @param ctx - Data parameters.
+ * @param buf - Data content.
  *
- * @return  none
- */
+ * @return none */
 static void tm_attr_confirm(struct bt_mesh_model   *model,
                             struct bt_mesh_msg_ctx *ctx,
                             struct net_buf_simple  *buf)
@@ -217,23 +213,22 @@ static void tm_attr_confirm(struct bt_mesh_model   *model,
     }
 }
 
-/*********************************************************************
- * @fn      tm_attr_trans
+/* ***************************************************************************
+ * @fn tm_attr_trans
  *
- * @brief   该消息用于Mesh设备与天猫精灵之间透传数据
+ * @brief This message is used to transmit data between the Mesh device and the Tmall Genie
  *
- * @param   model   - 模型参数.
- * @param   ctx     - 数据参数.
- * @param   buf     - 数据内容.
+ * @param model - Model parameters.
+ * @param ctx - Data parameters.
+ * @param buf - Data content.
  *
- * @return  none
- */
+ * @return none */
 static void tm_attr_trans(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx, struct net_buf_simple *buf)
 {
     APP_DBG(" ");
 }
 
-// opcode 对应的处理函数
+// Opcode corresponding processing function
 static const struct bt_mesh_model_op vnd_model_op[] = {
     {OP_VENDOR_MESSAGE_ATTR_GET, 0, tm_attr_get},
     {OP_VENDOR_MESSAGE_ATTR_SET, 0, tm_attr_set},
@@ -265,29 +260,28 @@ uint8_t als_avail_tid_get(void)
     return als_tid++;
 }
 
-/*********************************************************************
- * @fn      uuid_generate
+/* ***************************************************************************
+ * @fn uuid_generate
  *
- * @brief   生成阿里规范的UUID
+ * @brief Generate the UUID of Alibaba specification
  *
- * @param   cfg - 配置信息
+ * @param cfg - Configuration information
  *
- * @return  none
- */
+ * @return none */
 static void uuid_generate(struct bt_als_cfg const *cfg)
 {
     /* Company ID */
     tm_uuid[0] = cfg->cid;
     tm_uuid[1] = cfg->cid >> 8;
 
-    /*	bit3～0 ：蓝牙广播包版本号，目前是0x01
-            bit4为1：一机一密
-            bit5为1：支持OTA
-            bit7～6：蓝牙协议版本
-                                00：BLE4.0
-                                01：BLE4.2
-                                10：BLE5.0
-                                11：BLE5.0以上 */
+    /* bit3～0: Bluetooth broadcast package version number, currently 0x01
+            bit4 is 1: one machine and one secret
+            bit5 is 1: Support OTA
+            bit7～6: Bluetooth protocol version
+                                00: BLE4.0
+                                01: BLE4.2
+                                10: BLE5.0
+                                11: BLE5.0 or above */
     /* Advertising Verison */
     tm_uuid[2] = BIT(0) | /* adv version */
                  BIT(4) | /* secret */
@@ -314,17 +308,16 @@ static void uuid_generate(struct bt_als_cfg const *cfg)
     tm_uuid[2 + 1 + 4 + 6 + 2] = 0x00;
 }
 
-/*********************************************************************
- * @fn      num_to_str
+/* ***************************************************************************
+ * @fn num_to_str
  *
- * @brief   数字转字符
+ * @brief number to character
  *
- * @param   out     - 输出
- * @param   in      - 输入
- * @param   in_len  - 长度
+ * @param out - Output
+ * @param in - Input
+ * @param in_len - length
  *
- * @return  none
- */
+ * @return none */
 static void num_to_str(uint8_t *out, const uint8_t *in, uint16_t in_len)
 {
     uint16_t          i;
@@ -337,15 +330,14 @@ static void num_to_str(uint8_t *out, const uint8_t *in, uint16_t in_len)
     }
 }
 
-/*********************************************************************
- * @fn      oob_key_generate
+/* ***************************************************************************
+ * @fn oob_key_generate
  *
- * @brief   生成OOB key
+ * @brief Generate OOB key
  *
- * @param   cfg - 配置信息
+ * @param cfg - Configuration information
  *
- * @return  none
- */
+ * @return none */
 static void oob_key_generate(struct bt_als_cfg const *cfg)
 {
     int                           err;
@@ -386,16 +378,15 @@ static void oob_key_generate(struct bt_als_cfg const *cfg)
     memcpy(static_key, dig, 16);
 }
 
-/*********************************************************************
- * @fn      ind_reset
+/* ***************************************************************************
+ * @fn ind_reset
  *
- * @brief   移除列表，调用发送完成回调，释放缓存
+ * @brief Remove the list, call the send completion callback, and release the cache
  *
- * @param   ind     - 需要重置的通知
- * @param   err     - 错误码
+ * @param ind - Notifications that need to be reset
+ * @param err - Error code
  *
- * @return  none
- */
+ * @return none */
 static void ind_reset(struct bt_mesh_indicate *ind, int err)
 {
     if(ind->param.cb && ind->param.cb->end)
@@ -407,15 +398,14 @@ static void ind_reset(struct bt_mesh_indicate *ind, int err)
     ind->buf->__buf = NULL;
 }
 
-/*********************************************************************
- * @fn      bt_mesh_indicate_reset
+/* ***************************************************************************
+ * @fn bt_mesh_indicate_reset
  *
- * @brief   释放所有未发送的通知
+ * @brief Release all unsent notifications
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void bt_mesh_indicate_reset(void)
 {
     uint8_t i;
@@ -428,17 +418,16 @@ void bt_mesh_indicate_reset(void)
     }
 }
 
-/*********************************************************************
- * @fn      ind_start
+/* ***************************************************************************
+ * @fn ind_start
  *
- * @brief   发送 indicate 开始回调
+ * @brief send indication start callback
  *
- * @param   duration    - 本次发送将要持续的时长
- * @param   err         - 错误码
- * @param   cb_data     - 回调参数
+ * @param duration - How long will this send last
+ * @param err - Error code
+ * @param cb_data - callback parameters
  *
- * @return  none
- */
+ * @return none */
 static void ind_start(uint16_t duration, int err, void *cb_data)
 {
     struct bt_mesh_indicate *ind = cb_data;
@@ -456,16 +445,15 @@ static void ind_start(uint16_t duration, int err, void *cb_data)
     }
 }
 
-/*********************************************************************
- * @fn      ind_end
+/* ***************************************************************************
+ * @fn ind_end
  *
- * @brief   发送 indicate 结束回调
+ * @brief send indication end callback
  *
- * @param   err         - 错误码
- * @param   cb_data     - 回调参数
+ * @param err - Error code
+ * @param cb_data - callback parameters
  *
- * @return  none
- */
+ * @return none */
 static void ind_end(int err, void *cb_data)
 {
     struct bt_mesh_indicate *ind = cb_data;
@@ -477,22 +465,21 @@ static void ind_end(int err, void *cb_data)
     tmos_start_task(als_vendor_model_TaskID, ind->event, ind->param.period);
 }
 
-// 发送 indicate 回调结构体
+// Send indicated callback structure
 const struct bt_mesh_send_cb ind_cb =
     {
         .start = ind_start,
         .end = ind_end,
 };
 
-/*********************************************************************
- * @fn      adv_ind_send
+/* ***************************************************************************
+ * @fn adv_ind_send
  *
- * @brief   发送 indicate
+ * @brief send indicated
  *
- * @param   ind - 需要发送的通知
+ * @param ind - Notifications to be sent
  *
- * @return  none
- */
+ * @return none */
 static void adv_ind_send(struct bt_mesh_indicate *ind)
 {
     int err;
@@ -531,15 +518,14 @@ static void adv_ind_send(struct bt_mesh_indicate *ind)
     }
 }
 
-/*********************************************************************
- * @fn      bt_mesh_ind_alloc
+/* ***************************************************************************
+ * @fn bt_mesh_ind_alloc
  *
- * @brief   找一个空的indicate，并分配内存
+ * @brief Find an empty indicator and allocate memory
  *
- * @param   len - 需要分配的数据长度
+ * @param len - The length of data to be allocated
  *
- * @return  indicate结构体指针
- */
+ * @return indicated structure pointer */
 struct bt_mesh_indicate *bt_mesh_ind_alloc(uint16_t len)
 {
     uint8_t i;
@@ -564,29 +550,27 @@ struct bt_mesh_indicate *bt_mesh_ind_alloc(uint16_t len)
     return &indicate[i];
 }
 
-/*********************************************************************
- * @fn      bt_mesh_indicate_send
+/* ***************************************************************************
+ * @fn bt_mesh_indicate_send
  *
- * @brief   启动发送通知的事件
+ * @brief starts the event to send notifications
  *
- * @param   ind - indicate结构体指针
+ * @param ind - indicated structure pointer
  *
- * @return  none
- */
+ * @return none */
 void bt_mesh_indicate_send(struct bt_mesh_indicate *ind)
 {
     tmos_start_task(als_vendor_model_TaskID, ind->event, ind->param.rand);
 }
 
-/*********************************************************************
- * @fn      send_led_indicate
+/* ***************************************************************************
+ * @fn send_led_indicate
  *
- * @brief   发送当前LED状态，当有LED状态更新时都需要调用此函数
+ * @brief sends the current LED state, and this function needs to be called when there is an update to the LED state.
  *
- * @param   param   - 发送通知的发送参数
+ * @param param - Send parameters for sending notifications
  *
- * @return  none
- */
+ * @return none */
 void send_led_indicate(struct indicate_param *param)
 {
     struct bt_mesh_indicate *ind;
@@ -614,15 +598,14 @@ void send_led_indicate(struct indicate_param *param)
     bt_mesh_indicate_send(ind);
 }
 
-/*********************************************************************
- * @fn      send_windspeed_indicate
+/* ***************************************************************************
+ * @fn send_windspeed_indicate
  *
- * @brief   发送当前windspeed，当有windspeed更新时都需要调用此函数
+ * @brief sends the current windspeed, and this function needs to be called when there is a windspeed update.
  *
- * @param   param   - 发送通知的发送参数
+ * @param param - Send parameters for sending notifications
  *
- * @return  none
- */
+ * @return none */
 void send_windspeed_indicate(struct indicate_param *param)
 {
     struct bt_mesh_indicate *ind;
@@ -650,15 +633,14 @@ void send_windspeed_indicate(struct indicate_param *param)
     bt_mesh_indicate_send(ind);
 }
 
-/*********************************************************************
- * @fn      als_vendor_init
+/* ***************************************************************************
+ * @fn als_vendor_init
  *
- * @brief   阿里 厂家模型 初始化
+ * @brief Alibaba Manufacturer Model Initialization
  *
- * @param   model -  回调模型参数
+ * @param model - callback model parameters
  *
- * @return  always success
- */
+ * @return always success */
 int als_vendor_init(struct bt_mesh_model *model)
 {
     uint32_t ran;
@@ -685,17 +667,16 @@ int als_vendor_init(struct bt_mesh_model *model)
     return 0;
 }
 
-/*********************************************************************
- * @fn      als_vendor_model_ProcessEvent
+/* ***************************************************************************
+ * @fn als_vendor_model_ProcessEvent
  *
- * @brief   阿里厂商模型事件处理
+ * @brief Alibaba manufacturer model event processing
  *
- * @param   task_id - The TMOS assigned task ID.
- * @param   events  - events to process.  This is a bit map and can
- *                    contain more than one event.
+ * @param task_id - The TMOS assigned task ID.
+ * @param events - events to process. This is a bit map and can
+ * contains more than one event.
  *
- * @return  events not processed
- */
+ * @return events not processed */
 static uint16_t als_vendor_model_ProcessEvent(uint8_t task_id, uint16_t events)
 {
     for(int i = 0; i < CONFIG_INDICATE_NUM; i++)

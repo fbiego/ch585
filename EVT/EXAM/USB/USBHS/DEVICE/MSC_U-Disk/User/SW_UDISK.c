@@ -1,30 +1,30 @@
-/********************************** (C) COPYRIGHT *******************************
-* File Name          : SW_UDISK.C
-* Author             : WCH
-* Version            : V1.00
-* Date               : 2024/07/31
-* Description        : 模拟U盘(FLASH作为存储介质)部分程序
-*******************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+* File Name: SW_UDISK.C
+* Author: WCH
+* Version: V1.00
+* Date: 2024/07/31
+* Description: Simulate the USB flash drive (FLASH as storage medium) part of the program
+************************************************************************************************
 * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
-* Attention: This software (modified or not) and binary are used for 
+* Attention: This software (modified or not) and binary are used for
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
-*******************************************************************************/
+********************************************************************************************* */
 
 /******************************************************************************/
-/* 头文件包含 */
+/* The header file contains */
 #include <ch585_usbhs_device.h>
 #include <SPI_FLASH.h>
 #include <SW_UDISK.h>
 #include "ch58x_spi.h"
 #include "Internal_Flash.h"
 /******************************************************************************/
-/* 常量、变量定义 */
+/* Constant, variable definition */
 
 __attribute__ ((aligned(4))) uint8_t  UDisk_Down_Buffer[DEF_FLASH_SECTOR_SIZE];
 __attribute__ ((aligned(4))) uint8_t  UDisk_Pack_Buffer[DEF_UDISK_PACK_512];
 
 /******************************************************************************/
-/* INQUITY信息 */
+/* INQUITY information */
 uint8_t UDISK_Inquity_Tab[ ] =
 {
     /* UDISK */
@@ -67,7 +67,7 @@ uint8_t UDISK_Inquity_Tab[ ] =
 };
 
 /******************************************************************************/
-/* 格式化容量信息 */
+/* Format capacity information */
 uint8_t  const  UDISK_Rd_Format_Capacity[ ] =
 {
     0x00,
@@ -85,7 +85,7 @@ uint8_t  const  UDISK_Rd_Format_Capacity[ ] =
 };
 
 /******************************************************************************/
-/* 容量信息 */
+/* Capacity information */
 uint8_t  const  UDISK_Rd_Capacity[ ] =
 {
     ( ( MY_UDISK_SIZE - 1 ) >> 24 ) & 0xFF,
@@ -99,7 +99,7 @@ uint8_t  const  UDISK_Rd_Capacity[ ] =
 };
 
 /******************************************************************************/
-/* MODE_SENSE信息,对于CMD 0X1A */
+/* MODE_SENSE information, for CMD 0X1A */
 uint8_t  const  UDISK_Mode_Sense_1A[ ] =
 {
     0x0B,
@@ -117,7 +117,7 @@ uint8_t  const  UDISK_Mode_Sense_1A[ ] =
 };
 
 /******************************************************************************/
-/* MODE_SENSE信息,对于CMD 0X5A */
+/* MODE_SENSE information, for CMD 0X5A */
 uint8_t  const  UDISK_Mode_Senese_5A[ ] =
 {
     0x00,
@@ -139,9 +139,9 @@ uint8_t  const  UDISK_Mode_Senese_5A[ ] =
 };
 
 
-volatile uint8_t  Udisk_Status = 0x00;                                                              /* U盘相关状态 */
-volatile uint8_t  Udisk_Transfer_Status = 0x00;                                                     /* U盘传输相关状态 */
-volatile uint32_t Udisk_Capability = 0x00;                                                          /* U盘格式化容量 */
+volatile uint8_t  Udisk_Status = 0x00;                                                              /* USB drive related status */
+volatile uint8_t  Udisk_Transfer_Status = 0x00;                                                     /* USB drive transmission related status */
+volatile uint32_t Udisk_Capability = 0x00;                                                          /* USB drive format capacity */
 volatile uint8_t  Udisk_CBW_Tag_Save[ 4 ];
 volatile uint8_t  Udisk_Sense_Key = 0x00;
 volatile uint8_t  Udisk_Sense_ASC = 0x00;
@@ -156,15 +156,15 @@ BULK_ONLY_CMD mBOC;
 uint8_t   *pEndp2_Buf;
 
 
-/*******************************************************************************
-* Function Name  : UDISK_CMD_Deal_Status
-* Description    : 当前U盘命令执行状态
-* Input          : key------磁盘错误细节信息的主键
-*                  asc------磁盘错误细节信息的次键
-*                  status---当前命令执行结果状态
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/* *********************************************************************************************
+* Function Name: UDISK_CMD_Deal_Status
+* Description: Current U disk command execution status
+* Input: key----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+* asc-------Second key for disk error details
+* status---the current command execution result status
+* Output: None
+* Return : None
+********************************************************************************************* */
 void UDISK_CMD_Deal_Status( uint8_t key, uint8_t asc, uint8_t status )
 {
     Udisk_Sense_Key  = key;
@@ -172,50 +172,50 @@ void UDISK_CMD_Deal_Status( uint8_t key, uint8_t asc, uint8_t status )
     Udisk_CSW_Status = status;
 }
 
-/*******************************************************************************
-* Function Name  : UDISK_CMD_Deal_Fail
-* Description    : 当前U盘命令执行失败
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/* *********************************************************************************************
+* Function Name: UDISK_CMD_Deal_Fail
+* Description: The current U disk command execution failed
+* Input: None
+* Output: None
+* Return : None
+********************************************************************************************* */
 void UDISK_CMD_Deal_Fail( void )
 {
     if( Udisk_Transfer_Status & DEF_UDISK_BLUCK_UP_FLAG )
     {
-        /* 端点2上传返回STALL */
+        /* Endpoint 2 upload returns STALL */
         R8_U2EP2_TX_CTRL = ( R8_U2EP2_TX_CTRL & ~USBHS_UEP_T_RES_MASK ) | USBHS_UEP_T_RES_STALL;
         Udisk_Transfer_Status &= ~DEF_UDISK_BLUCK_UP_FLAG;
     }
     if( Udisk_Transfer_Status & DEF_UDISK_BLUCK_DOWN_FLAG )
     {
-        /* 端点3下传返回STALL */
+        /* Return STALL by downloading endpoint 3 */
         R8_U2EP3_RX_CTRL = ( R8_U2EP3_RX_CTRL & ~USBHS_UEP_R_RES_MASK ) | USBHS_UEP_R_RES_STALL;
         Udisk_Transfer_Status &= ~DEF_UDISK_BLUCK_DOWN_FLAG;
     }
 }
 
-/*******************************************************************************
-* Function Name  : CMD_RD_WR_Deal_Pre
-* Description    : 读写扇区处理前的准备
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/* *********************************************************************************************
+* Function Name: CMD_RD_WR_Deal_Pre
+* Description: Preparation before reading and writing sector processing
+* Input: None
+* Output: None
+* Return : None
+********************************************************************************************* */
 void CMD_RD_WR_Deal_Pre( void )
 {
-    /* 保存当前要操作的扇区号 */
+    /* Save the sector number you want to operate */
     UDISK_Cur_Sec_Lba = (uint32_t)mBOC.mCBW.mCBW_CB_Buf[ 2 ] << 24;
     UDISK_Cur_Sec_Lba = UDISK_Cur_Sec_Lba + ( (uint32_t)mBOC.mCBW.mCBW_CB_Buf[ 3 ] << 16 );
     UDISK_Cur_Sec_Lba = UDISK_Cur_Sec_Lba + ( (uint32_t)mBOC.mCBW.mCBW_CB_Buf[ 4 ] << 8 );
     UDISK_Cur_Sec_Lba = UDISK_Cur_Sec_Lba + ( (uint32_t)mBOC.mCBW.mCBW_CB_Buf[ 5 ] );
         
-    /* 保存当前要操作的数据长度 */                    
+    /* Save the data length that you want to operate */                    
     UDISK_Transfer_DataLen = ( (uint32_t)mBOC.mCBW.mCBW_CB_Buf[ 7 ] << 8 );
     UDISK_Transfer_DataLen = UDISK_Transfer_DataLen + ( (uint32_t)mBOC.mCBW.mCBW_CB_Buf[ 8 ] );
     UDISK_Transfer_DataLen = UDISK_Transfer_DataLen * DEF_UDISK_SECTOR_SIZE;         
 
-    /* 清相关变量 */
+    /* Clear relevant variables */
     UDISK_Sec_Pack_Count = 0x00;
     UDISK_CMD_Deal_Status( 0x00, 0x00, 0x00 );
 }
@@ -257,7 +257,7 @@ void UDISK_SCSI_CMD_Deal( void )
         }
         Udisk_Transfer_Status |= DEF_UDISK_CSW_UP_FLAG;
 
-        /* U盘SCSI命令包处理 */ 
+        /* U disk SCSI command package processing */ 
         switch( mBOC.mCBW.mCBW_CB_Buf[ 0 ] )
         {
             case  CMD_U_INQUIRY:                                                                    
@@ -267,14 +267,14 @@ void UDISK_SCSI_CMD_Deal( void )
                     UDISK_Transfer_DataLen = 0x24;
                 }    
 
-                /* 增加上传FLASH芯片ID号 */
+                /* Add the upload FLASH chip ID number */
 #if (STORAGE_MEDIUM == MEDIUM_SPI_FLASH)
                 UDISK_Inquity_Tab[ 32 ] =  (uint8_t)( Flash_ID >> 24 );
                 UDISK_Inquity_Tab[ 33 ] =  (uint8_t)( Flash_ID >> 16 );
                 UDISK_Inquity_Tab[ 34 ] =  (uint8_t)( Flash_ID >> 8 );
                 UDISK_Inquity_Tab[ 35 ] =  (uint8_t)( Flash_ID );
 #endif
-                /* UDISK模式 */
+                /* UDISK mode */
                 UDISK_Inquity_Tab[ 0 ] = 0x00;
                 pEndp2_Buf = (uint8_t *)UDISK_Inquity_Tab;
                 UDISK_CMD_Deal_Status( 0x00, 0x00, 0x00 );
@@ -473,7 +473,7 @@ void UDISK_SCSI_CMD_Deal( void )
         }
     }    
     else                                                                         
-    {   /* CBW包的包标志出错 */
+    {   /* The packet flag of the CBW package is incorrect */
         UDISK_CMD_Deal_Status( 0x05, 0x20, 0x02 );
         Udisk_Transfer_Status |= DEF_UDISK_BLUCK_UP_FLAG;
         Udisk_Transfer_Status |= DEF_UDISK_BLUCK_DOWN_FLAG;
@@ -481,13 +481,13 @@ void UDISK_SCSI_CMD_Deal( void )
     }
 }
 
-/*******************************************************************************
-* Function Name  : UDISK_In_EP_Deal
-* Description    : U盘上传端点处理
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/* *********************************************************************************************
+* Function Name: UDISK_In_EP_Deal
+* Description: U disk upload endpoint processing
+* Input: None
+* Output: None
+* Return : None
+********************************************************************************************* */
 void UDISK_In_EP_Deal( void )
 {        
     if( Udisk_Transfer_Status & DEF_UDISK_BLUCK_UP_FLAG ) 
@@ -507,20 +507,20 @@ void UDISK_In_EP_Deal( void )
     }
 }
 
-/*******************************************************************************
-* Function Name  : UDISK_Out_EP_Deal
-* Description    : U盘下传端点处理
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/* *********************************************************************************************
+* Function Name: UDISK_Out_EP_Deal
+* Description: U disk download endpoint processing
+* Input: None
+* Output: None
+* Return : None
+********************************************************************************************* */
 void UDISK_Out_EP_Deal( uint8_t *pbuf, uint16_t packlen )
 {
     uint32_t i;
-    /* 进行端点2下传数据处理 */
+    /* Perform endpoint 2 data upload processing */
     if( Udisk_Transfer_Status & DEF_UDISK_BLUCK_DOWN_FLAG )
     {
-        /* 处理下传的USB数据包 */
+        /* Processing downloaded USB packets */
         UDISK_Down_OnePack( pbuf, packlen );
     }
     else
@@ -532,7 +532,7 @@ void UDISK_Out_EP_Deal( uint8_t *pbuf, uint16_t packlen )
                 mBOC.buf[ i ] = *pbuf++;
             }
 
-            /* 进行SCSI命令包的处理 */
+            /* Processing SCSI command packages */
             UDISK_SCSI_CMD_Deal( );
             if( ( Udisk_Transfer_Status & DEF_UDISK_BLUCK_DOWN_FLAG ) == 0x00 )
             {
@@ -549,7 +549,7 @@ void UDISK_Out_EP_Deal( uint8_t *pbuf, uint16_t packlen )
                 }
                 else if( Udisk_CSW_Status == 0x00 )
                 {
-                    /* 上传CSW包 */
+                    /* Upload CSW package */
                     UDISK_Up_CSW(  );                     
                 }                        
             }
@@ -557,15 +557,15 @@ void UDISK_Out_EP_Deal( uint8_t *pbuf, uint16_t packlen )
     }
 }
 
-/*******************************************************************************
-* Function Name  : UDISK_Bulk_UpData
-* Description    : 批量端点端点2上传数据包
-* Input          : Transfer_DataLen--- 传输的数据长度
-*                  *pBuf---数据地址指针
-* Output         : Transfer_DataLen--- 传输的数据长度
-*                  *pBuf---数据地址指针
-* Return         : None
-*******************************************************************************/
+/* *********************************************************************************************
+* Function Name: UDISK_Bulk_UpData
+* Description: Bulk endpoint endpoint 2 uploads packets
+* Input: Transfer_DataLen--- The length of the data transmitted
+* *pBuf---Data address pointer
+* Output: Transfer_DataLen--- The length of the data transmitted
+* *pBuf---Data address pointer
+* Return : None
+********************************************************************************************* */
 void UDISK_Bulk_UpData( void )
 {                                            
     uint32_t  len;
@@ -582,20 +582,20 @@ void UDISK_Bulk_UpData( void )
         Udisk_Transfer_Status &= ~DEF_UDISK_BLUCK_UP_FLAG;        
     }
 
-    /* 将数据装载进上传缓冲区中,并启动上传 */
+    /* Load the data into the upload buffer and start the upload */
     USBHS_Endp_DataUp(DEF_UEP2, pEndp2_Buf, len, DEF_UEP_CPY_LOAD );
 }
 
-/*******************************************************************************
-* Function Name  : UDISK_Up_CSW
-* Description    : 批量端点端点2上传CSW包
-* Input          : CBW_Tag_Save---命令块标签
-*                  CSW_Status---当前命令执行结果状态
-* Output         : Bit_DISK_CSW---尚未上传过CSW包标志
-*                  Bit_DISK_Bluck_Up---数据上传标志
-*                  Bit_DISK_Bluck_Down---数据下传标志
-* Return         : None
-*******************************************************************************/
+/* *********************************************************************************************
+* Function Name: UDISK_Up_CSW
+* Description: Bulk endpoint endpoint 2 uploads CSW package
+* Input: CBW_Tag_Save---Command Block Tag
+* CSW_Status---Current command execution result status
+* Output: Bit_DISK_CSW---The CSW package flag has not been uploaded yet
+* Bit_DISK_Bluck_Up---Data upload flag
+* Bit_DISK_Bluck_Down---Data download flag
+* Return : None
+********************************************************************************************* */
 void UDISK_Up_CSW( void )
 {
     Udisk_Transfer_Status = 0x00;
@@ -614,23 +614,23 @@ void UDISK_Up_CSW( void )
     mBOC.mCSW.mCSW_Residue[ 3 ] = 0x00;
     mBOC.mCSW.mCSW_Status = Udisk_CSW_Status;
 
-    /* 将数据装载进上传缓冲区中,并启动上传 */
+    /* Load the data into the upload buffer and start the upload */
     USBHS_Endp_DataUp(DEF_UEP2, (uint8_t *)mBOC.buf, 0x0D, DEF_UEP_CPY_LOAD );
 
 }
 
-/*******************************************************************************
-* Function Name  : UDISK_Up_OnePack
-* Description    : USB存储设备上传一包数据
-*                  该函数在U盘读扇区命令时使用,每次上传一包数据后,根据需要在中断中在
-*                  考虑是否继续上传
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/* *********************************************************************************************
+* Function Name: UDISK_Up_OnePack
+* Description: Upload a packet of data on a USB storage device
+* This function is used when reading sector commands on the USB flash drive. After each upload of a packet of data, it will be interrupted as needed.
+* Consider whether to continue uploading
+* Input: None
+* Output: None
+* Return : None
+********************************************************************************************* */
 void UDISK_Up_OnePack( void )
 {    
-    /* 判断是否需要发起读扇区命令 */
+    /* Determine whether the read sector command is required */
     uint8_t *pbuf = NULL;
 
 #if (STORAGE_MEDIUM == MEDIUM_SPI_FLASH)
@@ -644,10 +644,10 @@ void UDISK_Up_OnePack( void )
     pbuf = (uint8_t*)(IFLASH_UDISK_START_ADDR + UDISK_Cur_Sec_Lba * DEF_UDISK_SECTOR_SIZE + UDISK_Pack_Size * UDISK_Sec_Pack_Count);
 #endif
 
-    /* USB上传本包数据 */
+    /* Upload data of this package by USB */
     USBHS_Endp_DataUp(DEF_UEP2, pbuf,UDISK_Pack_Size, DEF_UEP_CPY_LOAD );
 
-    /* 判断当前扇区数据是否读取上传完毕 */
+    /* Determine whether the current sector data has been read and uploaded */
     UDISK_Sec_Pack_Count++;
     UDISK_Transfer_DataLen -= UDISK_Pack_Size;
 
@@ -659,20 +659,20 @@ void UDISK_Up_OnePack( void )
         UDISK_Sec_Pack_Count = 0x00;
         UDISK_Cur_Sec_Lba++;
     }
-    /* 判断数据是否全部上传完毕 */    
+    /* Determine whether all data has been uploaded */    
      if( UDISK_Transfer_DataLen == 0x00 )
     {    
         Udisk_Transfer_Status &= ~DEF_UDISK_BLUCK_UP_FLAG;
     }
 }
 
-/*******************************************************************************
-* Function Name  : UDISK_Down_OnePack
-* Description    : USB存储设备处理一包下传数据
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/* *********************************************************************************************
+* Function Name: UDISK_Down_OnePack
+* Description: USB storage device processes a packet of downloaded data
+* Input: None
+* Output: None
+* Return : None
+********************************************************************************************* */
 void UDISK_Down_OnePack( uint8_t *pbuf, uint16_t packlen )
 {
     uint32_t address;
@@ -699,7 +699,7 @@ void UDISK_Down_OnePack( uint8_t *pbuf, uint16_t packlen )
 #elif (STORAGE_MEDIUM == MEDIUM_INTERAL_FLASH)
         IFlash_Prog_4096(IFLASH_UDISK_START_ADDR + sec_start_addr,(uint32_t*)UDisk_Down_Buffer);
 #endif
-        /* 判断数据是否全部下传完毕 */
+        /* Determine whether all data has been uploaded */
         if( UDISK_Transfer_DataLen == 0x00 )
         {
             Udisk_Transfer_Status &= ~DEF_UDISK_BLUCK_DOWN_FLAG;

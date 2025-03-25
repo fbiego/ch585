@@ -11,7 +11,7 @@
  *******************************************************************************/
 
 /******************************************************************************/
-/* 头文件包含 */
+/* The header file contains */
 #include "CONFIG.h"
 #include "HAL.h"
 #include "multiCentral.h"
@@ -25,13 +25,12 @@ __attribute__((aligned(4))) uint32_t MEM_BUF[BLE_MEMHEAP_SIZE / 4];
 const uint8_t MacAddr[6] = {0x84, 0xC2, 0xE4, 0x03, 0x02, 0x02};
 #endif
 
-/*********************************************************************
- * @fn      Main_Circulation
+/* ***************************************************************************
+ * @fn Main_Circulation
  *
- * @brief   主循环
+ * @brief main loop
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 __attribute__((noinline))
 void Main_Circulation()
@@ -42,13 +41,12 @@ void Main_Circulation()
     }
 }
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main(void)
 {
 #if(defined(DCDC_ENABLE)) && (DCDC_ENABLE == TRUE)

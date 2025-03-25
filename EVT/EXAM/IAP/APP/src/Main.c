@@ -1,25 +1,24 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : Main.c
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2022/03/15
- * Description        : USB IAP APP例程
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: Main.c
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2022/03/15
+ * Description: USB IAP APP routine
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #include "CH58x_common.h"
 #include "app_flag.h"
 
-/*********************************************************************
- * @fn      DebugInit
+/* ***************************************************************************
+ * @fn DebugInit
  *
- * @brief   调试初始化
+ * @brief debug initialization
  *
- * @return  none
- */
+ * @return none */
 void DebugInit(void)
 {
     GPIOA_SetBits(GPIO_Pin_14);
@@ -29,13 +28,12 @@ void DebugInit(void)
     UART0_DefInit();
 }
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main()
 {
     uint16_t i = 0;
@@ -44,10 +42,10 @@ int main()
     HSECFG_Capacitance(HSECap_18p);
     SetSysClock(CLK_SOURCE_HSE_PLL_62_4MHz);
 
-    /* 配置串口调试 */
+    /* Configure serial debugging */
     DebugInit();
     PRINT("Start @ChipID=%02x\n", R8_CHIP_ID);
-    /* app程序必须执行该语句，保证app更新失败时，下次依然运行IAP */
+    /* The app program must execute this statement to ensure that when the app update fails, the IAP will still be run next time. */
     SwitchImageFlag(FLAG_USER_CALL_APP);
 
     GPIOB_ModeCfg(GPIO_Pin_4, GPIO_ModeIN_PU);
@@ -59,7 +57,7 @@ int main()
 		if (GPIOB_ReadPortPin(GPIO_Pin_4) == 0)
 		{
 			s++;
-			//连续两次检测到按键按下，跳转到IAP
+			// Two consecutive key presses are detected and jump to IAP
 			if(s >= 2)
 			{
 				jumpToIap();

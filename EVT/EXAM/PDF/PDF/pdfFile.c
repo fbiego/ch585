@@ -64,17 +64,16 @@ const uint8_t  BPB_Media[] =
     0xf8,0xff,0xff,0xff,0xff,0xff
 };
 
-/*********************************************************************
- * @fn      pdf_memcpy
+/* ***************************************************************************
+ * @fn pdf_memcpy
  *
- * @brief   Data copying
+ * @brief Data copying
  *
- * @param   pDst - 目标地址
-            pSrc - 原地址
-            len - 要复制的字节数
+ * @param pDst - Destination address
+            pSrc - Original address
+            len - Number of bytes to copy
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 void pdf_memcpy( void *pDst, const void *pSrc, uint32_t len )
 {
@@ -139,16 +138,15 @@ void udisk_format( void )
     }
 }
 
-/*********************************************************************
- * @fn      mStopIfError
+/* ***************************************************************************
+ * @fn mStopIfError
  *
- * @brief   Checking the operation status, displaying the error code and stopping if there is an error
- *          input : iError - Error code input
+ * @brief Checking the operation status, displaying the error code and stopping if there is an error
+ * input : iError - Error code input
  *
- * @param   iError - 错误码
+ * @param iError - Error code
  *
- * @return  none
- */
+ * @return none */
 #if FUN_FILE_CREATE
 static void mStopIfError( uint8_t iError )
 {
@@ -170,16 +168,15 @@ static void mStopIfError( uint8_t iError )
 }
 #endif
 
-/*********************************************************************
- * @fn      open_file
+/* ***************************************************************************
+ * @fn open_file
  *
- * @brief   Try opening or enumerating files, and if the USB drive is not formatted, format the USB drive first.
- *          If the file is not found, create a new file in the root directory
+ * @brief Try opening or enumerating files, and if the USB drive is not formatted, format the USB drive first.
+ * If the file is not found, create a new file in the root directory
  *
- * @param   filename - 文件名
+ * @param filename - filename
  *
- * @return  none
- */
+ * @return none */
 void open_file( char *filename )
 {
 #if FUN_FILE_CREATE
@@ -211,15 +208,14 @@ void open_file( char *filename )
   data_tollen = 0;
 }
 
-/*********************************************************************
- * @fn      write_file
+/* ***************************************************************************
+ * @fn write_file
  *
- * @brief   Write data to file
+ * @brief Write data to file
  *
- * @param   pData - 文件缓冲区
+ * @param pData - File Buffer
  *
- * @return  none
- */
+ * @return none */
 void write_file( uint8_t *pData )
 {
 #if FUN_FILE_CREATE
@@ -270,19 +266,18 @@ void close_file( void )
 #endif
 }
 
-/*********************************************************************
- * @fn      pdf_data_proces
+/* ***************************************************************************
+ * @fn pdf_data_processes
  *
- * @brief   This function is used to process PDF data. The function takes a pointer to the data buffer and the length of the data as parameters
+ * @brief This function is used to process PDF data. The function takes a pointer to the data buffer and the length of the data as parameters
  *
- * @param   buf - PDF文件数据缓冲区
- *          length - 数据长度
+ * @param buf - PDF file data buffer
+ * length - data length
  *
- * @return  0 - 写入成功
- *          1 - 数据长度大于PDF_TMP_BUF_LEN_EXT
- *          2 - data_tollen与length相加后超过PDF_FILE_MAX_LEN
- *
- */
+ * @return 0 - Write successfully
+ * 1 - The data length is greater than PDF_TMP_BUF_LEN_EXT
+ * 2 - data_tollen and length are added to PDF_FILE_MAX_LEN
+ * */
 uint32_t pdf_data_proces( void *buf, uint32_t length )
 {
   if( length > PDF_TMP_BUF_LEN_EXT )

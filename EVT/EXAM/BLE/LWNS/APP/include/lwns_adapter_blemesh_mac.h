@@ -1,14 +1,14 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : lwns_adapter_blemesh_mac.h
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2021/06/20
- * Description        : lwns适配器，模拟ble sig mesh的mac协议
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: lwns_adapter_blemesh_mac.h
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2021/06/20
+ * Description: lwns adapter, emulates ble sig mesh's mac protocol
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 #ifndef _LWNS_ADAPTER_BLEMESH_MAC_H_
 #define _LWNS_ADAPTER_BLEMESH_MAC_H_
 
@@ -18,7 +18,7 @@ extern "C" {
 
 #include "lwns_config.h"
 
-#define LWNS_USE_BLEMESH_MAC    1  //是否使能模仿blemesh的mac协议，注意只能使能一个mac层协议。
+#define LWNS_USE_BLEMESH_MAC    1  // Whether to enable the mac protocol that mimics blemesh, please note that only one mac layer protocol can be enabled.
 
 #if LWNS_USE_BLEMESH_MAC
 
@@ -26,23 +26,23 @@ struct blemesh_mac_phy_manage_struct
 {
     struct blemesh_mac_phy_manage_struct *next;
     uint8_t                              *data;
-}; //模仿blemesh mac层发送管理结构体
+}; // Imitate the blemesh mac layer sending management structure
 
-  #define LWNS_MAC_TRANSMIT_TIMES           2     //一次发送，调用硬件发送几次
+  #define LWNS_MAC_TRANSMIT_TIMES           2     // Send once, call hardware to send several times
 
-  #define LWNS_MAC_PERIOD_MS                10    //mac接收周期，轮流切换
+  #define LWNS_MAC_PERIOD_MS                10    // Mac receiving cycle, switch in turn
 
-  #define LWNS_MAC_SEND_DELAY_MAX_MS        10    //蓝牙mesh就是10ms以内的随机数。
+  #define LWNS_MAC_SEND_DELAY_MAX_MS        10    // Bluetooth mesh is a random number within 10ms.
 
-  #define LWNS_MAC_SEND_PACKET_MAX_NUM      8     //发送链表最多支持几个数据包等待发送
+  #define LWNS_MAC_SEND_PACKET_MAX_NUM      8     // The sending linked list supports up to several packets waiting for sending
 
-  #define BLE_PHY_ONE_PACKET_MAX_625US      5     //ble mac发送一个包最大可能需要的周期
+  #define BLE_PHY_ONE_PACKET_MAX_625US      5     // ble mac sends a packet at the maximum possible period
 
-  #define LLE_MODE_ORIGINAL_RX              (0x80) //如果配置LLEMODE时加上此宏，则接收第一字节为原始数据（原来为RSSI）
+  #define LLE_MODE_ORIGINAL_RX              (0x80) // If this macro is added when configuring LLEMODE, the first byte is received as the original data (originally RSSI)
 
-  #define LWNS_HTIMER_PERIOD_MS             20    //为(1000/HTIMER_SECOND_NUM)
+  #define LWNS_HTIMER_PERIOD_MS             20    // ä¸º(1000/HTIMER_SECOND_NUM)
 
-    //RF_TX和RF_RX所用的类型，可以修改，不推荐改
+    // The types used by RF_TX and RF_RX can be modified, but it is not recommended to change them.
   #define USER_RF_RX_TX_TYPE                0xff
 
   #define LWNS_PHY_OUTPUT_TIMEOUT_MS        5

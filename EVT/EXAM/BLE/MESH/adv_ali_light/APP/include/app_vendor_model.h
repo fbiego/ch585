@@ -74,18 +74,16 @@ extern "C" {
 
 /******************************************************************************/
 
-/**
- * @brief 发送数据的开始和结束回调函数定义
- */
+/* *
+ * @brief The start and end callback function definition of sending data */
 struct bt_adv_ind_send_cb
 {
     void (*start)(int err, void *cb_data);
     void (*end)(int err, void *cb_data);
 };
 
-/**
- * @brief 发送参数结构体
- */
+/* *
+ * @brief send parameter structure */
 struct indicate_param
 {
     uint8_t tid;
@@ -98,9 +96,8 @@ struct indicate_param
     const struct bt_adv_ind_send_cb *cb;
 };
 
-/**
- * @brief indicate 发送缓存
- */
+/* *
+ * @brief indication Send cache */
 struct bt_mesh_indicate
 {
     struct indicate_param param;
@@ -108,9 +105,8 @@ struct bt_mesh_indicate
     uint8_t               event;
 };
 
-/**
- * @brief 天猫精灵相关信息结构体
- */
+/* *
+ * @brief Tmall Elf related information structure */
 struct bt_als_cfg
 {
     /** Company Identify */
@@ -143,41 +139,36 @@ extern const struct bt_mesh_model_cb bt_mesh_als_vendor_model_cb;
  */
 uint8_t als_avail_tid_get(void);
 
-/**
- * @brief   找一个空的indicate，并分配内存
+/* *
+ * @brief Find an empty indicator and allocate memory
  *
- * @param   len - 需要分配的数据长度
+ * @param len - The length of data to be allocated
  *
- * @return  indicate结构体指针
- */
+ * @return indicated structure pointer */
 struct bt_mesh_indicate *bt_mesh_ind_alloc(uint16_t len);
 
-/**
- * @brief   启动发送通知的事件
+/* *
+ * @brief starts the event to send notifications
  *
- * @param   ind - indicate结构体指针
- */
+ * @param ind - indicated structure pointer */
 void bt_mesh_indicate_send(struct bt_mesh_indicate *ind);
 
-/**
- * @brief   发送当前LED状态，当有LED状态更新时都需要调用此函数
+/* *
+ * @brief sends the current LED state, and this function needs to be called when there is an update to the LED state.
  *
- * @param   param -  发送通知的发送参数
- */
+ * @param param - Send parameters for sending notifications */
 void send_led_indicate(struct indicate_param *param);
 
-/**
- * @brief   释放所有未发送的通知
- */
+/* *
+ * @brief Release all unsent notifications */
 void bt_mesh_indicate_reset(void);
 
-/**
- * @brief   阿里 厂家模型 初始化
+/* *
+ * @brief Alibaba Manufacturer Model Initialization
  *
- * @param   model -  回调模型参数
+ * @param model - callback model parameters
  *
- * @return  always success
- */
+ * @return always success */
 int als_vendor_init(struct bt_mesh_model *model);
 
 

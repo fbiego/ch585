@@ -22,61 +22,57 @@
 
 #define ALI_DEF_TTL    (10)
 
-/*********************************************************************
- * @fn      read_led_state
+/* ***************************************************************************
+ * @fn read_led_state
  *
- * @brief   获取当前灯状态.
+ * @brief Get the current light status.
  *
- * @param   led_pin - 引脚.
+ * @param led_pin - pin.
  *
- * @return  灯状态
- */
+ * @return Light status */
 BOOL read_led_state(uint32_t led_pin)
 {
     return (GPIOB_ReadPortPin(led_pin) > 0) ? 0 : 1;
 }
 
-/*********************************************************************
- * @fn      set_led_state
+/* ***************************************************************************
+ * @fn set_led_state
  *
- * @brief   设置当前灯状态.
+ * @brief Sets the current light status.
  *
- * @param   led_pin - 引脚.
- * @param   on      - 状态.
+ * @param led_pin - pin.
+ * @param on - Status.
  *
- * @return  none
- */
+ * @return none */
 void set_led_state(uint32_t led_pin, BOOL on)
 {
     GPIOB_ModeCfg(led_pin, GPIO_ModeOut_PP_5mA);
     on ? GPIOB_ResetBits(led_pin) : GPIOB_SetBits(led_pin);
 }
 
-/*********************************************************************
- * @fn      toggle_led_state
+/* ***************************************************************************
+ * @fn toggle_led_state
  *
- * @brief   翻转当前灯状态
+ * @brief Flip the current light status
  *
- * @param   led_pin - 引脚.
+ * @param led_pin - pin.
  *
- * @return  none
- */
+ * @return none */
 void toggle_led_state(uint32_t led_pin)
 {
     GPIOB_ModeCfg(led_pin, GPIO_ModeOut_PP_5mA);
     GPIOB_InverseBits(led_pin);
 }
 
-/*********************************************************************
- * @fn      gen_onoff_status
+/* ***************************************************************************
+ * @fn gen_onoff_status
  *
- * @brief   回复天猫精灵开关状态
+ * @brief Reply to the status of Tmall Ghost Switch
  *
- * @param   model   - 模型参数.
- * @param   ctx     - 数据参数.
+ * @param model - Model parameters.
+ * @param ctx - Data parameters.
  *
- * @return  none
- */
+ * @return none */
 static void gen_onoff_status(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx)
 {
     NET_BUF_SIMPLE_DEFINE(msg, 32);
@@ -103,17 +99,16 @@ static void gen_onoff_status(struct bt_mesh_model *model, struct bt_mesh_msg_ctx
     }
 }
 
-/*********************************************************************
- * @fn      gen_onoff_get
+/* ***************************************************************************
+ * @fn gen_onoff_get
  *
- * @brief   天猫精灵下发的获取开关状态命令
+ * @brief The status command for obtaining switch issued by Tmall Genie
  *
- * @param   model   - 模型参数.
- * @param   ctx     - 数据参数.
- * @param   buf     - 数据内容.
+ * @param model - Model parameters.
+ * @param ctx - Data parameters.
+ * @param buf - Data content.
  *
- * @return  none
- */
+ * @return none */
 static void gen_onoff_get(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx, struct net_buf_simple *buf)
 {
     APP_DBG(" ");
@@ -121,17 +116,16 @@ static void gen_onoff_get(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *c
     gen_onoff_status(model, ctx);
 }
 
-/*********************************************************************
- * @fn      gen_onoff_set
+/* ***************************************************************************
+ * @fn gen_onoff_set
  *
- * @brief   天猫精灵下发的设置开关状态命令，如果与当前状态不同,还需要发送ind给天猫
+ * @brief The setting switch status command issued by Tmall Genie. If it is different from the current state, it is also necessary to send an ind to Tmall
  *
- * @param   model   - 模型参数.
- * @param   ctx     - 数据参数.
- * @param   buf     - 数据内容.
+ * @param model - Model parameters.
+ * @param ctx - Data parameters.
+ * @param buf - Data content.
  *
- * @return  none
- */
+ * @return none */
 static void gen_onoff_set(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx, struct net_buf_simple *buf)
 {
     APP_DBG("ttl: 0x%02x dst: 0x%04x rssi: %d", ctx->recv_ttl, ctx->recv_dst, ctx->recv_rssi);
@@ -140,17 +134,16 @@ static void gen_onoff_set(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *c
     gen_onoff_status(model, ctx);
 }
 
-/*********************************************************************
- * @fn      gen_onoff_set_unack
+/* ***************************************************************************
+ * @fn gen_onoff_set_unack
  *
- * @brief   天猫精灵下发的设置开关状态命令(无应答)
+ * @brief The setting switch status command issued by Tmall Genie (no response)
  *
- * @param   model   - 模型参数.
- * @param   ctx     - 数据参数.
- * @param   buf     - 数据内容.
+ * @param model - Model parameters.
+ * @param ctx - Data parameters.
+ * @param buf - Data content.
  *
- * @return  none
- */
+ * @return none */
 static void gen_onoff_set_unack(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx, struct net_buf_simple *buf)
 {
     uint8_t status;

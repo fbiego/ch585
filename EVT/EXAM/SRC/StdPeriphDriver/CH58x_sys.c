@@ -16,15 +16,14 @@ volatile MachineMode_Call_func gs_machine_mode_func;
 
 extern uint32_t _vector_base[];
 
-/*********************************************************************
- * @fn      SetSysClock
+/* ***************************************************************************
+ * @fn SetSysClock
  *
- * @brief   配置系统运行时钟
+ * @brief Configure the system running clock
  *
- * @param   sc      - 系统时钟源选择 refer to SYS_CLKTypeDef
+ * @param sc - System clock source selection refer to SYS_CLKTypeDef
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 void SetSysClock(SYS_CLKTypeDef sc)
 {
@@ -121,15 +120,14 @@ void SetSysClock(SYS_CLKTypeDef sc)
     sys_safe_access_disable();
 }
 
-/*********************************************************************
- * @fn      highcode_init
+/* ***************************************************************************
+ * @fn highcode_init
  *
- * @brief   搬运highcode代码
+ * @brief transfer highcode code
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 __attribute__((section(".highcode_init")))
 void highcode_init(void)
 {
@@ -146,15 +144,14 @@ void highcode_init(void)
     sys_safe_access_disable();
 }
 
-/*********************************************************************
- * @fn      MachineMode_Call_IRQ
+/* ***************************************************************************
+ * @fn MachineMode_Call_IRQ
  *
- * @brief   机械模式调用函数使用的中断
+ * @brief Interrupts used by mechanical mode call functions
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 __INTERRUPT
 void MachineMode_Call_IRQ(void)
@@ -166,15 +163,14 @@ void MachineMode_Call_IRQ(void)
     }
 }
 
-/*********************************************************************
- * @fn      MachineMode_Call
+/* ***************************************************************************
+ * @fn MachineMode_Call
  *
- * @brief   注册机械模式执行函数，并在机械模式下调用
+ * @brief Register the mechanical mode execution function and call it in mechanical mode
  *
- * @param   func    -   用于在机械模式下执行的函数
+ * @param func - Function for execution in mechanical mode
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 void MachineMode_Call(MachineMode_Call_func func)
 {
@@ -182,17 +178,17 @@ void MachineMode_Call(MachineMode_Call_func func)
     uint32_t sw_vtf, sw_irqtable;
     uint32_t irqv;
 
-    /* 这里关闭所有中断 */
+    /* Close all interrupts here */
     irqv = (PFIC->ISR[0] >> 8) | (PFIC->ISR[1] << 24);
     PFIC->IRER[0] = 0xffffffff;
     PFIC->IRER[1] = 0xffffffff;
 
-    /* 如果用户使用了SW中断的免表中断，则需要取消此函数所有注释 */
+    /* If the user uses table-free interrupts for SW interrupts, all comments of this function need to be cancelled */
 //    for(i = 0; i < 4; i++)
 //    {
 //        if(PFIC->VTFIDR[i] == SWI_IRQn)
 //        {
-//            /* 找到了用户自己使用的SW中断，关闭它 */
+// /* Found the SW interrupt used by the user and close it */
 //            sw_vtf = PFIC->VTFADDR[i];
 //            PFIC->VTFADDR[i] = (sw_vtf & 0xFFFFFFFE);
 //            break;
@@ -203,67 +199,64 @@ void MachineMode_Call(MachineMode_Call_func func)
     _vector_base[SWI_IRQn] = (uint32_t)MachineMode_Call_IRQ;
     gs_machine_mode_func = func;
 
-    /* 只打开SWI_IRQn */
+    /* Only open SWI_IRQn */
     PFIC_EnableIRQ(SWI_IRQn);
-    /* 进入SWI_IRQn中断处理函数 */
+    /* Enter SWI_IRQn interrupt handling function */
     PFIC_SetPendingIRQ(SWI_IRQn);
 
-    /* 等待处理结束 */
+    /* Wait for processing to end */
     while(gs_machine_mode_func != NULL);
 
     PFIC_DisableIRQ(SWI_IRQn);
 
 //    if(i != 4)
 //    {
-//        /* 恢复原本的SW免表中断 */
+// /* Restore the original SW table-free interrupt */
 //        PFIC->VTFADDR[i] = sw_vtf;
 //    }
 
-    /* 这里恢复原来的中断使能配置 */
+    /* Restore the original interrupt enable configuration here */
     PFIC->IENR[0] = (irqv << 8);
     PFIC->IENR[1] = (irqv >> 24);
 }
 
-/*********************************************************************
- * @fn      SetPI_func
+/* ***************************************************************************
+ * @fn SetPI_func
  *
- * @brief   用于机械模式调用的使能预取指令函数
+ * @brief Enable prefetch instruction function for mechanical mode calls
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */void SetPI_func()
+ * @return none */void SetPI_func()
 {
     write_csr(0xbc0, 0x25);
 }
 
-/*********************************************************************
- * @fn      SYS_EnablePI
+/* ***************************************************************************
+ * @fn SYS_EnablePI
  *
- * @brief   使能预取指令功能
+ * @brief enables the prefetch command function
  *
- * @param   none
+ * @param none
  *
- * @return  null
- */
+ * @return null */
 void SYS_EnablePI()
 {
     MachineMode_Call(SetPI_func);
 }
 
-/*********************************************************************
- * @fn      GetSysClock
+/* ***************************************************************************
+ * @fn GetSysClock
  *
- * @brief   获取当前系统时钟
+ * @brief Get the current system clock
  *
- * @param   none
+ * @param none
  *
- * @return  Hz
- */
+ * @return Hz */
 uint32_t GetSysClock(void)
 {
     if((R16_CLK_SYS_CFG & RB_CLK_SYS_MOD) == RB_CLK_SYS_MOD)
-    { // 32K做主频
+    { // 32K is the main frequency
         return (CAB_LSIFQ);
     }
     else if(R16_CLK_SYS_CFG & RB_XROM_SCLK_SEL)
@@ -273,29 +266,28 @@ uint32_t GetSysClock(void)
             return ((R16_CLK_SYS_CFG & RB_OSC32M_SEL)?32000000:16000000);
         }
         else
-        {   // PLL进行分频
+        {   // PLL for frequency division
             return (312000000 / (R16_CLK_SYS_CFG & 0x1f));
         }
     }
     else if(R16_CLK_SYS_CFG & RB_OSC32M_SEL)
-    { // 32M进行分频
+    { // 32M for frequency division
         return (32000000 / (R16_CLK_SYS_CFG & 0x1f));
     }
     else
-    { // 16M进行分频
+    { // 16M for frequency division
         return (16000000 / (R16_CLK_SYS_CFG & 0x1f));
     }
 }
 
-/*********************************************************************
- * @fn      SYS_GetInfoSta
+/* ***************************************************************************
+ * @fn SYS_GetInfoSta
  *
- * @brief   获取当前系统信息状态
+ * @brief Get the current system information status
  *
- * @param   i       - refer to SYS_InfoStaTypeDef
+ * @param i - refer to SYS_InfoStaTypeDef
  *
- * @return  是否开启
- */
+ * @return is enabled */
 uint8_t SYS_GetInfoSta(SYS_InfoStaTypeDef i)
 {
     if(i == STA_SAFEACC_ACT)
@@ -308,15 +300,14 @@ uint8_t SYS_GetInfoSta(SYS_InfoStaTypeDef i)
     }
 }
 
-/*********************************************************************
- * @fn      SYS_ResetExecute
+/* ***************************************************************************
+ * @fn SYS_ResetExecute
  *
- * @brief   执行系统软件复位
+ * @brief Execute system software reset
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 void SYS_ResetExecute(void)
 {
@@ -326,15 +317,14 @@ void SYS_ResetExecute(void)
     sys_safe_access_disable();
 }
 
-/*********************************************************************
- * @fn      SYS_DisableAllIrq
+/* ***************************************************************************
+ * @fn SYS_DisableAllIrq
  *
- * @brief   关闭所有中断，并保留当前中断值
+ * @brief Close all interrupts and keep the current interrupt value
  *
- * @param   pirqv   - 当前保留中断值
+ * @param pirqv - Currently reserved interrupt value
  *
- * @return  none
- */
+ * @return none */
 void SYS_DisableAllIrq(uint32_t *pirqv)
 {
     *pirqv = (PFIC->ISR[0] >> 8) | (PFIC->ISR[1] << 24);
@@ -342,44 +332,41 @@ void SYS_DisableAllIrq(uint32_t *pirqv)
     PFIC->IRER[1] = 0xffffffff;
 }
 
-/*********************************************************************
- * @fn      SYS_RecoverIrq
+/* ***************************************************************************
+ * @fn SYS_RecoverIrq
  *
- * @brief   恢复之前关闭的中断值
+ * @brief restores the interrupt value that was closed before
  *
- * @param   irq_status  - 当前保留中断值
+ * @param irq_status - currently retained interrupt value
  *
- * @return  none
- */
+ * @return none */
 void SYS_RecoverIrq(uint32_t irq_status)
 {
     PFIC->IENR[0] = (irq_status << 8);
     PFIC->IENR[1] = (irq_status >> 24);
 }
 
-/*********************************************************************
- * @fn      SYS_GetSysTickCnt
+/* ***************************************************************************
+ * @fn SYS_GetSysTickCnt
  *
- * @brief   获取当前系统(SYSTICK)计数值
+ * @brief Get the current system (SYSTICK) count value
  *
- * @param   none
+ * @param none
  *
- * @return  当前计数值
- */
+ * @return Current count value */
 uint32_t SYS_GetSysTickCnt(void)
 {
     return SysTick->CNTL;
 }
 
-/*********************************************************************
- * @fn      WWDG_ITCfg
+/* ***************************************************************************
+ * @fn WWDG_ITCfg
  *
- * @brief   看门狗定时器溢出中断使能
+ * @brief Watchdog timer overflow interrupt enable
  *
- * @param   s       - 溢出是否中断
+ * @param s - whether the overflow is interrupted
  *
- * @return  none
- */
+ * @return none */
 void WWDG_ITCfg(FunctionalState s)
 {
     uint8_t ctrl = R8_RST_WDOG_CTRL;
@@ -398,15 +385,14 @@ void WWDG_ITCfg(FunctionalState s)
     sys_safe_access_disable();
 }
 
-/*********************************************************************
- * @fn      WWDG_ResetCfg
+/* ***************************************************************************
+ * @fn WWDG_ResetCfg
  *
- * @brief   看门狗定时器复位功能
+ * @brief Watchdog timer reset function
  *
- * @param   s       - 溢出是否复位
+ * @param s - Whether to reset overflow
  *
- * @return  none
- */
+ * @return none */
 void WWDG_ResetCfg(FunctionalState s)
 {
     uint8_t ctrl = R8_RST_WDOG_CTRL;
@@ -425,15 +411,14 @@ void WWDG_ResetCfg(FunctionalState s)
     sys_safe_access_disable();
 }
 
-/*********************************************************************
- * @fn      WWDG_ClearFlag
+/* ***************************************************************************
+ * @fn WWDG_ClearFlag
  *
- * @brief   清除看门狗中断标志，重新加载计数值也可清除
+ * @brief Clear the watchdog interrupt flag, and reload the count value can also be cleared
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void WWDG_ClearFlag(void)
 {
     sys_safe_access_enable();
@@ -441,15 +426,14 @@ void WWDG_ClearFlag(void)
     sys_safe_access_disable();
 }
 
-/*********************************************************************
- * @fn      HardFault_Handler
+/* ***************************************************************************
+ * @fn HardFault_Handler
  *
- * @brief   硬件错误中断，进入后执行复位，复位类型为上电复位
+ * @brief The hardware error interrupts, and the reset is power-on reset after entering.
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 __INTERRUPT
 __HIGH_CODE
 __attribute__((weak))
@@ -465,15 +449,14 @@ void HardFault_Handler(void)
     while(1);
 }
 
-/*********************************************************************
- * @fn      mDelayuS
+/* ***************************************************************************
+ * @fn mDelayuS
  *
- * @brief   uS 延时
+ * @brief uS Delay
  *
- * @param   t       - 时间参数
+ * @param t - Time parameters
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 void mDelayuS(uint16_t t)
 {
@@ -525,15 +508,14 @@ void mDelayuS(uint16_t t)
 #endif
 }
 
-/*********************************************************************
- * @fn      mDelaymS
+/* ***************************************************************************
+ * @fn mDelaymS
  *
- * @brief   mS 延时
+ * @brief mS Delay
  *
- * @param   t       - 时间参数
+ * @param t - Time parameters
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 void mDelaymS(uint16_t t)
 {
@@ -550,17 +532,17 @@ int _write(int fd, char *buf, int size)
     for(i = 0; i < size; i++)
     {
 #if DEBUG == Debug_UART0
-        while(R8_UART0_TFC == UART_FIFO_SIZE);                  /* 等待数据发送 */
-        R8_UART0_THR = *buf++; /* 发送数据 */
+        while(R8_UART0_TFC == UART_FIFO_SIZE);                  /* Wait for data to be sent */
+        R8_UART0_THR = *buf++; /* Send data */
 #elif DEBUG == Debug_UART1
-        while(R8_UART1_TFC == UART_FIFO_SIZE);                  /* 等待数据发送 */
-        R8_UART1_THR = *buf++; /* 发送数据 */
+        while(R8_UART1_TFC == UART_FIFO_SIZE);                  /* Wait for data to be sent */
+        R8_UART1_THR = *buf++; /* Send data */
 #elif DEBUG == Debug_UART2
-        while(R8_UART2_TFC == UART_FIFO_SIZE);                  /* 等待数据发送 */
-        R8_UART2_THR = *buf++; /* 发送数据 */
+        while(R8_UART2_TFC == UART_FIFO_SIZE);                  /* Wait for data to be sent */
+        R8_UART2_THR = *buf++; /* Send data */
 #elif DEBUG == Debug_UART3       
-        while(R8_UART3_TFC == UART_FIFO_SIZE);                  /* 等待数据发送 */
-        R8_UART3_THR = *buf++; /* 发送数据 */
+        while(R8_UART3_TFC == UART_FIFO_SIZE);                  /* Wait for data to be sent */
+        R8_UART3_THR = *buf++; /* Send data */
 #endif
     }
     return size;

@@ -1,28 +1,28 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : rf_basic.c
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2024/08/15
- * Description        : 2.4G库基本模式收发测试例程
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: rf_basic.c
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2024/08/15
+ * Description: 2.4G library basic mode transceiver test routine
  *
- *                      功率设置
- *                      RFIP_SetTxPower
- *                      1. 支持-20dBm ~ 4dBm 动态调整
+ * Power settings
+ * RFIP_SetTxPower
+ * 1. Supports -20dBm ~ 4dBm dynamic adjustment
  *
- *                      发送状态切换稳定时间
- *                      RFIP_SetTxDelayTime
- *                      1.如果需要切换通道发送，稳定时间不低于80us
+ * Send status switching stability time
+ * RFIP_SetTxDelayTime
+ * 1. If you need to switch channel transmission, the stability time shall not be less than 80us
  *
- *                      获取信号强度
- *                      RFIP_ReadRssi
- *                      1.可读取当前数据包的RSSI值
+ * Get signal strength
+ * RFIP_ReadRssi
+ * 1. The RSSI value of the current packet can be read
  *
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+ ********************************************************************************************* */
 
 /******************************************************************************/
-/* 头文件包含 */
+/* The header file contains */
 #include "rf_test.h"
 #include "hal.h"
 
@@ -38,23 +38,23 @@ rfipTx_t gTxParam;
 rfipRx_t gRxParam;
 
 __attribute__((__aligned__(4))) uint8_t TxBuf[64];
-__attribute__((__aligned__(4))) uint8_t RxBuf[264]; // 接收DMA buf不能小于264字节
+__attribute__((__aligned__(4))) uint8_t RxBuf[264]; // The received DMA buf cannot be less than 264 bytes
 
 #define  MODE_RX     0
 #define  MODE_TX     1
 
 
-#define  WAIT_ACK         0               // 是否使能ACK
-#define  TEST_DATA_LEN    4               // 数据长度
-#define  TEST_FREQUENCY   16              // 通信频点
+#define  WAIT_ACK         0               // Whether to enable ACK
+#define  TEST_DATA_LEN    4               // Data length
+#define  TEST_FREQUENCY   16              // Communication frequency
 
-#define  TEST_MODE     MODE_TX            // 发送模式
-//#define  TEST_MODE     MODE_RX            // 接收模式
+#define  TEST_MODE     MODE_TX            // Send mode
+// #define TEST_MODE MODE_RX // Receive mode
 
 #if WAIT_ACK
-#define  RF_DEVICE_PERIDOC    4000        // 等待ACK模式的发送速率
+#define  RF_DEVICE_PERIDOC    4000        // Wait for the transmission rate of ACK mode
 #else
-#define  RF_DEVICE_PERIDOC    8000        // 无需ACK模式的发送速率
+#define  RF_DEVICE_PERIDOC    8000        // Send rate without ACK mode
 #endif
 
 int8_t gRssi;
@@ -63,109 +63,102 @@ int8_t gRssiAverage;
 uint32_t gTxCount;
 uint32_t gRxCount;
 
-/******************************** 发送相关函数 ********************************/
-/**
- * @brief   配置发送的频点
+/* *************************************** Send related functions ********************************* */
+/* *
+ * @brief configures the frequency of sending
  *
- * @param   channel_num - 需要切换的通道
+ * @param channel_num - channel to switch
  *
- * @return  None.
- */
+ * @return None. */
 
 void rf_tx_set_channel( uint8_t channel_num )
 {
     gTxParam.frequency = channel_num;
 }
 
-/**
- * @brief   配置发送的地址
+/* *
+ * @brief Configure the address to send
  *
- * @param   sync_word - 需要配置的接入地址
+ * @param sync_word - Access address to be configured
  *
- * @return  None.
- */
+ * @return None. */
 
 void rf_tx_set_sync_word( uint32_t sync_word )
 {
     gTxParam.accessAddress = sync_word;
 }
 
-/**
- * @brief   rf发送数据子程序
+/* *
+ * @brief rf send data subroutine
  *
- * @param   pBuf - 发送的DMA地址
+ * @param pBuf - DMA address sent
  *
- * @return  None.
- */
+ * @return None. */
 __HIGH_CODE
 void rf_tx_start( uint8_t *pBuf )
 {
     RFIP_SetTxStart( );
-    // 配置发送的频点
+    // Configure the frequency of sending
     gTxParam.frequency = TEST_FREQUENCY;
-    // 发送的DMA地址
+    // The DMA address sent
     gTxParam.txDMA = (uint32_t)pBuf;
-//    gTxParam.accessAddress = gParm.accessAddress; // 发送同步字
-//    gTxParam.sendCount = 1;  // 发送次数
+// gTxParam.accessAddress = gParm.accessAddress; // Send synchronous words
+// gTxParam.sendCount = 1; // Number of sends
     RFIP_SetTxParm( &gTxParam );
 }
 
-/******************************** 接收相关函数 ********************************/
-/**
- * @brief   配置接收的地址
+/* ****************************** Receive related functions ********************************* */
+/* *
+ * @brief Configure the received address
  *
- * @param   sync_word - 需要配置的接入地址
+ * @param sync_word - Access address to be configured
  *
- * @return  None.
- */
+ * @return None. */
 
 void rf_rx_set_sync_word( uint32_t sync_word )
 {
     gRxParam.accessAddress = sync_word;
 }
 
-/**
- * @brief   配置接收的频点
+/* *
+ * @brief Configure the received frequency
  *
- * @param   channel_num - 需要切换的通道
+ * @param channel_num - channel to switch
  *
- * @return  None.
- */
+ * @return None. */
 
 void rf_rx_set_channel( uint8_t channel_num )
 {
     gRxParam.frequency = channel_num;
 }
 
-/**
- * @brief   rf接收数据子程序
+/* *
+ * @brief rf receive data subroutine
  *
- * @param   None.
+ * @param None.
  *
- * @return  None.
- */
+ * @return None. */
 __HIGH_CODE
 void rf_rx_start( void )
 {
-    // 配置发送的频点
+    // Configure the frequency of sending
     gRxParam.frequency = TEST_FREQUENCY;
-    // 配置接收的超时时间，0则无超时
+    // Configure the timeout time of reception, no timeout if 0 is
     gRxParam.timeOut = 0;
-//    gRxParam.accessAddress = gParm.accessAddress; // 接收同步字
+// gRxParam.accessAddress = gParm.accessAddress; // Receive synchronous words
     RFIP_SetRx( &gRxParam );
 }
 
-/**
- * @brief   rf接收数据处理
+/* *
+ * @brief rf receive data processing
  *
- * @param   None.
+ * @param None.
  *
- * @return  None.
- */
+ * @return None. */
 __HIGH_CODE
 void rf_rx_process_data( void )
 {
-    // 获取信号强度
+    // Obtain signal strength
     gRssi = RFIP_ReadRssi();
     if( !gRssiAverage ) gRssiAverage =  gRssi;
     else gRssiAverage = (gRssi+gRssiAverage)/2;
@@ -176,16 +169,15 @@ void rf_rx_process_data( void )
 //    }
 }
 
-/*******************************************************************************
- * @fn      RF_ProcessCallBack
+/* *********************************************************************************************
+ * @fn RF_ProcessCallBack
  *
- * @brief   rf中断处理程序
+ * @brief rf interrupt handler
  *
- * @param   sta - 中断状态.
- *          id - 保留
+ * @param sta - Interrupt status.
+ * id - reserved
  *
- * @return  None.
- */
+ * @return None. */
 __HIGH_CODE
 void RF_ProcessCallBack( rfRole_States_t sta,uint8_t id  )
 {
@@ -226,15 +218,14 @@ void RF_ProcessCallBack( rfRole_States_t sta,uint8_t id  )
     }
 }
 
-/*******************************************************************************
- * @fn      RF_ProcessEvent
+/* *********************************************************************************************
+ * @fn RF_ProcessEvent
  *
- * @brief   RF层系统任务处理
+ * @brief RF layer system task processing
  *
- * @param   None.
+ * @param None.
  *
- * @return  None.
- */
+ * @return None. */
 tmosEvents RFRole_ProcessEvent( tmosTaskID task_id, tmosEvents events )
 {
     if( events & SYS_EVENT_MSG )
@@ -272,21 +263,20 @@ tmosEvents RFRole_ProcessEvent( tmosTaskID task_id, tmosEvents events )
     return 0;
 }
 
-/*********************************************************************
- * @fn      TMR0_IRQHandler
+/* ***************************************************************************
+ * @fn TMR0_IRQHandler
  *
- * @brief   TMR0中断函数
+ * @brief TMR0 interrupt function
  *
- * @return  none
- */
+ * @return none */
 __INTERRUPT
 __HIGH_CODE
-void TMR0_IRQHandler(void) // TMR0 定时中断
+void TMR0_IRQHandler(void) // TMR0 Timed interrupt
 {
     if(TMR0_GetITFlag(TMR0_3_IT_CYC_END))
     {
-        TMR0_ClearITFlag(TMR0_3_IT_CYC_END); // 清除中断标志
-        // 初始化发送的数据
+        TMR0_ClearITFlag(TMR0_3_IT_CYC_END); // Clear the interrupt flag
+        // Initialize the sent data
         TxBuf[0] = 0x55;
         TxBuf[1] = TEST_DATA_LEN;
         TxBuf[2]++;
@@ -295,15 +285,14 @@ void TMR0_IRQHandler(void) // TMR0 定时中断
     }
 }
 
-/*******************************************************************************
- * @fn      RFRole_Init
+/* *********************************************************************************************
+ * @fn RFRole_Init
  *
- * @brief   RF应用层初始化
+ * @brief RF application layer initialization
  *
- * @param   None.
+ * @param None.
  *
- * @return  None.
- */
+ * @return None. */
 void RFRole_Init(void)
 {
     rfTaskID = TMOS_ProcessEventRegister( RFRole_ProcessEvent );
@@ -318,15 +307,15 @@ void RFRole_Init(void)
     {
         gParm.accessAddress = 0x71762345;
         gParm.crcInit = 0x555555;
-        // 配置PHY类型
+        // Configure PHY type
         gParm.properties = LLE_MODE_PHY_2M;
-        // 配置重传间隔，发送次数大于1时有效
+        // Configure the retransmission interval, and it is valid if the number of sending times is greater than 1.
         gParm.sendInterval = 1999*2;
-        // 配置发送稳定时间
+        // Configure sending stability time
         gParm.sendTime = 10*2;
         RFRole_SetParam( &gParm );
     }
-    // TX相关参数，全局变量
+    // TX-related parameters, global variables
     {
         gTxParam.accessAddress = gParm.accessAddress;
         gTxParam.crcInit = gParm.crcInit;
@@ -334,7 +323,7 @@ void RFRole_Init(void)
         gTxParam.sendCount = 1;
         gTxParam.txDMA = (uint32_t)TxBuf;
     }
-    // RX相关参数，全局变量
+    // RX-related parameters, global variables
     {
         gRxParam.accessAddress = gParm.accessAddress;
         gRxParam.crcInit = gParm.crcInit;
@@ -360,7 +349,7 @@ void RFRole_Init(void)
     gRxCount = 0;
     tmos_start_reload_task(rfTaskID, RF_TEST_TX_EVENT, MS1_TO_SYSTEM_TIME(1000));
     TMR0_TimerInit( GetSysClock() / RF_DEVICE_PERIDOC );
-    TMR0_ITCfg(ENABLE, TMR0_3_IT_CYC_END); // 开启中断
+    TMR0_ITCfg(ENABLE, TMR0_3_IT_CYC_END); // Turn on interrupt
 #endif
     PFIC_SetPriority( TMR0_IRQn, 0x80 );
     PFIC_EnableIRQ(TMR0_IRQn);

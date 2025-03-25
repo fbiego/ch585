@@ -12,27 +12,26 @@
 
 #include "CH58x_common.h"
 
-/*********************************************************************
- * @fn      ADC_DataCalib_Rough
+/* ***************************************************************************
+ * @fn ADC_DataCalib_Rough
  *
- * @brief   采样数据粗调,获取偏差值,必须先配置ADC后调用此函数获取校准值
+ * @brief sample data to roughly tune, get the deviation value, you must first configure the ADC and then call this function to get the calibration value
  *
- * @param   none
+ * @param none
  *
- * @return  偏差
- */
-signed short ADC_DataCalib_Rough(void) // 采样数据粗调,获取偏差值
+ * @return deviation */
+signed short ADC_DataCalib_Rough(void) // Sampling data roughly tuned to obtain deviation value
 {
     uint16_t i;
     uint32_t sum = 0;
-    uint8_t  ch = 0;   // 备份通道
-    uint8_t  cfg = 0;   // 备份
+    uint8_t  ch = 0;   // Backup channel
+    uint8_t  cfg = 0;   // Backup
 
     ch = R8_ADC_CHANNEL;
     cfg = R8_ADC_CFG;
 
-    R8_ADC_CFG |= RB_ADC_OFS_TEST; // 进入测试模式
-    R8_ADC_CFG &= ~RB_ADC_DIFF_EN; // 关闭差分
+    R8_ADC_CFG |= RB_ADC_OFS_TEST; // Enter test mode
+    R8_ADC_CFG &= ~RB_ADC_DIFF_EN; // Close the difference
 
     R8_ADC_CONVERT |= RB_ADC_START;
     while(R8_ADC_CONVERT & RB_ADC_START);
@@ -44,22 +43,21 @@ signed short ADC_DataCalib_Rough(void) // 采样数据粗调,获取偏差值
     }
     sum = (sum + 8) >> 4;
 
-    R8_ADC_CFG = cfg;  // 恢复配置值
+    R8_ADC_CFG = cfg;  // Restore configuration values
     R8_ADC_CHANNEL = ch;
 
     return (2048 - sum);
 }
 
-/*********************************************************************
- * @fn      ADC_ExtSingleChSampInit
+/* ***************************************************************************
+ * @fn ADC_ExtSingleChSampInit
  *
- * @brief   外部信号单通道采样初始化
+ * @brief External signal single channel sampling initialization
  *
- * @param   sp  - refer to ADC_SampClkTypeDef
- * @param   ga  - refer to ADC_SignalPGATypeDef
+ * @param sp - refer to ADC_SampClkTypeDef
+ * @param ga - refer to ADC_SignalPGATypeDef
  *
- * @return  none
- */
+ * @return none */
 void ADC_ExtSingleChSampInit(ADC_SampClkTypeDef sp, ADC_SignalPGATypeDef ga)
 {
     R8_TKEY_CFG &= ~RB_TKEY_PWR_ON;
@@ -74,16 +72,15 @@ void ADC_ExtSingleChSampInit(ADC_SampClkTypeDef sp, ADC_SignalPGATypeDef ga)
     }
 }
 
-/*********************************************************************
- * @fn      ADC_ExtDiffChSampInit
+/* ***************************************************************************
+ * @fn ADC_ExtDiffChSampInit
  *
- * @brief   外部信号差分通道采样初始化
+ * @brief External signal differential channel sampling initialization
  *
- * @param   sp  - refer to ADC_SampClkTypeDef
- * @param   ga  - refer to ADC_SignalPGATypeDef
+ * @param sp - refer to ADC_SampClkTypeDef
+ * @param ga - refer to ADC_SignalPGATypeDef
  *
- * @return  none
- */
+ * @return none */
 void ADC_ExtDiffChSampInit(ADC_SampClkTypeDef sp, ADC_SignalPGATypeDef ga)
 {
     R8_TKEY_CFG &= ~RB_TKEY_PWR_ON;
@@ -98,15 +95,14 @@ void ADC_ExtDiffChSampInit(ADC_SampClkTypeDef sp, ADC_SignalPGATypeDef ga)
     }
 }
 
-/*********************************************************************
- * @fn      ADC_InterTSSampInit
+/* ***************************************************************************
+ * @fn ADC_InterTSSampInit
  *
- * @brief   内置温度传感器采样初始化
+ * @brief Built-in temperature sensor sampling initialization
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void ADC_InterTSSampInit(void)
 {
     R8_TKEY_CFG &= ~RB_TKEY_PWR_ON;
@@ -116,32 +112,30 @@ void ADC_InterTSSampInit(void)
     R8_ADC_CONVERT &= ~RB_ADC_PGA_GAIN2;
 }
 
-/*********************************************************************
- * @fn      ADC_InterBATSampInit
+/* ***************************************************************************
+ * @fn ADC_InterBATSampInit
  *
- * @brief   内置电池电压采样初始化
+ * @brief Built-in battery voltage sampling initialization
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void ADC_InterBATSampInit(void)
 {
     R8_TKEY_CFG &= ~RB_TKEY_PWR_ON;
     R8_ADC_CHANNEL = CH_INTE_VBAT;
-    R8_ADC_CFG = RB_ADC_POWER_ON | RB_ADC_BUF_EN | (0 << 4); // 使用-12dB模式
+    R8_ADC_CFG = RB_ADC_POWER_ON | RB_ADC_BUF_EN | (0 << 4); // Use -12dB mode
     R8_ADC_CONVERT &= ~RB_ADC_PGA_GAIN2;
 }
 
-/*********************************************************************
- * @fn      TouchKey_ChSampInit
+/* ***************************************************************************
+ * @fn TouchKey_ChSampInit
  *
- * @brief   触摸按键通道采样初始化
+ * @brief Touch key channel sampling initialization
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void TouchKey_ChSampInit(void)
 {
     R8_ADC_CFG = RB_ADC_POWER_ON | RB_ADC_BUF_EN | (ADC_PGA_0 << 4) | (SampleFreq_8_or_4 << 6);
@@ -149,15 +143,14 @@ void TouchKey_ChSampInit(void)
     R8_TKEY_CFG = RB_TKEY_PWR_ON | RB_TKEY_CURRENT;
 }
 
-/*********************************************************************
- * @fn      ADC_ExcutSingleConver
+/* ***************************************************************************
+ * @fn ADC_ExcutSingleConver
  *
- * @brief   ADC执行单次转换
+ * @brief ADC performs a single conversion
  *
- * @param   none
+ * @param none
  *
- * @return  ADC转换后的数据
- */
+ * @return ADC converted data */
 uint16_t ADC_ExcutSingleConver(void)
 {
     R8_ADC_CONVERT |= RB_ADC_START;
@@ -166,16 +159,15 @@ uint16_t ADC_ExcutSingleConver(void)
     return (R16_ADC_DATA & RB_ADC_DATA);
 }
 
-/*********************************************************************
- * @fn      TouchKey_ExcutSingleConver
+/* ***************************************************************************
+ * @fn TouchKey_ExcutSingleConver
  *
- * @brief   TouchKey转换后数据
+ * @brief TouchKey converted data
  *
- * @param   charg   - Touchkey充电时间,5bits有效, t=charg*Tadc
- * @param   disch   - Touchkey放电时间,3bits有效, t=disch*Tadc
+ * @param charg - Touchkey charging time, 5bits valid, t=charg*Tadc
+ * @param disch - Touchkey discharge time, 3bits valid, t=disch*Tadc
  *
- * @return  当前TouchKey等效数据
- */
+ * @return Current TouchKey equivalent data */
 uint16_t TouchKey_ExcutSingleConver(uint8_t charg, uint8_t disch)
 {
     R8_TKEY_COUNT = (disch << 5) | (charg & 0x1f);
@@ -184,32 +176,30 @@ uint16_t TouchKey_ExcutSingleConver(uint8_t charg, uint8_t disch)
     return (R16_ADC_DATA & RB_ADC_DATA);
 }
 
-/*********************************************************************
- * @fn      ADC_AutoConverCycle
+/* ***************************************************************************
+ * @fn ADC_AutoConverCycle
  *
- * @brief   设置连续 ADC的周期
+ * @brief Sets the cycle of continuous ADC
  *
- * @param   cycle   - 采样周期计算方法为(256-cycle)*16*Tsys
+ * @param cycle - The sampling period calculation method is (256-cycle)*16*Tsys
  *
- * @return  none
- */
+ * @return none */
 void ADC_AutoConverCycle(uint8_t cycle)
 {
     R8_ADC_AUTO_CYCLE = cycle;
 }
 
-/*********************************************************************
- * @fn      ADC_DMACfg
+/* ***************************************************************************
+ * @fn ADC_DMACfg
  *
- * @brief   配置DMA功能
+ * @brief Configure DMA function
  *
- * @param   s           - 是否打开DMA功能
- * @param   startAddr   - DMA 起始地址
- * @param   endAddr     - DMA 结束地址
- * @param   m           - 配置DMA模式
+ * @param s - Whether to turn on the DMA function
+ * @param startAddr - DMA Start Address
+ * @param endAddr - DMA end address
+ * @param m - Configure DMA mode
  *
- * @return  none
- */
+ * @return none */
 void ADC_DMACfg(uint8_t s, uint32_t startAddr, uint32_t endAddr, ADC_DMAModeTypeDef m)
 {
     if(s == DISABLE)
@@ -256,197 +246,183 @@ int adc_to_temperature_celsius(uint16_t adc_val)
     return (temp);
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverSignalPGA_MINUS_12dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverSignalPGA_MINUS_12dB
  *
- * @brief   -12dB增益时ADC单端采样值转换成电压(mV)
+ * @brief -12dB gain ADC single-ended sampling value is converted to voltage (mV)
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverSignalPGA_MINUS_12dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+256)/512 - 3*1050);
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverSignalPGA_MINUS_6dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverSignalPGA_MINUS_6dB
  *
- * @brief   -6dB增益时ADC单端采样值转换成电压(mV)
+ * @brief -6dB gain ADC single-ended sampling value is converted to voltage (mV)
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverSignalPGA_MINUS_6dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+512)/1024 - 1*1050);
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverSignalPGA_0dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverSignalPGA_0dB
  *
- * @brief   0dB增益时ADC单端采样值转换成电压(mV)
+ * @brief The ADC single-ended sampling value is converted to voltage (mV) at 0dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverSignalPGA_0dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+1024)/2048);
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverSignalPGA_6dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverSignalPGA_6dB
  *
- * @brief   6dB增益时ADC单端采样值转换成电压(mV)
+ * @brief The ADC single-ended sample value is converted to voltage (mV) at 6dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverSignalPGA_6dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+2048)/4096 + 525);
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverSignalPGA_12dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverSignalPGA_12dB
  *
- * @brief   12dB增益时ADC单端采样值转换成电压(mV)
+ * @brief The ADC single-ended sampling value is converted to voltage (mV) at 12dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverSignalPGA_12dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050)/8192 + 788);  //787.5
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverSignalPGA_18dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverSignalPGA_18dB
  *
- * @brief   18dB增益时ADC单端采样值转换成电压(mV)
+ * @brief The ADC single-ended sample value is converted to voltage (mV) at 18dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverSignalPGA_18dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+4096)/16384 + 919);  //918.75
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverSignalPGA_24dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverSignalPGA_24dB
  *
- * @brief   24dB增益时ADC单端采样值转换成电压(mV)
+ * @brief The ADC single-ended sample value is converted to voltage (mV) at 24dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverSignalPGA_24dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+28672)/32768 + 984);  //984.375
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverDiffPGA_MINUS_12dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverDiffPGA_MINUS_12dB
  *
- * @brief   -12dB增益时ADC差分采样值转换成电压(mV)
+ * @brief - ADC differential sampling value is converted to voltage (mV) at 12dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverDiffPGA_MINUS_12dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+256)/512 - 4*1050);
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverDiffPGA_MINUS_6dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverDiffPGA_MINUS_6dB
  *
- * @brief   -6dB增益时ADC差分采样值转换成电压(mV)
+ * @brief -6dB gain ADC differential sampling value is converted to voltage (mV)
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverDiffPGA_MINUS_6dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+512)/1024 - 2*1050);
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverDiffPGA_0dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverDiffPGA_0dB
  *
- * @brief   0dB增益时ADC差分采样值转换成电压(mV)
+ * @brief The ADC differential sampling value is converted to voltage (mV) at 0dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverDiffPGA_0dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+1024)/2048 - 1*1050);
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverDiffPGA_6dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverDiffPGA_6dB
  *
- * @brief   6dB增益时ADC差分采样值转换成电压(mV)
+ * @brief The ADC differential sampling value is converted to voltage (mV) at 6dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverDiffPGA_6dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+2048)/4096 - 525);
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverDiffPGA_12dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverDiffPGA_12dB
  *
- * @brief   12dB增益时ADC差分采样值转换成电压(mV)
+ * @brief The ADC differential sampling value is converted to voltage (mV) at 12dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverDiffPGA_12dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050)/8192 - 262);  //262.5
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverDiffPGA_18dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverDiffPGA_18dB
  *
- * @brief   18dB增益时ADC差分采样值转换成电压(mV)
+ * @brief The ADC differential sampling value is converted to voltage (mV) at 18dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverDiffPGA_18dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+4096)/16384 - 131);  //131.25
 }
 
-/*********************************************************************
- * @fn      ADC_VoltConverDiffPGA_24dB
+/* ***************************************************************************
+ * @fn ADC_VoltConverDiffPGA_24dB
  *
- * @brief   24dB增益时ADC差分采样值转换成电压(mV)
+ * @brief The ADC differential sampling value is converted to voltage (mV) at 24dB gain
  *
- * @param   adc_data - ADC采样值
+ * @param adc_data - ADC sampling value
  *
- * @return  电压(mV)
- */
+ * @return voltage (mV) */
 int ADC_VoltConverDiffPGA_24dB(uint16_t adc_data)
 {
     return (((int)adc_data*1050+28672)/32768 - 66);  //65.625

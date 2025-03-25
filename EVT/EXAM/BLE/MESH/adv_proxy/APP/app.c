@@ -57,11 +57,11 @@ static struct bt_mesh_cfg_srv cfg_srv = {
 #if(CONFIG_BLE_MESH_PROXY)
     .gatt_proxy = BLE_MESH_GATT_PROXY_ENABLED,
 #endif
-    /* 默认TTL为3 */
+    /* The default TTL is 3 */
     .default_ttl = 3,
-    /* 底层发送数据重试7次，每次间隔10ms（不含内部随机数） */
+    /* The underlying data is sent 7 times and the interval is 10ms (excluding internal random numbers) */
     .net_transmit = BLE_MESH_TRANSMIT(7, 10),
-    /* 底层转发数据重试7次，每次间隔10ms（不含内部随机数） */
+    /* Retry the underlying forwarding data 7 times, each time interval is 10ms (excluding internal random numbers) */
     .relay_retransmit = BLE_MESH_TRANSMIT(7, 10),
     .handler = cfg_srv_rsp_handler,
 };
@@ -97,14 +97,14 @@ static struct bt_mesh_elem elements[] = {
 static uint8_t dev_uuid[16];
 uint8_t        MACAddr[6];
 
-// elements 构成 Node Composition
+// elements composition Node Composition
 const struct bt_mesh_comp app_comp = {
-    .cid = 0x07D7, // WCH 公司id
+    .cid = 0x07D7, // WCH Company ID
     .elem = elements,
     .elem_count = ARRAY_SIZE(elements),
 };
 
-// 配网参数和回调
+// Distribution network parameters and callbacks
 static const struct bt_mesh_prov app_prov = {
     .uuid = dev_uuid,
     .link_open = link_open,
@@ -117,13 +117,12 @@ static const struct bt_mesh_prov app_prov = {
  * GLOBAL TYPEDEFS
  */
 
-/*********************************************************************
- * @fn      prov_enable
+/* ***************************************************************************
+ * @fn prov_enable
  *
- * @brief   使能配网功能
+ * @brief enable network distribution function
  *
- * @return  none
- */
+ * @return none */
 static void prov_enable(void)
 {
     if(bt_mesh_is_provisioned())
@@ -142,30 +141,28 @@ static void prov_enable(void)
     }
 }
 
-/*********************************************************************
- * @fn      link_open
+/* ***************************************************************************
+ * @fn link_open
  *
- * @brief   配网时后的link打开回调
+ * @brief The link opens the callback after the network distribution time
  *
- * @param   bearer  - 当前link是PB_ADV还是PB_GATT
+ * @param bearer - Is the current link PB_ADV or PB_GATT
  *
- * @return  none
- */
+ * @return none */
 static void link_open(bt_mesh_prov_bearer_t bearer)
 {
     APP_DBG(" ");
 }
 
-/*********************************************************************
- * @fn      link_close
+/* ***************************************************************************
+ * @fn link_close
  *
- * @brief   配网后的link关闭回调
+ * @brief The link after the network is distributed to close the callback
  *
- * @param   bearer  - 当前link是PB_ADV还是PB_GATT
- * @param   reason  - link关闭原因
+ * @param bearer - Is the current link PB_ADV or PB_GATT
+ * @param reason - link close reason
  *
- * @return  none
- */
+ * @return none */
 static void link_close(bt_mesh_prov_bearer_t bearer, uint8_t reason)
 {
     APP_DBG("reason %x", reason);
@@ -179,30 +176,28 @@ static void link_close(bt_mesh_prov_bearer_t bearer, uint8_t reason)
     }
 }
 
-/*********************************************************************
- * @fn      prov_complete
+/* ***************************************************************************
+ * @fn prov_complete
  *
- * @brief   配网完成回调，重新开始广播
+ * @brief The distribution network completes the callback and starts broadcasting again
  *
- * @param   net_idx     - 网络key的index
- * @param   addr        - link关闭原因网络地址
- * @param   flags       - 是否处于key refresh状态
- * @param   iv_index    - 当前网络iv的index
+ * @param net_idx - index of network key
+ * @param addr - link Close reason network address
+ * @param flags - Is it in key refresh state
+ * @param iv_index - index of the current network iv
  *
- * @return  none
- */
+ * @return none */
 static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32_t iv_index)
 {
     APP_DBG(" ");
 }
 
-/*********************************************************************
- * @fn      prov_reset
+/* ***************************************************************************
+ * @fn prov_reset
  *
- * @brief   复位配网功能回调
+ * @brief reset network function callback
  *
- * @return  none
- */
+ * @return none */
 static void prov_reset(void)
 {
     APP_DBG("");
@@ -210,20 +205,19 @@ static void prov_reset(void)
     prov_enable();
 }
 
-/*********************************************************************
- * @fn      cfg_srv_rsp_handler
+/* ***************************************************************************
+ * @fn cfg_srv_rsp_handler
  *
- * @brief   config 模型服务回调
+ * @brief config Model service callback
  *
- * @param   val     - 回调参数，包括命令类型、配置命令执行状态
+ * @param val - Callback parameters, including command type, configuration command execution status
  *
- * @return  none
- */
+ * @return none */
 static void cfg_srv_rsp_handler( const cfg_srv_status_t *val )
 {
     if(val->cfgHdr.status)
     {
-        // 配置命令执行不成功
+        // The configuration command execution failed
         APP_DBG("warning opcode 0x%02x", val->cfgHdr.opcode);
         return;
     }
@@ -245,15 +239,14 @@ static void cfg_srv_rsp_handler( const cfg_srv_status_t *val )
     }
 }
 
-/*********************************************************************
- * @fn      keyPress
+/* ***************************************************************************
+ * @fn keyPress
  *
- * @brief   按键回调
+ * @brief key callback
  *
- * @param   keys    - 按键类型
+ * @param keys - key type
  *
- * @return  none
- */
+ * @return none */
 void keyPress(uint8_t keys)
 {
     APP_DBG("keys %d ", keys);
@@ -265,13 +258,12 @@ void keyPress(uint8_t keys)
     }
 }
 
-/*********************************************************************
- * @fn      blemesh_on_sync
+/* ***************************************************************************
+ * @fn blemesh_on_sync
  *
- * @brief   同步mesh参数，启用对应功能，不建议修改
+ * @brief Synchronize mesh parameters, enable corresponding functions, and it is not recommended to modify them
  *
- * @return  none
- */
+ * @return none */
 void blemesh_on_sync(void)
 {
     int        err;
@@ -328,7 +320,7 @@ void blemesh_on_sync(void)
 #endif /* PROXY || PB-GATT */
 
 #if(CONFIG_BLE_MESH_PROXY_CLI)
-    bt_mesh_proxy_client_init(cli); //待添加
+    bt_mesh_proxy_client_init(cli); // To be added
 #endif                              /* PROXY_CLI */
 
     bt_mesh_prov_retransmit_init();
@@ -385,13 +377,12 @@ void blemesh_on_sync(void)
     APP_DBG("Mesh initialized");
 }
 
-/*********************************************************************
- * @fn      App_Init
+/* ***************************************************************************
+ * @fn App_Init
  *
- * @brief   应用层初始化
+ * @brief Application layer initialization
  *
- * @return  none
- */
+ * @return none */
 void App_Init()
 {
     App_TaskID = TMOS_ProcessEventRegister(App_ProcessEvent);
@@ -403,17 +394,16 @@ void App_Init()
     tmos_set_event(App_TaskID, APP_USER_EVT);
 }
 
-/*********************************************************************
- * @fn      App_ProcessEvent
+/* ***************************************************************************
+ * @fn App_ProcessEvent
  *
- * @brief   应用层事件处理函数
+ * @brief application layer event handling function
  *
- * @param   task_id  - The TMOS assigned task ID.
- * @param   events - events to process.  This is a bit map and can
- *                   contain more than one event.
+ * @param task_id - The TMOS assigned task ID.
+ * @param events - events to process. This is a bit map and can
+ * contains more than one event.
  *
- * @return  events not processed
- */
+ * @return events not processed */
 static uint16_t App_ProcessEvent(uint8_t task_id, uint16_t events)
 {
     if(events & APP_USER_EVT)

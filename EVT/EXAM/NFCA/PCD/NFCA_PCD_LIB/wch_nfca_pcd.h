@@ -1,14 +1,14 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : wch_nfca_pcd.h
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2024/08/22
- * Description        : NFC-A PCD库头文件
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : wch_nfca_pcd.h
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2024/08/22
+ * Description: NFC-A PCD library header file
+ ************************************************************************************************************
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #ifndef _WCH_NFCA_PCD_H_
 #define _WCH_NFCA_PCD_H_
@@ -63,8 +63,8 @@ typedef enum
 typedef enum
 {
     NFCA_PCD_REC_MODE_NONE          = 0,
-    NFCA_PCD_REC_MODE_NORMAL        = 1,            /* 接收时不进行冲突检测，尽可能的进行解码 */
-    NFCA_PCD_REC_MODE_COLI          = 0x10,         /* 接收时进行冲突检测 */
+    NFCA_PCD_REC_MODE_NORMAL        = 1,            /* No conflict detection is performed during reception, and decode as much as possible */
+    NFCA_PCD_REC_MODE_COLI          = 0x10,         /* Conflict detection is performed during reception */
 } NFCA_PCD_REC_MODE_Def;
 
 typedef struct _nfca_pcd_config_struct
@@ -80,194 +80,177 @@ typedef struct _nfca_pcd_config_struct
     uint16_t parity_buf_size;
 } nfca_pcd_config_t;
 
-/*******************************************************************************
- * @fn              nfca_pcd_lib_init
+/* *********************************************************************************************
+ * @fn nfca_pcd_lib_init
  *
- * @brief           nfc-a初始化
+ * @brief nfc-a initialization
  *
- * @param           cfg - 配置参数指针
+ * @param cfg - Configuration parameter pointer
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_lib_init(nfca_pcd_config_t *cfg);
 
-/*******************************************************************************
- * @fn              nfca_pcd_lib_start
+/* *********************************************************************************************
+ * @fn nfca_pcd_lib_start
  *
- * @brief           nfc-a库开始运行，开始在天线上发送连续波
+ * @brief nfc-a library starts running and starts sending continuous waves on the antenna
  *
- * @param           None
+ * @param None
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_lib_start(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_lib_stop
+/* *********************************************************************************************
+ * @fn nfca_pcd_lib_stop
  *
- * @brief           nfc-a库停止运行，停止在天线上发送连续波
+ * @brief nfc-a library stops running and stops sending continuous waves on the antenna
  *
- * @param           None
+ * @param None
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_lib_stop(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_antenna_on
+/* *********************************************************************************************
+ * @fn nfca_pcd_antenna_on
  *
- * @brief           开始在天线上发送连续波
+ * @brief Start sending continuous waves on the antenna
  *
- * @param           None
+ * @param None
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_antenna_on(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_antenna_off
+/* *********************************************************************************************
+ * @fn nfca_pcd_antenna_off
  *
- * @brief           停止在天线上发送连续波
+ * @brief stop sending continuous waves on the antenna
  *
- * @param           None
+ * @param None
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_antenna_off(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_communicate
+/* *********************************************************************************************
+ * @fn nfca_pcd_communicate
  *
- * @brief           nfc-a开始通讯，传输数据
+ * @brief nfc-a starts communication and transmits data
  *
- * @param           data_bits_num - uint16_t，需要发送的数据区bit数量
- * @param           mode - NFCA_PCD_REC_MODE_Def，发送结束后的接收模式
- * @param           offset - uint8_t(0 - 7)，需要发送的第一个位在首字节中的偏移数量
+ * @param data_bits_num - uint16_t, the number of bits that need to be sent
+ * @param mode - NFCA_PCD_REC_MODE_Def, reception mode after sending
+ * @param offset - uint8_t(0 - 7), the number of offsets to be sent in the first byte
  *
- * @return          0 if success, others failed.
- */
+ * @return 0 if success, others failed. */
 extern uint8_t nfca_pcd_communicate(uint16_t data_bits_num, NFCA_PCD_REC_MODE_Def mode, uint8_t offset);
 
-/*******************************************************************************
- * @fn              nfca_pcd_get_communicate_status
+/* *********************************************************************************************
+ * @fn nfca_pcd_get_communicate_status
  *
- * @brief           nfc-a开始通讯，传输数据
+ * @brief nfc-a starts communication and transmits data
  *
- * @param           None.
+ * @param None.
  *
- * @return          nfca_pcd_controller_state_t，获取当前通讯状态。.
- */
+ * @return nfca_pcd_controller_state_t, get the current communication status. . */
 extern nfca_pcd_controller_state_t nfca_pcd_get_communicate_status(void);
 
 
-/*******************************************************************************
- * @fn              nfca_pcd_get_recv_data_len
+/* *********************************************************************************************
+ * @fn nfca_pcd_get_recv_data_len
  *
- * @brief           获取本次接收并解码出的数据长度
+ * @brief Get the data length received and decoded this time
  *
- * @param           None
+ * @param None
  *
- * @return          uint16_t - 数据长度.
- */
+ * @return uint16_t - Data length. */
 extern uint16_t nfca_pcd_get_recv_data_len(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_get_recv_bits
+/* *********************************************************************************************
+ * @fn nfca_pcd_get_recv_bits
  *
- * @brief           获取本次接收到的bit数量
+ * @brief Get the number of bits received this time
  *
- * @param           None
+ * @param None
  *
- * @return          uint16_t - 接收到的bit数量.
- */
+ * @return uint16_t - The number of bits received. */
 extern uint16_t nfca_pcd_get_recv_bits(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_set_out_drv
+/* *********************************************************************************************
+ * @fn nfca_pcd_set_out_drv
  *
- * @brief           nfc-a设置天线输出阻抗，默认Level1
+ * @brief nfc-a sets the antenna output impedance, default Level1
  *
- * @param           drv - NFCA_PCD_DRV_CTRL_Def，天线发射引脚输出等级
+ * @param drv - NFCA_PCD_DRV_CTRL_Def, antenna transmit pin output level
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_set_out_drv(NFCA_PCD_DRV_CTRL_Def drv);
 
-/*******************************************************************************
- * @fn              nfca_pcd_set_recv_gain
+/* *********************************************************************************************
+ * @fn nfca_pcd_set_recv_gain
  *
- * @brief           nfc-a设置接收增益，默认18DB
+ * @brief nfc-a sets the receive gain, default 18DB
  *
- * @param           gain - NFCA_PCD_REC_GAIN_Def，接收增益
+ * @param gain - NFCA_PCD_REC_GAIN_Def, receive gain
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_set_recv_gain(NFCA_PCD_REC_GAIN_Def gain);
 
-/*******************************************************************************
- * @fn              nfca_pcd_set_lp_ctrl
+/* *********************************************************************************************
+ * @fn nfca_pcd_set_lp_ctrl
  *
- * @brief           nfc-a设置天线信号检测档位，默认0.8VDD
+ * @brief nfc-a sets the antenna signal detection gear, default is 0.8VDD
  *
- * @param           lp - NFCA_PCD_LP_CTRL_Def，天线信号检测档位
+ * @param lp - NFCA_PCD_LP_CTRL_Def, antenna signal detection gear
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_set_lp_ctrl(NFCA_PCD_LP_CTRL_Def lp);
 
-/*******************************************************************************
- * @fn              nfca_pcd_set_rec_threshold
+/* *********************************************************************************************
+ * @fn nfca_pcd_set_rec_threshold
  *
- * @brief           nfc-a设置比较门限，默认150mv
+ * @brief nfc-a sets comparison threshold, default is 150mv
  *
- * @param           th - NFCA_PCD_REC_THRESHOLD_Def，解码模拟信号比较门限
+ * @param th - NFCA_PCD_REC_THRESHOLD_Def, comparison threshold for decoding analog signal
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_set_rec_threshold(NFCA_PCD_REC_THRESHOLD_Def th);
 
-/*******************************************************************************
- * @fn              nfca_pcd_set_wait_ms
+/* *********************************************************************************************
+ * @fn nfca_pcd_set_wait_ms
  *
- * @brief           NFC设置接收超时时间
+ * @brief NFC sets the reception timeout time
  *
- * @param           us - uint16_t，超时时间，单位ms，最大38ms。
+ * @param us - uint16_t, timeout time, unit ms, maximum 38ms.
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_set_wait_ms(uint8_t ms);
 
-/*******************************************************************************
- * @fn              nfca_pcd_set_wait_us
+/* *********************************************************************************************
+ * @fn nfca_pcd_set_wait_us
  *
- * @brief           NFC设置接收超时时间
+ * @brief NFC sets the reception timeout time
  *
- * @param           us - uint16_t，超时时间，单位us，最大38000us。
+ * @param us - uint16_t, timeout time, unit us, maximum 38000us.
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_set_wait_us(uint16_t us);
 
-/*******************************************************************************
- * @fn              nfca_pcd_get_lp_status
+/* *********************************************************************************************
+ * @fn nfca_pcd_get_lp_status
  *
- * @brief           NFC读取天线信号是否过低
+ * @brief Is the NFC reading antenna signal too low
  *
- * @param           None.
+ * @param None.
  *
- * @return          1低于设定阈值，0不低于设定阈值.
- */
+ * @return 1 is below the set threshold, 0 is not below the set threshold. */
 extern uint8_t nfca_pcd_get_lp_status(void);
 
-/*******************************************************************************
- * @fn              NFC_IRQLibHandler
+/* *********************************************************************************************
+ * @fn NFC_IRQLibHandler
  *
- * @brief           NFC中断处理函数
+ * @brief NFC interrupt handling function
  *
- * @param           None
+ * @param None
  *
- * @return          None.
- */
+ * @return None. */
 extern void NFC_IRQLibHandler(void);
 
 #ifdef __cplusplus

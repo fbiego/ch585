@@ -1,14 +1,14 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : Main.c
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2020/08/06
- * Description        : 串口1收发演示
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: Main.c
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2020/08/06
+ * Description: Serial port 1 sending and receiving demonstration
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #include "CH58x_common.h"
 
@@ -16,13 +16,12 @@ uint8_t TxBuff[] = "This is a tx exam\r\n";
 uint8_t RxBuff[100];
 uint8_t trigB;
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main()
 {
     uint8_t len;
@@ -30,18 +29,18 @@ int main()
     HSECFG_Capacitance(HSECap_18p);
     SetSysClock(CLK_SOURCE_HSE_PLL_62_4MHz);
 
-    /* 配置串口1：先配置IO口模式，再配置串口 */
+    /* Configure serial port 1: first configure IO port mode, then configure serial port */
     GPIOA_SetBits(GPIO_Pin_9);
-    GPIOA_ModeCfg(GPIO_Pin_8, GPIO_ModeIN_PU);      // RXD-配置上拉输入
-    GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeOut_PP_5mA); // TXD-配置推挽输出，注意先让IO口输出高电平
+    GPIOA_ModeCfg(GPIO_Pin_8, GPIO_ModeIN_PU);      // RXD-Configure pull-up input
+    GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeOut_PP_5mA); // TXD-Configure push-pull output, be careful to let the IO port output high level first
     UART1_DefInit();
 
-#if 1 // 测试串口发送字符串
+#if 1 // Test serial send string
     UART1_SendString(TxBuff, sizeof(TxBuff));
 
 #endif
 
-#if 1 // 查询方式：接收数据后发送出去
+#if 1 // Query method: send it out after receiving the data
     while(1)
     {
         len = UART1_RecvString(RxBuff);
@@ -53,7 +52,7 @@ int main()
 
 #endif
 
-#if 0 // 中断方式：接收数据后发送出去
+#if 0 // Interrupt method: send it out after receiving the data
     UART1_ByteTrigCfg(UART_7BYTE_TRIG);
     trigB = 7;
     UART1_INTCfg(ENABLE, RB_IER_RECV_RDY | RB_IER_LINE_STAT);
@@ -63,13 +62,12 @@ int main()
     while(1);
 }
 
-/*********************************************************************
- * @fn      UART1_IRQHandler
+/* ***************************************************************************
+ * @fn UART1_IRQHandler
  *
- * @brief   UART1中断函数
+ * @brief UART1 interrupt function
  *
- * @return  none
- */
+ * @return none */
 __INTERRUPT
 __HIGH_CODE
 void UART1_IRQHandler(void)
@@ -78,13 +76,13 @@ void UART1_IRQHandler(void)
 
     switch(UART1_GetITFlag())
     {
-        case UART_II_LINE_STAT: // 线路状态错误
+        case UART_II_LINE_STAT: // Line status error
         {
             UART1_GetLinSTA();
             break;
         }
 
-        case UART_II_RECV_RDY: // 数据达到设置触发点
+        case UART_II_RECV_RDY: // The data reaches the setting trigger point
             for(i = 0; i != trigB; i++)
             {
                 RxBuff[i] = UART1_RecvByte();
@@ -92,15 +90,15 @@ void UART1_IRQHandler(void)
             }
             break;
 
-        case UART_II_RECV_TOUT: // 接收超时，暂时一帧数据接收完成
+        case UART_II_RECV_TOUT: // Receive timeout, temporary data reception is completed
             i = UART1_RecvString(RxBuff);
             UART1_SendString(RxBuff, i);
             break;
 
-        case UART_II_THR_EMPTY: // 发送缓存区空，可继续发送
+        case UART_II_THR_EMPTY: // The sending buffer area is empty, and you can continue to send
             break;
 
-        case UART_II_MODEM_CHG: // 只支持串口0
+        case UART_II_MODEM_CHG: // Only support serial port 0
             break;
 
         default:

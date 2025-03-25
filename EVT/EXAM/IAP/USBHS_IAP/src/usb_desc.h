@@ -38,10 +38,10 @@ extern "C" {
 #define DEf_USBD_LS_UEP0_SIZE        8      /* usb ls device end-point 0 size */
 #define DEF_USBD_LS_PACK_SIZE        64     /* usb ls device max int pack size */
 
-#define DEF_USB_EP0_SIZE           0x40                                         /* 端点0大小 */
-#define DEF_USB_EP1_SIZE           64                                           /* 端点1大小 */
-#define DEF_USB_FS_EP2_SIZE        64                                           /* 端点2全速模式大小 */
-#define DEF_USB_HS_EP2_SIZE        512                                          /* 端点2高速模式大小 */
+#define DEF_USB_EP0_SIZE           0x40                                         /* Endpoint size 0 */
+#define DEF_USB_EP1_SIZE           64                                           /* Endpoint 1 size */
+#define DEF_USB_FS_EP2_SIZE        64                                           /* Endpoint 2 full speed mode size */
+#define DEF_USB_HS_EP2_SIZE        512                                          /* Endpoint 2 high-speed mode size */
 
 #define DEF_UEP_IN                    0x80
 #define DEF_UEP_OUT                   0x00

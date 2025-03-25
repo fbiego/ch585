@@ -1,16 +1,16 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : wch_nfca_mifare_classic.c
- * Author             : WCH
- * Version            : V1.1
- * Date               : 2024/09/23
- * Description        : WCH Mifare Classic One卡操作库
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : wch_nfca_mifare_classic.c
+ * Author: WCH
+ * Version: V1.1
+ * Date: 2024/09/23
+ * Description: WCH Mifare Classic One Card Operation Library
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #include "wch_nfca_mifare_classic.h"
 
-/* 每个文件单独debug打印的开关，置0可以禁止本文件内部打印 */
+/* Each file has a separate debug print switch, setting 0 can prohibit internal printing of this file. */
 #define DEBUG_PRINT_IN_THIS_FILE 1
 #if DEBUG_PRINT_IN_THIS_FILE
 #define PRINTF(...) PRINT(__VA_ARGS__)
@@ -263,7 +263,7 @@ step1:
                 }
                 else
                 {
-                    /* 校验错误 */
+                    /* Verification error */
                     res = PCD_AUTH_ERROR;
                     PRINTF("Auth err\n");
                 }
@@ -294,7 +294,7 @@ step2:
                 }
                 else
                 {
-                    /* 校验错误 */
+                    /* Verification error */
                     res = PCD_AUTH_ERROR;
                     PRINTF("Auth err\n");
                 }
@@ -537,7 +537,7 @@ step2:
 
     nfca_crypto1_encrypt(&g_m1_crypto1_cipher, (uint8_t *)g_nfca_pcd_send_buf, (uint8_t *)g_nfca_pcd_send_buf, (uint8_t *)g_nfca_pcd_parity_buf, (6 * 8));
 
-    nfca_pcd_communicate((6 * 8), NFCA_PCD_REC_MODE_NORMAL, 0);     /* 本次需要等待超时结束 */
+    nfca_pcd_communicate((6 * 8), NFCA_PCD_REC_MODE_NORMAL, 0);     /* This time you need to wait for the timeout to end */
 
     nfca_pcd_wait_communicate_end();
 
@@ -650,7 +650,7 @@ step2:
 
     nfca_crypto1_encrypt(&g_m1_crypto1_cipher, (uint8_t *)g_nfca_pcd_send_buf, (uint8_t *)g_nfca_pcd_send_buf, (uint8_t *)g_nfca_pcd_parity_buf, (6 * 8));
 
-    nfca_pcd_communicate((6 * 8), NFCA_PCD_REC_MODE_NORMAL, 0);     /* 本次需要等待超时结束 */
+    nfca_pcd_communicate((6 * 8), NFCA_PCD_REC_MODE_NORMAL, 0);     /* This time you need to wait for the timeout to end */
     nfca_pcd_wait_communicate_end();
 
 step3:
@@ -778,7 +778,7 @@ void PcdHalt(void)
     g_nfca_pcd_send_buf[0] = PICC_HALT;
     g_nfca_pcd_send_buf[1] = 0;
 
-    //ISO14443AAppendCRCA((uint8_t *)g_nfca_pcd_send_buf, 2); /* 固定为0x57, 0xcd */
+    // ISO14443AAppendCRCA((uint8_t *)g_nfca_pcd_send_buf, 2); /* Fixed to 0x57, 0xcd */
     g_nfca_pcd_send_buf[2] = 0x57;
     g_nfca_pcd_send_buf[3] = 0xcd;
 

@@ -1,30 +1,29 @@
-/********************************** (C) COPYRIGHT *******************************
-* File Name          : Main.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2024/11/20
-* Description        : LED例子
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+* File Name: Main.c
+* Author: WCH
+* Version: V1.0
+* Date: 2024/11/20
+* Description: LED example
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #include "CH58x_common.h"
 #include "ch58x_drv_ledc.h"
 
 __attribute__((__aligned__(4))) uint32_t tx_data[8] = {0x01020408,0x10204080,0x03,0x04,0x05,0x06,0x07,0x08};
 
-#define  LSB_HSB         0           // LED串行数据位序, 1:高位在前;  0:低位在前
-#define  POLAR           0           // LED数据输出极性, 0:直通，数据0输出0，数据1输出1; 1为反相
+#define  LSB_HSB         0           // LED serial data bit sequence, 1: High bit is ahead; 0: Low bit is ahead
+#define  POLAR           0           // LED data output polarity, 0: passthrough, data 0 output 0, data 1 output 1; 1 is inverting
 
-/*********************************************************************
- * @fn      DebugInit
+/* ***************************************************************************
+ * @fn DebugInit
  *
- * @brief   调试初始化
+ * @brief debug initialization
  *
- * @return  none
- */
+ * @return none */
 void DebugInit(void)
 {
     GPIOA_SetBits(GPIO_Pin_14);
@@ -34,18 +33,17 @@ void DebugInit(void)
     UART0_DefInit();
 }
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main()
 {
     HSECFG_Capacitance(HSECap_18p);
     SetSysClock(CLK_SOURCE_HSE_PLL_62_4MHz);
-    /* 配置串口调试 */
+    /* Configure serial debugging */
     DebugInit();
     PRINT( "Start @ChipID=%02X\n", R8_CHIP_ID );
 
@@ -71,10 +69,10 @@ int main()
     GPIOA_ModeCfg( GPIO_Pin_8 , GPIO_ModeOut_PP_5mA );
 
 
-    //配置分频和模式选择
+    // Configure frequency division and mode selection
     ch58x_led_controller_init(CH58X_LED_OUT_MODE_FOUR_EXT, 128);
 
-    //开始发送,后面再发送就在中断里面发送了
+    // Start sending, and then sending it in the interrupt
     R32_LED_DMA_BEG = ((uint32_t)(tx_data)& RB_LED_DMA_BEG);
     R16_LED_DMA_LEN = 2;
     R8_LED_CTRL_MOD |= RB_LED_DMA_EN;
@@ -83,7 +81,7 @@ int main()
     R8_LED_CTRL_MOD ^= RB_LED_BIT_ORDER;
 #endif
 
-#if POLAR     //极性
+#if POLAR     // polarity
     R8_LED_CTRL_MOD ^= RB_LED_OUT_POLAR;
 #endif
 
@@ -93,18 +91,17 @@ int main()
     while(1);
 }
 
-/*********************************************************************
- * @fn      LED_IRQHandler
+/* ***************************************************************************
+ * @fn LED_IRQHandler
  *
- * @brief   LED中断函数
+ * @brief LED interrupt function
  *
- * @return  none
- */
+ * @return none */
 __INTERRUPT
 __HIGH_CODE
 void LED_IRQHandler(void)
 {
-    //清空中断标志
+    // Clear the interrupt sign
     uint16_t LED_status;
     LED_status = R16_LED_STATUS;
     R16_LED_STATUS = LED_status;

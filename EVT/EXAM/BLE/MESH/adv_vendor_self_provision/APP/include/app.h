@@ -34,15 +34,15 @@ extern "C" {
 #define PROVISION_NET_KEY_LEN          16
 #define ADDRESS_LEN                    2
 
-// 通过ble接收到的配网参数，包含 1字节命令码+16字节网络密钥+2字节网络地址
+// The distribution parameters received through ble include 1 byte command code + 16 byte network key + 2 byte network address
 #define PROVISION_DATA_LEN             (PERIPHERAL_CMD_LEN + PROVISION_NET_KEY_LEN + ADDRESS_LEN)
-// 删除节点命令，包含 1字节命令码+2字节需要删除的节点地址
+// Delete node command, including 1 byte command code + 2 bytes of node address that needs to be deleted
 #define DELETE_NODE_DATA_LEN           (PERIPHERAL_CMD_LEN + ADDRESS_LEN)
-// 删除节点命令应答，包含 1字节命令码
+// Delete the node command response, including 1 byte command code
 #define DELETE_NODE_ACK_DATA_LEN       (PERIPHERAL_CMD_LEN)
-// 删除存储的节点信息命令，包含 1字节命令码
+// Delete stored node information command, including 1 byte command code
 #define DELETE_NODE_INFO_DATA_LEN      (PERIPHERAL_CMD_LEN)
-// 本地复位命令，包含 1字节命令码
+// Local reset command, including 1 byte command code
 #define LOCAL_RESET_DATA_LEN           (PERIPHERAL_CMD_LEN)
 
 /******************************************************************************/
@@ -62,30 +62,30 @@ typedef union
 {
     struct
     {
-        uint8_t cmd;                            /* 命令码 CMD_PROVISION */
-        uint8_t net_key[PROVISION_NET_KEY_LEN]; /* 后续数据长度 */
-        uint8_t addr[ADDRESS_LEN];              /* 擦除地址 */
-    } provision;                                /* 配网命令 */
+        uint8_t cmd;                            /* Command code CMD_PROVISION */
+        uint8_t net_key[PROVISION_NET_KEY_LEN]; /* Subsequent data length */
+        uint8_t addr[ADDRESS_LEN];              /* Erase address */
+    } provision;                                /* Network distribution command */
     struct
     {
-        uint8_t cmd;                /* 命令码 CMD_DELETE_NODE */
-        uint8_t addr[ADDRESS_LEN];  /* 擦除地址 */
-    } delete_node;                  /* 删除节点命令 */
+        uint8_t cmd;                /* Command code CMD_DELETE_NODE */
+        uint8_t addr[ADDRESS_LEN];  /* Erase address */
+    } delete_node;                  /* Delete Node Command */
     struct
     {
-        uint8_t cmd;                /* 命令码 CMD_DELETE_NODE_ACK */
-    } delete_node_ack;              /* 删除节点命令应答 */
+        uint8_t cmd;                /* Command code CMD_DELETE_NODE_ACK */
+    } delete_node_ack;              /* Delete node command answer */
     struct
     {
-        uint8_t cmd;                /* 命令码 CMD_DELETE_NODE_INFO */
-    } delete_node_info;             /* 删除存储的节点信息命令 */
+        uint8_t cmd;                /* Command code CMD_DELETE_NODE_INFO */
+    } delete_node_info;             /* Delete stored node information command */
     struct
     {
-        uint8_t cmd;                /* 命令码 CMD_LOCAL_RESET */
-    } local_reset;                  /* 本地恢复出厂设置命令 */
+        uint8_t cmd;                /* Command code CMD_LOCAL_RESET */
+    } local_reset;                  /* Local factory reset command */
     struct
     {
-        uint8_t buf[20]; /* 接收数据包*/
+        uint8_t buf[20]; /* Receive packets */
     } data;
 }app_mesh_manage_t;
 

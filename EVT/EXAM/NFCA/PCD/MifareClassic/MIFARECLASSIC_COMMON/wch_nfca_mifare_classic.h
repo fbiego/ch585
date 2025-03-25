@@ -1,12 +1,12 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : wch_nfca_mifare_classic.h
- * Author             : WCH
- * Version            : V1.1
- * Date               : 2024/09/23
- * Description        : WCH Mifare Classic One卡操作库
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : wch_nfca_mifare_classic.h
+ * Author: WCH
+ * Version: V1.1
+ * Date: 2024/09/23
+ * Description: WCH Mifare Classic One Card Operation Library
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #ifndef _WCH_NFCA_MIFARE_CLASSIC_H_
 #define _WCH_NFCA_MIFARE_CLASSIC_H_
@@ -14,23 +14,21 @@
 #include "wch_nfca_pcd_bsp.h"
 #include "ISO14443-3A.h"
 
-/*
- * Mifare Classic卡片命令字
-*/
-#define PICC_REQIDL                 0x26               /* 寻天线区内未进入休眠状态 */
-#define PICC_REQALL                 0x52               /* 寻天线区内全部卡 */
-#define PICC_ANTICOLL1              0x93               /* 防冲撞1 */
-#define PICC_ANTICOLL2              0x95               /* 防冲撞2 */
-#define PICC_ANTICOLL3              0x97               /* 防冲撞3 */
-#define PICC_AUTHENT1A              0x60               /* 验证A密钥 */
-#define PICC_AUTHENT1B              0x61               /* 验证B密钥 */
-#define PICC_READ                   0x30               /* 读块 */
-#define PICC_WRITE                  0xA0               /* 写块 */
-#define PICC_DECREMENT              0xC0               /* 扣款 */
-#define PICC_INCREMENT              0xC1               /* 充值 */
-#define PICC_RESTORE                0xC2               /* 调块数据到缓冲区 */
-#define PICC_TRANSFER               0xB0               /* 保存缓冲区中数据 */
-#define PICC_HALT                   0x50               /* 休眠 */
+/* * Mifare Classic card command word */
+#define PICC_REQIDL                 0x26               /* The search antenna area has not entered a dormant state */
+#define PICC_REQALL                 0x52               /* Find all cards in the antenna area */
+#define PICC_ANTICOLL1              0x93               /* Anti-collision 1 */
+#define PICC_ANTICOLL2              0x95               /* Anti-collision 2 */
+#define PICC_ANTICOLL3              0x97               /* Anti-collision 3 */
+#define PICC_AUTHENT1A              0x60               /* Verify A key */
+#define PICC_AUTHENT1B              0x61               /* Verify B key */
+#define PICC_READ                   0x30               /* Read block */
+#define PICC_WRITE                  0xA0               /* Write blocks */
+#define PICC_DECREMENT              0xC0               /* Deduct money */
+#define PICC_INCREMENT              0xC1               /* top up */
+#define PICC_RESTORE                0xC2               /* Adjust block data to buffer */
+#define PICC_TRANSFER               0xB0               /* Save data in the buffer */
+#define PICC_HALT                   0x50               /* Sleep */
 
 #define ACK_NAK_FRAME_SIZE          4
 #define ACK_VALUE                   0x0A

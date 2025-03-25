@@ -1,18 +1,18 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : iap.c
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2022/03/15
- * Description        : USBHS IAP例程
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : iap.c
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2022/03/15
+ * Description: USBHS IAP routine
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 #include "iap.h"
 #include "usb_desc.h"
 
-#undef pSetupReqPak     /* 解决和外设库头文件冲突  */
+#undef pSetupReqPak     /* Resolve conflicts with peripheral library header files */
 #define pSetupReqPak          ((PUSB_SETUP_REQ)EP0_Databuf)
 
 /* Endpoint tx busy flag */
@@ -54,55 +54,54 @@ __attribute__ ((aligned(4))) uint8_t USBHS_EP2_Tx_Buf[ DEF_USB_EP2_HS_SIZE];
 __attribute__ ((aligned(4))) uint8_t USBHS_EP2_Rx_Buf[ DEF_USB_EP2_HS_SIZE];
 
 #define DevEP0SIZE  64
-// 设备描述符
+// Device descriptor
 const uint8_t MyDevDescr[] =
 {
     0x12, 0x01, 0x10, 0x01, 0xFF, 0x80, 0x55,
-    DevEP0SIZE, 0x48, 0x43, 0xe0, 0x55,      // 厂商ID和产品ID
+    DevEP0SIZE, 0x48, 0x43, 0xe0, 0x55,      // Manufacturer ID and product ID
     0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
 };
-// 配置描述符
+// Configuration descriptor
 const uint8_t MyCfgDescr[] =
 {
     0x09, 0x02, 0x20, 0x00, 0x01, 0x01, 0x00, 0x80, 0x32, 0x09, 0x04, 0x00, 0x00,
     0x02, 0xFF, 0x80, 0x55, 0x00, 0x07, 0x05, 0x82, 0x02, 0x40, 0x00, 0x00,
     0x07, 0x05, 0x02, 0x02, 0x40, 0x00, 0x00
 };
-// 语言描述符
+// Language descriptor
 const uint8_t MyLangDescr[] =
 { 0x04, 0x03, 0x09, 0x04 };
-// 厂家信息
+// Manufacturer information
 const uint8_t MyManuInfo[] =
 { 0x0E, 0x03, 'w', 0, 'c', 0, 'h', 0, '.', 0, 'c', 0, 'n', 0 };
-// 产品信息
+// Product Information
 const uint8_t MyProdInfo[] =
 { 0x0C, 0x03, 'C', 0, 'H', 0, '5', 0, '8', 0, 'x', 0 };
-// 上下传输函数声明
+// Up and down transfer function declaration
 void myDevEP2_OUT_Deal(uint8_t l);
 void myDevEP2_IN_Deal(uint8_t s);
 
-//USB相关变量
+// USB related variables
 uint8_t DevConfig;
 uint8_t SetupReqCode;
 uint16_t SetupReqLen;
 const uint8_t *pDescr;
 
-//升级相关变量
-__attribute__((aligned(4)))   uint8_t g_write_buf[256 + 64]; //每次满256字节再写flash，提升速度
+// Upgrade related variables
+__attribute__((aligned(4)))   uint8_t g_write_buf[256 + 64]; // Write flash every time you spend 256 bytes to increase the speed
 volatile uint16_t g_buf_write_ptr = 0;
 volatile uint32_t g_flash_write_ptr = 0;
 uint32_t g_tcnt;
 __attribute__((aligned(4))) iap_cmd_t g_iap_cmd;
 
-/*********************************************************************
- * @fn      USB_DevTransProcess
+/* ***************************************************************************
+ * @fn USB_DevTransProcess
  *
- * @brief   IAP USB主循环,程序放ram中运行，提升速度.
+ * @brief IAP USB main loop, the program is put into ram to improve the speed.
  *
- * @param   None.
+ * @param None.
  *
- * @return  None.
- */
+ * @return None. */
 __HIGH_CODE
 void USB_DevTransProcess(void)
 {
@@ -115,7 +114,7 @@ void USB_DevTransProcess(void)
 
     if( intflag & USBHS_UDIF_TRANSFER )
     {
-        g_tcnt = 0; //USB有数据，清空超时计数
+        g_tcnt = 0; // USB has data, clear the timeout count
 
         endp_num = intst & USBHS_UDIS_EP_ID_MASK;
         if( !(R8_USB2_INT_ST & USBHS_UDIS_EP_DIR )) // SETUP/OUT Transaction
@@ -516,19 +515,18 @@ void USB_DevTransProcess(void)
     }
 }
 
-/*********************************************************************
- * @fn      myDevEP2_OUT_Deal
+/* ***************************************************************************
+ * @fn myDevEP2_OUT_Deal
  *
- * @brief   IAP USB数据处理函数，放入ram中运行提升速度.
+ * @brief IAP USB data processing function, put it in ram to run to improve speed.
  *
- * @param   None.
+ * @param None.
  *
- * @return  None.
- */
+ * @return None. */
 __HIGH_CODE
 void myDevEP2_OUT_Deal(uint8_t l)
 {
-    /* 用户可自定义 */
+    /* User-customizable */
     uint8_t s = 0;
     uint32_t addr;
     switch (g_iap_cmd.other.buf[0])
@@ -538,7 +536,7 @@ void myDevEP2_OUT_Deal(uint8_t l)
         {
             if (g_buf_write_ptr != 0)
             {
-            	g_buf_write_ptr = ((g_buf_write_ptr + 3) & (~3)); //四字节对齐
+            	g_buf_write_ptr = ((g_buf_write_ptr + 3) & (~3)); // Four byte alignment
                 s = FLASH_ROM_WRITE(g_flash_write_ptr, (PUINT32)g_write_buf, g_buf_write_ptr);
                 g_buf_write_ptr = 0;
             }
@@ -551,14 +549,14 @@ void myDevEP2_OUT_Deal(uint8_t l)
             {
                 s = FLASH_ROM_WRITE(g_flash_write_ptr, (PUINT32)g_write_buf, 256);
                 g_flash_write_ptr += 256;
-                g_buf_write_ptr = g_buf_write_ptr - 256;    //超出的长度
-                my_memcpy(g_write_buf, g_write_buf + 256, g_buf_write_ptr); //保存剩下的iap_cmd.program.buf + g_iap_cmd.program.len - g_buf_write_ptr
+                g_buf_write_ptr = g_buf_write_ptr - 256;    // Exceeded length
+                my_memcpy(g_write_buf, g_write_buf + 256, g_buf_write_ptr); // Save the remaining iap_cmd.program.buf + g_iap_cmd.program.len - g_buf_write_ptr
             }
         }
         myDevEP2_IN_Deal(s);
         break;
     case CMD_IAP_ERASE:
-    	//这里可以添加地址判断，也可以直接擦除指定位置
+    	// Here you can add address judgment or directly erase the specified location
     	addr = (g_iap_cmd.erase.addr[0]
 				| (uint32_t) g_iap_cmd.erase.addr[1] << 8
 				| (uint32_t) g_iap_cmd.erase.addr[2] << 16
@@ -566,7 +564,7 @@ void myDevEP2_OUT_Deal(uint8_t l)
     	if(addr == APP_CODE_START_ADDR)
     	{
 			s = FLASH_ROM_ERASE(APP_CODE_START_ADDR, APP_CODE_END_ADDR - APP_CODE_START_ADDR);
-			g_buf_write_ptr = 0;    //计数清零
+			g_buf_write_ptr = 0;    // Count clear
 			g_flash_write_ptr = APP_CODE_START_ADDR;
     	}
     	else
@@ -585,7 +583,7 @@ void myDevEP2_OUT_Deal(uint8_t l)
         myDevEP2_IN_Deal(s);
         break;
     case CMD_IAP_END:
-        /*结束升级，复位USB，跳转到app*/
+        /* End the upgrade, reset the USB, and jump to the app */
         R8_USB2_CTRL = USBHS_UD_RST_SIE;
         R16_PIN_CONFIG &= ~RB_PIN_USB2_EN;
         DelayMs(10);
@@ -599,12 +597,12 @@ void myDevEP2_OUT_Deal(uint8_t l)
     R8_U2EP2_RX_CTRL = (R8_U2EP2_RX_CTRL & ~USBHS_UEP_R_RES_MASK) | USBHS_UEP_R_RES_ACK;
 }
 
-/*******************************************************************************
- * Function Name  : myDevEP2_IN_Deal
- * Description    : 端点2数据上传
- * Input          : l: 上传数据长度(<64B)
- * Return         : None
- *******************************************************************************/
+/* *********************************************************************************************
+ * Function Name: myDevEP2_IN_Deal
+ * Description: Endpoint 2 data upload
+ * Input: l: Upload data length (<64B)
+ * Return : None
+ ********************************************************************************************* */
 __HIGH_CODE
 void myDevEP2_IN_Deal(uint8_t s)
 {
@@ -622,15 +620,14 @@ void myDevEP2_IN_Deal(uint8_t s)
     }
 }
 
-/*********************************************************************
- * @fn      my_memcpy
+/* ***************************************************************************
+ * @fn my_memcpy
  *
- * @brief   数据拷贝函数,程序放ram中运行，提升速度
+ * @brief data copy function, program is put into ram to improve speed
  *
- * @param   None.
+ * @param None.
  *
- * @return  None.
- */
+ * @return None. */
 __HIGH_CODE
 void my_memcpy(void *dst, const void *src, uint32_t l)
 {

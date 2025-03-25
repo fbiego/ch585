@@ -39,11 +39,11 @@ void FLASH_Port_Init( void )
     GPIOA_ModeCfg(GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14, GPIO_ModeOut_PP_5mA);
     GPIOA_ModeCfg(GPIO_Pin_15, GPIO_ModeIN_Floating);
 
-    R8_SPI0_CLOCK_DIV = 5; // 主频时钟5分频,12M
+    R8_SPI0_CLOCK_DIV = 5; // Main frequency clock 5 frequency division, 12M
     R8_SPI0_CTRL_MOD = RB_SPI_ALL_CLEAR;
     R8_SPI0_CTRL_MOD = RB_SPI_MOSI_OE | RB_SPI_SCK_OE|RB_SPI_MST_SCK_MOD; //Mode3
-    R8_SPI0_CTRL_CFG |= RB_SPI_AUTO_IF;     // 访问BUFFER/FIFO自动清除IF_BYTE_END标志
-    R8_SPI0_CTRL_CFG &= ~RB_SPI_DMA_ENABLE; // 不启动DMA方式
+    R8_SPI0_CTRL_CFG |= RB_SPI_AUTO_IF;     // Access BUFFER/FIFO to automatically clear the IF_BYTE_END flag
+    R8_SPI0_CTRL_CFG &= ~RB_SPI_DMA_ENABLE; // Don't start DMA mode
 }
 
 /*********************************************************************
@@ -215,16 +215,15 @@ void FLASH_RD_Block_Start( uint32_t address )
     SPI_FLASH_SendByte( (uint8_t)address );
 }
 
-/*********************************************************************
- * @fn      FLASH_RD_Block
+/* ***************************************************************************
+ * @fn FLASH_RD_Block
  *
- * @brief   FLASH read block
+ * @brief FLASH read block
  *
- * @param   pbuf - 数据缓冲区
- *          len - 数据长度
+ * @param pbuf - Data buffer
+ * len - Data length
  *
- * @return  none
- */
+ * @return none */
 void FLASH_RD_Block( uint8_t *pbuf, uint32_t len )
 {
     while( len-- )                                                             
@@ -248,17 +247,16 @@ void FLASH_RD_Block_End( void )
     PIN_FLASH_CS_HIGH( );
 }
 
-/*********************************************************************
- * @fn      W25XXX_WR_Page
+/* ***************************************************************************
+ * @fn W25XXX_WR_Page
  *
- * @brief   Flash page program
+ * @brief Flash page program
  *
- * @param   pbuf - 数据缓冲区
- *          address - 地址
- *          len - 数据长度
+ * @param pbuf - Data buffer
+ * address - address
+ * len - Data length
  *
- * @return  none
- */
+ * @return none */
 void W25XXX_WR_Page( uint8_t *pbuf, uint32_t address, uint32_t len )
 {
     uint8_t  temp;
@@ -284,17 +282,16 @@ void W25XXX_WR_Page( uint8_t *pbuf, uint32_t address, uint32_t len )
 }
 
 
-/*********************************************************************
- * @fn      W25XXX_WR_Block
+/* ***************************************************************************
+ * @fn W25XXX_WR_Block
  *
- * @brief   W25XXX block write
+ * @brief W25XXX block write
  *
- * @param   pbuf - 数据缓冲区
- *          address - 地址
- *          len - 数据长度
+ * @param pbuf - Data buffer
+ * address - address
+ * len - Data length
  *
- * @return  none
- */
+ * @return none */
 void W25XXX_WR_Block( uint8_t *pbuf, uint32_t address, uint32_t len )
 {
     uint8_t NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0, temp = 0;

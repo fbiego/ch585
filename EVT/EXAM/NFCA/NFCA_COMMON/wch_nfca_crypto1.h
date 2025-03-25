@@ -1,12 +1,12 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : wch_nfca_crypto1.h
- * Author             : WCH
- * Version            : V1.3
- * Date               : 2024/11/12
- * Description        : nfc crypto1算法相关函数库 - wch_nfca_crypto1
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: wch_nfca_crypto1.h
+ * Author: WCH
+ * Version: V1.3
+ * Date: 2024/11/12
+ * Description: nfc crypto1 algorithm related function library - wch_nfca_crypto1
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #ifndef _WCH_NFCA_CRYPTO1_H_
 #define _WCH_NFCA_CRYPTO1_H_

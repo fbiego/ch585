@@ -1,12 +1,12 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : ISO14443-3A.c
- * Author             : WCH
- * Version            : V1.1
- * Date               : 2024/11/12
- * Description        : ISO14443-3A相关函数
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: ISO14443-3A.c
+ * Author: WCH
+ * Version: V1.1
+ * Date: 2024/11/12
+ * Description: ISO14443-3A related functions
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+ ********************************************************************************************* */
 #include "ISO14443-3A.h"
 
 #define HI_UINT16(a) (((a) >> 8) & 0xFF)
@@ -21,16 +21,15 @@ __attribute__((always_inline)) RV_STATIC_INLINE uint16_t _crc_ccitt_update(uint1
             ^ ((uint16_t)data << 3));
 }
 
-/*********************************************************************
- * @fn      ISO14443_CRCA
+/* ***************************************************************************
+ * @fn ISO14443_CRCA
  *
- * @brief   检查CRC是否正确
+ * @brief Check if CRC is correct
  *
- * @param   buf      - 数据指针
- * @param   len   - 数据长度
+ * @param buf - Data pointer
+ * @param len - Data length
  *
- * @return  0 if everything is ok, others is error.
- */
+ * @return 0 if everything is ok, others is error. */
 __attribute__((section(".highcode")))
 uint16_t ISO14443_CRCA(uint8_t *buf, uint8_t len)
 {
@@ -46,16 +45,15 @@ uint16_t ISO14443_CRCA(uint8_t *buf, uint8_t len)
     return crc;
 }
 
-/*********************************************************************
- * @fn      ISO14443AAppendCRCA
+/* ***************************************************************************
+ * @fn ISO14443AAppendCRCA
  *
- * @brief   在数据尾部生成CRC
+ * @brief generates CRC at the end of the data
  *
- * @param   buf      - 数据指针
- * @param   len   - 数据长度
+ * @param buf - Data pointer
+ * @param len - Data length
  *
- * @return  CRC.
- */
+ * @return CRC. */
 __attribute__((section(".highcode")))
 uint16_t ISO14443AAppendCRCA(void *buf, uint16_t len)
 {
@@ -74,17 +72,16 @@ uint16_t ISO14443AAppendCRCA(void *buf, uint16_t len)
     return crc;
 }
 
-/*********************************************************************
- * @fn      ISO14443ACheckOddParityBit
+/* ***************************************************************************
+ * @fn ISO14443ACheckOddParityBit
  *
- * @brief   检查奇校验位
+ * @brief Check odd check bit
  *
- * @param   data      - 数据指针
- * @param   parity    - 校验位指针
- * @param   len       - 数据长度
+ * @param data - Data pointer
+ * @param parity - check digit pointer
+ * @param len - Data length
  *
- * @return  1 if ok, 0 if error.
- */
+ * @return 1 if ok, 0 if error. */
 __attribute__((section(".highcode")))
 uint8_t ISO14443ACheckOddParityBit(uint8_t *data, uint8_t *parity, uint16_t len)
 {
@@ -101,17 +98,16 @@ uint8_t ISO14443ACheckOddParityBit(uint8_t *data, uint8_t *parity, uint16_t len)
     return 1;
 }
 
-/*********************************************************************
- * @fn      ISO14443ACalOddParityBit
+/* ***************************************************************************
+ * @fn ISO14443ACalOddParityBit
  *
- * @brief   计算奇校验位
+ * @brief calculate odd check bits
  *
- * @param   data        - 数据指针
- * @param   out_parity  - 校验位指针
- * @param   len         - 数据长度
+ * @param data - Data pointer
+ * @param out_parity - check digit pointer
+ * @param len - Data length
  *
- * @return  None.
- */
+ * @return None. */
 __attribute__((section(".highcode")))
 void ISO14443ACalOddParityBit(uint8_t *data, uint8_t *out_parity, uint16_t len)
 {
@@ -173,18 +169,17 @@ __attribute__((always_inline)) RV_STATIC_INLINE  uint8_t _ISO14443ASelectB2(uint
     return 0;
 }
 
-/*********************************************************************
- * @fn      ISO14443ASelect
+/* ***************************************************************************
+ * @fn ISO14443ASelect
  *
- * @brief   卡片选择流程处理
+ * @brief card selection process
  *
- * @param   data        - 数据指针
- * @param   bit_count   - 数据比特数量指针
- * @param   uid         - 自身的卡片uid数据指针
- * @param   sak         - 自身的卡片sak值
+ * @param data - Data pointer
+ * @param bit_count - Data bit count pointer
+ * @param uid - its own card uid data pointer
+ * @param sak - its own card sak value
  *
- * @return  1 - 还在卡片选择流程中，0 - 卡片选择流程结束.
- */
+ * @return 1 - Still in the card selection process, 0 - The card selection process ends. */
 __attribute__((section(".highcode")))
 uint8_t ISO14443ASelect(uint8_t *data, uint16_t *bit_count, uint8_t *uid, uint8_t sak)
 {

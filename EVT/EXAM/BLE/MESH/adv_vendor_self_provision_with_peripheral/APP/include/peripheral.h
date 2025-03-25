@@ -61,14 +61,10 @@ extern uint16_t Peripheral_ProcessEvent(uint8_t task_id, uint16_t events);
  */
 extern void peripheralChar4Notify(uint8_t *pValue, uint16_t len);
 
-/*
- * 修改广播数据内配网标志.
- */
+/* * Modify the broadcast data distribution network logo. */
 extern void Peripheral_AdvertData_Privisioned(uint8_t privisioned);
 
-/*
- * 断开连接.
- */
+/* * Disconnect. */
 extern void Peripheral_TerminateLink(void);
 
 /*********************************************************************

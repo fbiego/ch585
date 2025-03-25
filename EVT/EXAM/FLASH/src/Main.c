@@ -1,28 +1,27 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : Main.c
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2020/08/06
- * Description        : FALSH读写例程
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: Main.c
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2020/08/06
+ * Description: FALSH read and write routine
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #include "CH58x_common.h"
 
-#define WRProt_Size    0x08  /* 代码包含大小，单位4KB */
+#define WRProt_Size    0x08  /* Code contains size, unit 4KB */
 
 uint8_t TestBuf[1024];
 
-/*********************************************************************
- * @fn      DebugInit
+/* ***************************************************************************
+ * @fn DebugInit
  *
- * @brief   调试初始化
+ * @brief debug initialization
  *
- * @return  none
- */
+ * @return none */
 void DebugInit(void)
 {
     GPIOA_SetBits(GPIO_Pin_14);
@@ -31,13 +30,12 @@ void DebugInit(void)
     UART0_DefInit();
 }
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main()
 {
     uint16_t i;
@@ -46,11 +44,11 @@ int main()
     HSECFG_Capacitance(HSECap_18p);
     SetSysClock(CLK_SOURCE_HSE_PLL_62_4MHz);
 
-    /* 配置串口调试 */
+    /* Configure serial debugging */
     DebugInit();
     PRINT("Start @ChipID=%02X\n", R8_CHIP_ID);
 
-#if 1 // 读写Data-Flash
+#if 1 // Read and write Data-Flash
 
     PRINT("EEPROM_READ...\n");
     EEPROM_READ(0, TestBuf, 500);
@@ -84,7 +82,7 @@ int main()
 
 #endif
 
-#if 1 // 获取唯一ID，MAC地址，读写Flash-ROM
+#if 1 // Get unique ID, MAC address, read and write Flash-ROM
 
     PRINT("GET_UNIQUE_ID...\n");
     GET_UNIQUE_ID(TestBuf);
@@ -139,7 +137,7 @@ int main()
 
 #endif
 
-#if 0 /* 修改用户配置值 */
+#if 0 /* Modify user configuration values */
     s = UserOptionByteConfig(ENABLE, ENABLE, ENABLE, WRProt_Size);
     if(s)
         PRINT("ERR\n");
@@ -151,7 +149,7 @@ int main()
     }
 #endif
 
-#if 0 /* 关闭两线调试接口 */
+#if 0 /* Close the two-wire debugging interface */
     s = UserOptionByteClose_SWD();
     if(s)
         PRINT("ERR\n");

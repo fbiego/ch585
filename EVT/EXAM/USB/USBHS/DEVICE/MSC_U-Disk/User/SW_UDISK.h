@@ -17,7 +17,7 @@
 #endif 
 
 /******************************************************************************/
-/* BulkOnly Mass Storage设备特殊类请求 */
+/* BulkOnly Mass Storage device special class request */
 #define CMD_UDISK_RESET                 0xFF
 #define CMD_UDISK_GET_MAX_LUN           0xFE
 
@@ -48,11 +48,11 @@
 #define CMD_U_WRITE12	  				0xAA
 
 /******************************************************************************/
-/* 指定当前小容量U盘大小为32K */
+/* Specify the current small-capacity USB disk size to 32K */
 #define MY_UDISK_SIZE  0x00000040
 
 /******************************************************************************/
-/* BulkOnly传输结构定义 */
+/* BulkOnly Transmission Structure Definition */
 typedef union _BULK_ONLY_CMD 
 {
 	uint8_t buf[ 31 ];
@@ -88,7 +88,7 @@ typedef union _BULK_ONLY_CMD
 } BULK_ONLY_CMD;
 
 /******************************************************************************/
-/* 当前U盘相关宏定义(根据需要可以修改) */
+/* Current USB disk related macro definition (can be modified as needed) */
 
 #define DEF_DEBUG_PRINTF           1
 #define MEDIUM_INTERAL_FLASH       1
@@ -98,30 +98,30 @@ typedef union _BULK_ONLY_CMD
 //#define STORAGE_MEDIUM             MEDIUM_SPI_FLASH
 
 #if (STORAGE_MEDIUM == MEDIUM_SPI_FLASH)
-    #define DEF_CFG_DISK_SEC_SIZE      4096                                                /* 磁盘扇区大小 */
-    #define DEF_FLASH_SECTOR_SIZE      4096                                                /* 定义FLASH扇区大小 */
-    #define DEF_UDISK_SECTOR_SIZE      DEF_CFG_DISK_SEC_SIZE                               /* 定义U盘扇区大小 */
+    #define DEF_CFG_DISK_SEC_SIZE      4096                                                /* Disk sector size */
+    #define DEF_FLASH_SECTOR_SIZE      4096                                                /* Define the FLASH sector size */
+    #define DEF_UDISK_SECTOR_SIZE      DEF_CFG_DISK_SEC_SIZE                               /* Define the USB disk sector size */
 #elif (STORAGE_MEDIUM == MEDIUM_INTERAL_FLASH)
-    #define DEF_CFG_DISK_SEC_SIZE      4096                                                /* 磁盘扇区大小 */
-    #define DEF_FLASH_SECTOR_SIZE      4096                                                /* 定义FLASH扇区大小 */
-    #define DEF_UDISK_SECTOR_SIZE      DEF_CFG_DISK_SEC_SIZE                               /* 定义U盘扇区大小 */
+    #define DEF_CFG_DISK_SEC_SIZE      4096                                                /* Disk sector size */
+    #define DEF_FLASH_SECTOR_SIZE      4096                                                /* Define the FLASH sector size */
+    #define DEF_UDISK_SECTOR_SIZE      DEF_CFG_DISK_SEC_SIZE                               /* Define the USB disk sector size */
 #endif
 
 #define DEF_UDISK_PACK_512    	        512
 #define DEF_UDISK_PACK_64               64
 
 /******************************************************************************/
-/* 当前U盘状态相关宏定义 */
+/* Macro definitions related to the current USB disk status */
 #define DEF_UDISK_EN_FLAG              0x01
 
 /******************************************************************************/
-/* 当前U盘传输状态相关宏定义 */
+/* Macro definitions related to current USB drive transmission status */
 #define DEF_UDISK_BLUCK_UP_FLAG        0x01
 #define DEF_UDISK_BLUCK_DOWN_FLAG      0x02
 #define DEF_UDISK_CSW_UP_FLAG  	       0x04
 
 /******************************************************************************/
-/* 常、变量外扩 */
+/* Normal, variable expansion */
 extern volatile uint8_t  Udisk_CBW_Tag_Save[ 4 ];
 extern volatile uint8_t  Udisk_Sense_Key;
 extern volatile uint8_t  Udisk_Sense_ASC;
@@ -145,7 +145,7 @@ extern uint8_t  const  UDISK_Mode_Sense_1A[ ];
 extern uint8_t  const  UDISK_Mode_Senese_5A[ ];
 
 /******************************************************************************/
-/* 函数外扩 */
+/* Function Extended */
 extern void UDISK_CMD_Deal_Status( uint8_t key, uint8_t asc, uint8_t status );
 extern void UDISK_CMD_Deal_Fail( void );
 extern void UDISK_SCSI_CMD_Deal( void );

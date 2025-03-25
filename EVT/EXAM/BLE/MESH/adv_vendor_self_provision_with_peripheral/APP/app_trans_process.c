@@ -35,63 +35,59 @@
  */
 
 
-/*********************************************************************
- * @fn      read_led_state
+/* ***************************************************************************
+ * @fn read_led_state
  *
- * @brief   获取当前灯状态.
+ * @brief Get the current light status.
  *
- * @param   led_pin - 引脚.
+ * @param led_pin - pin.
  *
- * @return  灯状态
- */
+ * @return Light status */
 BOOL read_led_state(uint32_t led_pin)
 {
     return (GPIOB_ReadPortPin(led_pin) > 0) ? 0 : 1;
 }
 
-/*********************************************************************
- * @fn      set_led_state
+/* ***************************************************************************
+ * @fn set_led_state
  *
- * @brief   设置当前灯状态.
+ * @brief Sets the current light status.
  *
- * @param   led_pin - 引脚.
- * @param   on      - 状态.
+ * @param led_pin - pin.
+ * @param on - Status.
  *
- * @return  none
- */
+ * @return none */
 void set_led_state(uint32_t led_pin, BOOL on)
 {
     GPIOB_ModeCfg(led_pin, GPIO_ModeOut_PP_5mA);
     on ? GPIOB_ResetBits(led_pin) : GPIOB_SetBits(led_pin);
 }
 
-/*********************************************************************
- * @fn      toggle_led_state
+/* ***************************************************************************
+ * @fn toggle_led_state
  *
- * @brief   翻转当前灯状态
+ * @brief Flip the current light status
  *
- * @param   led_pin - 引脚.
+ * @param led_pin - pin.
  *
- * @return  none
- */
+ * @return none */
 void toggle_led_state(uint32_t led_pin)
 {
     GPIOB_ModeCfg(led_pin, GPIO_ModeOut_PP_5mA);
     GPIOB_InverseBits(led_pin);
 }
 
-/*********************************************************************
- * @fn      app_trans_process
+/* ***************************************************************************
+ * @fn app_trans_process
  *
- * @brief   处理收到的trans数据
+ * @brief Processes received trans data
  *
- * @param   pValue      - 数据指针.
- *          len         - 数据长度.
- *          src_Addr    - 数据来源地址.
- *          dst_Addr    - 数据目的地址.
+ * @param pValue - Data pointer.
+ * len - Data length.
+ * src_Addr - Data source address.
+ * dst_Addr - Data destination address.
  *
- * @return  none
- */
+ * @return none */
 void app_trans_process(uint8_t *pValue, uint8_t len, uint16_t src_Addr, uint16_t dst_Addr)
 {
     uint16_t opcode = (pValue[0]<<8)|pValue[1];

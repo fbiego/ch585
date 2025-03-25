@@ -12,16 +12,15 @@
 
 #include "CH58x_common.h"
 
-/*********************************************************************
- * @fn      GPIOA_ModeCfg
+/* ***************************************************************************
+ * @fn GPIOA_ModeCfg
  *
- * @brief   GPIOA端口引脚模式配置
+ * @brief GPIOA port pin mode configuration
  *
- * @param   pin     - PA0-PA15
- * @param   mode    - 输入输出类型
+ * @param pin - PA0-PA15
+ * @param mode - Input and output type
  *
- * @return  none
- */
+ * @return none */
 void GPIOA_ModeCfg(uint32_t pin, GPIOModeTypeDef mode)
 {
     switch(mode)
@@ -59,16 +58,15 @@ void GPIOA_ModeCfg(uint32_t pin, GPIOModeTypeDef mode)
     }
 }
 
-/*********************************************************************
- * @fn      GPIOB_ModeCfg
+/* ***************************************************************************
+ * @fn GPIOB_ModeCfg
  *
- * @brief   GPIOB端口引脚模式配置
+ * @brief GPIOB port pin mode configuration
  *
- * @param   pin     - PB0-PB23
- * @param   mode    - 输入输出类型
+ * @param pin - PB0-PB23
+ * @param mode - Input and output type
  *
- * @return  none
- */
+ * @return none */
 void GPIOB_ModeCfg(uint32_t pin, GPIOModeTypeDef mode)
 {
     switch(mode)
@@ -106,36 +104,35 @@ void GPIOB_ModeCfg(uint32_t pin, GPIOModeTypeDef mode)
     }
 }
 
-/*********************************************************************
- * @fn      GPIOA_ITModeCfg
+/* ***************************************************************************
+ * @fn GPIOA_ITModeCfg
  *
- * @brief   GPIOA引脚中断模式配置
+ * @brief GPIOA pin interrupt mode configuration
  *
- * @param   pin     - PA0-PA15
- * @param   mode    - 触发类型
+ * @param pin - PA0-PA15
+ * @param mode - Trigger type
  *
- * @return  none
- */
+ * @return none */
 void GPIOA_ITModeCfg(uint32_t pin, GPIOITModeTpDef mode)
 {
     switch(mode)
     {
-        case GPIO_ITMode_LowLevel: // 低电平触发
+        case GPIO_ITMode_LowLevel: // Low level trigger
             R16_PA_INT_MODE &= ~pin;
             R32_PA_CLR |= pin;
             break;
 
-        case GPIO_ITMode_HighLevel: // 高电平触发
+        case GPIO_ITMode_HighLevel: // High level trigger
             R16_PA_INT_MODE &= ~pin;
             R32_PA_OUT |= pin;
             break;
 
-        case GPIO_ITMode_FallEdge: // 下降沿触发
+        case GPIO_ITMode_FallEdge: // Falling edge trigger
             R16_PA_INT_MODE |= pin;
             R32_PA_CLR |= pin;
             break;
 
-        case GPIO_ITMode_RiseEdge: // 上升沿触发
+        case GPIO_ITMode_RiseEdge: // Rising edge trigger
             R16_PA_INT_MODE |= pin;
             R32_PA_OUT |= pin;
             break;
@@ -147,37 +144,36 @@ void GPIOA_ITModeCfg(uint32_t pin, GPIOITModeTpDef mode)
     R16_PA_INT_EN |= pin;
 }
 
-/*********************************************************************
- * @fn      GPIOB_ITModeCfg
+/* ***************************************************************************************
+ * @fn GPIOB_ITModeCfg
  *
- * @brief   GPIOB引脚中断模式配置
+ * @brief GPIOB pin interrupt mode configuration
  *
- * @param   pin     - PB0-PB23
- * @param   mode    - 触发类型
+ * @param pin - PB0-PB23
+ * @param mode - Trigger type
  *
- * @return  none
- */
+ * @return none */
 void GPIOB_ITModeCfg(uint32_t pin, GPIOITModeTpDef mode)
 {
     uint32_t Pin = pin | ((pin & (GPIO_Pin_22 | GPIO_Pin_23)) >> 14);
     switch(mode)
     {
-        case GPIO_ITMode_LowLevel: // 低电平触发
+        case GPIO_ITMode_LowLevel: // Low level trigger
             R16_PB_INT_MODE &= ~Pin;
             R32_PB_CLR |= pin;
             break;
 
-        case GPIO_ITMode_HighLevel: // 高电平触发
+        case GPIO_ITMode_HighLevel: // High level trigger
             R16_PB_INT_MODE &= ~Pin;
             R32_PB_OUT |= pin;
             break;
 
-        case GPIO_ITMode_FallEdge: // 下降沿触发
+        case GPIO_ITMode_FallEdge: // Falling edge trigger
             R16_PB_INT_MODE |= Pin;
             R32_PB_CLR |= pin;
             break;
 
-        case GPIO_ITMode_RiseEdge: // 上升沿触发
+        case GPIO_ITMode_RiseEdge: // Rising edge trigger
             R16_PB_INT_MODE |= Pin;
             R32_PB_OUT |= pin;
             break;
@@ -189,30 +185,29 @@ void GPIOB_ITModeCfg(uint32_t pin, GPIOITModeTpDef mode)
     R16_PB_INT_EN |= Pin;
 }
 
-/*********************************************************************
- * @fn      GPIOPinRemap
+/* ***************************************************************************
+ * @fn GPIOPinRemap
  *
- * @brief   外设功能引脚映射
+ * @brief Peripheral Function Pin Mapping
  *
- * @param   s       - 是否使能映射
- * @param   perph   - RB_RF_ANT_SW_EN -  RF antenna switch control output on PA4/PA5/PA12/PA13/PA14/PA15
- *                    RB_PIN_U0_INV -  RXD0/RXD0_/TXD0/TXD0_ invert input/output
- *                    RB_PIN_INTX   -  INTX: INT24/INT25 PB8/PB9 -> INT24_/INT25_ PB22/PB23
- *                    RB_PIN_MODEM  -  MODEM: PA6/PA7 -> PB12/PB13
- *                    RB_PIN_I2C    -  I2C: PB14/PB15 -> PB14/PB15
- *                    RB_PIN_PWMX   -  PWMX: PA12/PA13/PB7/PB6/PB4 -> PA6/PA7/PB3/PB2/PB1
- *                    RB_PIN_SPI0   -  SPI0:  PA12/PA13/PA14/PA15 -> PB12/PB13/PB14/PB15
- *                    RB_PIN_UART3  -  UART3: PA4/PA5 ->  PA4/PA5
- *                    RB_PIN_UART2  -  UART2: PB22/PB23 ->  PA6/PA7
- *                    RB_PIN_UART1  -  UART1: PA8/PA9 ->  PB12/PB13
- *                    RB_PIN_UART0  -  UART0: PB4/PB7 ->  PA15/PA14
- *                    RB_PIN_TMR3   -  TMR2:  PB22 ->  PB22
- *                    RB_PIN_TMR2   -  TMR2:  PA11 ->  PB11
- *                    RB_PIN_TMR1   -  TMR1:  PA10 ->  PB10
- *                    RB_PIN_TMR0   -  TMR0:  PA9 ->  PB23
+ * @param s - Whether to enable mapping
+ * @param perph - RB_RF_ANT_SW_EN - RF antenna switch control output on PA4/PA5/PA12/PA13/PA14/PA15
+ * RB_PIN_U0_INV - RXD0/RXD0_/TXD0/TXD0_ invert input/output
+ * RB_PIN_INTX - INTX: INT24/INT25 PB8/PB9 -> INT24_/INT25_ PB22/PB23
+ * RB_PIN_MODEM - MODEM: PA6/PA7 -> PB12/PB13
+ * RB_PIN_I2C - I2C: PB14/PB15 -> PB14/PB15
+ * RB_PIN_PWMX - PWMX: PA12/PA13/PB7/PB6/PB4 -> PA6/PA7/PB3/PB2/PB1
+ * RB_PIN_SPI0 - SPI0: PA12/PA13/PA14/PA15 -> PB12/PB13/PB14/PB15
+ * RB_PIN_UART3 - UART3: PA4/PA5 -> PA4/PA5
+ * RB_PIN_UART2 - UART2: PB22/PB23 -> PA6/PA7
+ * RB_PIN_UART1 - UART1: PA8/PA9 -> PB12/PB13
+ * RB_PIN_UART0 - UART0: PB4/PB7 -> PA15/PA14
+ * RB_PIN_TMR3 - TMR2: PB22 -> PB22
+ * RB_PIN_TMR2 - TMR2: PA11 -> PB11
+ * RB_PIN_TMR1 - TMR1: PA10 -> PB10
+ * RB_PIN_TMR0 - TMR0: PA9 -> PB23
  *
- * @return  none
- */
+ * @return none */
 void GPIOPinRemap(FunctionalState s, uint16_t perph)
 {
     if(s)
@@ -225,21 +220,20 @@ void GPIOPinRemap(FunctionalState s, uint16_t perph)
     }
 }
 
-/*********************************************************************
- * @fn      GPIOAGPPCfg
+/* ***************************************************************************
+ * @fn GPIOAGPPCfg
  *
- * @brief   模拟外设GPIO引脚功能控制
+ * @brief Analog peripheral GPIO pin function control
  *
- * @param   s       -   ENABLE  - 打开模拟外设功能，关闭数字功能
- *                      DISABLE - 启用数字功能，关闭模拟外设功能
- * @param   perph   -   RB_DEBUG_PIN_SEL  - SWDIO/SWCLK alternate pin enable: 0=SWDIO/SWCLK on PA[8]/PA[9], 1=SWDIO/SWCLK on PA[14]/PA[15]
- *                      RB_PB16_8_SEL  - interupt pin select,0=PB8, 1=PB16
- *                      RB_PIN_USB2_EN  - USB high speed comunication pin select, 0=PB12/13 not use, 1=PB12/13 used
- *                      RB_UDP_PU_EN  - enable USB ud+ pin pulled upresistance , 0=control by RB_UC_DEV_PU_EN, 1=force pulled up
- *                      RB_PIN_USB_EN  - enable USB fast speed pin, 0=PB10/PB11 not used, 1=PB10/PB11 used
+ * @param s - ENABLE - Turn on analog peripheral function and turn off digital function
+ * DISABLE - Enable digital function and turn off analog peripheral function
+ * @param perph - RB_DEBUG_PIN_SEL - SWDIO/SWCLK alternate pin enable: 0=SWDIO/SWCLK on PA[8]/PA[9], 1=SWDIO/SWCLK on PA[14]/PA[15]
+ * RB_PB16_8_SEL - interrupt pin select,0=PB8, 1=PB16
+ * RB_PIN_USB2_EN - USB high speed communication pin select, 0=PB12/13 not use, 1=PB12/13 used
+ * RB_UDP_PU_EN - enable USB ud+ pin pulled up , 0=control by RB_UC_DEV_PU_EN, 1=force pulled up
+ * RB_PIN_USB_EN - enable USB fast speed pin, 0=PB10/PB11 not used, 1=PB10/PB11 used
  *
- * @return  none
- */
+ * @return none */
 void GPIOAGPPCfg(FunctionalState s, uint16_t perph)
 {
     if(s)
@@ -253,14 +247,13 @@ void GPIOAGPPCfg(FunctionalState s, uint16_t perph)
 }
 
 
-/*********************************************************************
- * @fn      GPIOADigitalCfg
+/* ***************************************************************************
+ * @fn GPIOADigitalCfg
  *
- * @brief   I/O pin数字功能控制
+ * @brief I/O pin digital function control
  *
- * @param   s       - 是否打开对应I/O pin数字功能
- * @param   pin     - PA0-PA15
- */
+ * @param s - Whether to turn on the corresponding I/O pin digital function
+ * @param pin - PA0-PA15 */
 void GPIOADigitalCfg(FunctionalState s, uint16_t pin)
 {
     if(s)
@@ -273,14 +266,13 @@ void GPIOADigitalCfg(FunctionalState s, uint16_t pin)
     }
 }
 
-/*********************************************************************
- * @fn      GPIOADigitalCfg
+/* ***************************************************************************
+ * @fn GPIOADigitalCfg
  *
- * @brief   I/O pin数字功能控制
+ * @brief I/O pin digital function control
  *
- * @param   s       - 是否打开对应I/O pin数字功能
- * @param   pin     - PB0-PB23
- */
+ * @param s - Whether to turn on the corresponding I/O pin digital function
+ * @param pin - PB0-PB23 */
 void GPIOBDigitalCfg(FunctionalState s, uint32_t pin)
 {
     uint32_t dis_pin;

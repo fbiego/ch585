@@ -54,13 +54,12 @@ void touch_init(void)
  *   STATIC FUNCTIONS
  **********************/
 
-/*********************************************************************
- * @fn      TKY_PeripheralInit
+/* ***************************************************************************
+ * @fn TKY_PeripheralInit
  *
- * @brief   触摸相关外设初始化函数
+ * @brief Touch related peripheral initialization function
  *
- * @return  none
- */
+ * @return none */
 static void TKY_PeripheralInit(void)
 {
     /*You code here*/

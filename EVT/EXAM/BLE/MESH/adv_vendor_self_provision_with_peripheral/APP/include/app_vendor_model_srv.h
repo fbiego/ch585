@@ -34,18 +34,16 @@ extern "C" {
 #define VENDOR_MODEL_SRV_RSP_TIMEOUT_EVT     (1 << 1)
 #define VENDOR_MODEL_SRV_INDICATE_EVT        (1 << 2)
 
-/**
- * @brief 发送数据的开始和结束回调函数定义
- */
+/* *
+ * @brief The start and end callback function definition of sending data */
 struct bt_adv_trans_cb
 {
     void (*start)(int err, void *cb_data);
     void (*end)(int err, void *cb_data);
 };
 
-/**
- * @brief 发送参数结构体
- */
+/* *
+ * @brief send parameter structure */
 struct send_param
 {
     uint16_t net_idx;
@@ -61,36 +59,32 @@ struct send_param
     const struct bt_adv_trans_cb *cb;
 };
 
-/**
- * @brief indicate 发送缓存
- */
+/* *
+ * @brief indication Send cache */
 struct bt_mesh_indicate
 {
     struct send_param param;
     struct net_buf   *buf;
 };
 
-/**
- * @brief trans 发送缓存
- */
+/* *
+ * @brief trans Send cache */
 struct bt_mesh_trans
 {
     struct send_param param;
     struct net_buf   *buf;
 };
 
-/**
- * @brief write 发送缓存
- */
+/* *
+ * @brief write Send cache */
 struct bt_mesh_write
 {
     struct send_param param;
     struct net_buf   *buf;
 };
 
-/**
- * @brief write 回调结构体
- */
+/* *
+ * @brief write callback structure */
 struct bt_mesh_vendor_model_write
 {
     uint8_t *pdata;
@@ -98,9 +92,8 @@ struct bt_mesh_vendor_model_write
     uint16_t addr;
 };
 
-/**
- * @brief srv_trans 回调结构体
- */
+/* *
+ * @brief srv_trans callback structure */
 struct bt_mesh_vendor_model_srv_trans
 {
     uint8_t *pdata;
@@ -137,9 +130,8 @@ typedef struct
 
 typedef void (*vendor_model_srv_rsp_handler_t)(const vendor_model_srv_status_t *val);
 
-/**
- * @brief 记录当前发送数据包的tid
- */
+/* *
+ * @brief record the tid of the currently sent packet */
 struct vendor_model_srv_tid
 {
     uint8_t trans_tid;
@@ -162,26 +154,24 @@ struct bt_mesh_vendor_model_srv
 
 extern const struct bt_mesh_model_op vnd_model_srv_op[];
 
-/**
- * @brief   indicate,有应答传输数据通道
+/* *
+ * @brief indication, there is a reply transmission data channel
  *
- * @param   param   - 发送参数.
- * @param   pData   - 数据指针.
- * @param   len     - 数据长度,最大为(APP_MAX_TX_SIZE).
+ * @param param - Send parameters.
+ * @param pData - Data pointer.
+ * @param len - Data length, maximum is (APP_MAX_TX_SIZE).
  *
- * @return  参考Global_Error_Code
- */
+ * @return Reference Global_Error_Code */
 int vendor_message_srv_indicate(struct send_param *param, uint8_t *pData, uint16_t len);
 
-/**
- * @brief   send_trans,透传数据通道
+/* *
+ * @brief send_trans,transparent data channel
  *
- * @param   param   - 发送参数.
- * @param   pData   - 数据指针.
- * @param   len     - 数据长度,最大为(APP_MAX_TX_SIZE).
+ * @param param - Send parameters.
+ * @param pData - Data pointer.
+ * @param len - Data length, maximum is (APP_MAX_TX_SIZE).
  *
- * @return  参考Global_Error_Code
- */
+ * @return Reference Global_Error_Code */
 int vendor_message_srv_send_trans(struct send_param *param, uint8_t *pData, uint16_t len);
 
 /**
@@ -191,18 +181,16 @@ int vendor_message_srv_send_trans(struct send_param *param, uint8_t *pData, uint
  */
 uint8_t vendor_srv_tid_get(void);
 
-/**
- * @brief   复位厂商模型服务，取消所有正在发送的流程
- */
+/* *
+ * @brief Reset the vendor model service and cancel all sending processes */
 void vendor_message_srv_trans_reset(void);
 
-/**
- * @brief   厂商模型初始化
+/* *
+ * @brief vendor model initialization
  *
- * @param   model       - 指向厂商模型结构体
+ * @param model - Point to the manufacturer model structure
  *
- * @return  always SUCCESS
- */
+ * @return always SUCCESS */
 int vendor_model_srv_init(struct bt_mesh_model *model);
 
 

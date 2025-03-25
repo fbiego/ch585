@@ -1,14 +1,14 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : wch_nfca_pcd_bsp.h
- * Author             : WCH
- * Version            : V1.1
- * Date               : 2024/11/14
- * Description        : NFC-A PCD BSP底层接口
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : wch_nfca_pcd_bsp.h
+ * Author: WCH
+ * Version: V1.1
+ * Date: 2024/11/14
+ * Description: NFC-A PCD BSP underlying interface
+ ************************************************************************************************************
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #ifndef _WCH_NFCA_PCD_BSP_H_
 #define _WCH_NFCA_PCD_BSP_H_
@@ -31,114 +31,104 @@ extern uint8_t g_nfca_pcd_parity_buf[NFCA_PCD_MAX_PARITY_NUM];
 extern uint16_t g_nfca_pcd_recv_buf_len;
 extern uint32_t g_nfca_pcd_recv_bits;
 
-/*******************************************************************************
- * @fn              nfca_pcd_init
+/* *********************************************************************************************
+ * @fn nfca_pcd_init
  *
- * @brief           nfc-a pcd初始化
+ * @brief nfc-a pcd initialization
  *
- * @param           None.
+ * @param None.
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_init(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_start
+/* *********************************************************************************************
+ * @fn nfca_pcd_start
  *
- * @brief           nfc-a pcd开始运行，开始发送连续波
+ * @brief nfc-a pcd starts running and starts sending continuous waves
  *
- * @param           None.
+ * @param None.
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_start(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_stop
+/* *********************************************************************************************
+ * @fn nfca_pcd_stop
  *
- * @brief           nfc-a pcd停止运行，停止发送连续波
+ * @brief nfc-a pcd stops running, stops sending continuous waves
  *
- * @param           None.
+ * @param None.
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_stop(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_lpcd_calibration
+/* *********************************************************************************************
+ * @fn nfca_pcd_lpcd_calibration
  *
- * @brief           nfc-a pcd lpcd ADC检卡方式阈值校准
+ * @brief nfc-a pcd lpcd ADC card detection method threshold calibration
  *
- * @param           None.
+ * @param None.
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_lpcd_calibration(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_lpcd_check
+/* *********************************************************************************************
+ * @fn nfca_pcd_lpcd_check
  *
- * @brief           nfc-a pcd lpcd ADC检卡
+ * @brief nfc-a pcd lpcd ADC check card
  *
- * @param           None.
+ * @param None.
  *
- * @return          1 有卡，0无卡.
- */
+ * @return 1 has a card, 0 has no card. */
 extern uint8_t nfca_pcd_lpcd_check(void);
 
-/*******************************************************************************
- * @fn              nfca_adc_get_ant_signal
+/* *********************************************************************************************
+ * @fn nfca_adc_get_ant_signal
  *
- * @brief           nfc-a pcd lpcd ADC检卡
+ * @brief nfc-a pcd lpcd ADC check card
  *
- * @param           None.
+ * @param None.
  *
- * @return          uint16_t，返回天线上信号的adc检测值.
- */
+ * @return uint16_t, returns the adc detection value of the signal on the antenna. */
 extern uint16_t nfca_adc_get_ant_signal(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_wait_communicate_end
+/* *********************************************************************************************
+ * @fn nfca_pcd_wait_communicate_end
  *
- * @brief           nfc-a pcd 等待通信结束
+ * @brief nfc-a pcd Wait for the end of communication
  *
- * @param           None.
+ * @param None.
  *
- * @return          nfca_pcd_controller_state_t，返回通讯结束状态.
- */
+ * @return nfca_pcd_controller_state_t, return to the communication end state. */
 extern nfca_pcd_controller_state_t nfca_pcd_wait_communicate_end(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_rand
+/* *********************************************************************************************
+ * @fn nfca_pcd_rand
  *
- * @brief           nfc-a pcd 获取随机数接口
+ * @brief nfc-a pcd Get random number interface
  *
- * @param           None.
+ * @param None.
  *
- * @return          uint32_t，返回一个随机数
- */
+ * @return uint32_t, return a random number */
 extern uint32_t nfca_pcd_rand(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_ctr_init
+/* *********************************************************************************************
+ * @fn nfca_pcd_ctr_init
  *
- * @brief           nfc-a pcd 天线信号控制初始化
+ * @brief nfc-a pcd antenna signal control initialization
  *
- * @param           None.
+ * @param None.
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_ctr_init(void);
 
-/*******************************************************************************
- * @fn              nfca_pcd_ctr_handle
+/* *********************************************************************************************
+ * @fn nfca_pcd_ctr_handle
  *
- * @brief           nfc-a pcd 天线信号控制处理
+ * @brief nfc-a pcd antenna signal control processing
  *
- * @param           None.
+ * @param None.
  *
- * @return          None.
- */
+ * @return None. */
 extern void nfca_pcd_ctr_handle(void);
 
 #endif /* _WCH_NFCA_PCD_BSP_H_ */

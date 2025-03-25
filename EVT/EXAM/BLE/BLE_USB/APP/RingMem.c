@@ -24,15 +24,14 @@
  * PUBLIC FUNCTIONS
  */
 RingMemProtection_t RingMemProtection;
-/*********************************************************************
- * @fn      RingMemInit
+/* ***************************************************************************
+ * @fn RingMemInit
  *
- * @brief   初始化
+ * @brief initialization
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void RingMemInit( RingMemParm_t *Parm, uint8_t *StartAddr, uint32_t MaxLen, RingMemProtection_t Protection )
 {
 	Parm->pData		= StartAddr;
@@ -45,15 +44,14 @@ void RingMemInit( RingMemParm_t *Parm, uint8_t *StartAddr, uint32_t MaxLen, Ring
 	RingMemProtection = Protection;
 }
 
-/*********************************************************************
- * @fn      RingMemWrite
+/* ***************************************************************************
+ * @fn RingMemWrite
  *
- * @brief   往里写
+ * @brief Write in
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 uint8_t RingMemWrite( RingMemParm_t *Parm, uint8_t *pData, uint32_t len )
 {
 	uint32_t i,edgelen;
@@ -99,15 +97,14 @@ uint8_t RingMemWrite( RingMemParm_t *Parm, uint8_t *pData, uint32_t len )
 	return SUCCESS;
 }
 
-/*********************************************************************
- * @fn      RingMemRead
+/* ***************************************************************************
+ * @fn RingMemRead
  *
- * @brief   往外读
+ * @brief Read outside
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 uint8_t RingMemRead( RingMemParm_t *Parm, uint8_t *pData, uint32_t len )
 {
 	uint32_t i,edgelen;
@@ -251,15 +248,14 @@ uint8_t RingMemDelete( RingMemParm_t *Parm, uint32_t len )
     return SUCCESS;
 }
 
-/*********************************************************************
- * @fn      RingAddInStart
+/* ***************************************************************************
+ * @fn RingAddInStart
  *
- * @brief   向缓冲区开始处添加数据
+ * @brief Add data to the beginning of the buffer
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 uint8_t RingAddInStart( RingMemParm_t *Parm, uint8_t *pData, uint32_t len )
 {
 	uint32_t i,edgelen;

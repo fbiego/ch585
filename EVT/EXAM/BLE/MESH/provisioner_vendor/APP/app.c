@@ -39,8 +39,8 @@ static uint8_t App_TaskID = 0; // Task ID for internal task/event processing
 
 static uint16_t App_ProcessEvent(uint8_t task_id, uint16_t events);
 
-static uint8_t dev_uuid[16] = {0}; // 此设备的UUID
-uint8_t        MACAddr[6];         // 此设备的mac
+static uint8_t dev_uuid[16] = {0}; // UUID of this device
+uint8_t        MACAddr[6];         // Mac for this device
 
 static const uint8_t self_prov_net_key[16] = {
     0x00, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
@@ -59,12 +59,12 @@ static const uint8_t self_prov_app_key[16] = {
 
 /*  The key indexes are 12-bit values ranging from 0x000 to 0xFFF
     inclusive. A network key at index 0x000 is called the primary NetKey*/
-const uint16_t self_prov_net_idx = 0x0000;      // 自配网所用的net key
-const uint16_t self_prov_app_idx = 0x0001;      // 自配网所用的app key
-const uint32_t self_prov_iv_index = 0x00000000; // 自配网的iv_index
-const uint16_t self_prov_addr = 0x0001;         // 自配网的自身主元素地址
-const uint8_t  self_prov_flags = 0x00;          // 是否处于key更新状态，默认为否
-const uint16_t vendor_sub_addr = 0xC000;        // 配置自定义模型的订阅group地址
+const uint16_t self_prov_net_idx = 0x0000;      // Net key used in self-distribution network
+const uint16_t self_prov_app_idx = 0x0001;      // The app key used in self-distribution network
+const uint32_t self_prov_iv_index = 0x00000000; // iv_index of self-distribution network
+const uint16_t self_prov_addr = 0x0001;         // The address of the main element of the self-distribution network
+const uint8_t  self_prov_flags = 0x00;          // Whether it is in the key update state, the default is No
+const uint16_t vendor_sub_addr = 0xC000;        // Configure the subscription group address of the custom model
 
 #if(!CONFIG_BLE_MESH_PB_GATT)
 NET_BUF_SIMPLE_DEFINE_STATIC(rx_buf, 65);
@@ -98,11 +98,11 @@ static struct bt_mesh_cfg_srv cfg_srv = {
 #if(CONFIG_BLE_MESH_PROXY)
     .gatt_proxy = BLE_MESH_GATT_PROXY_ENABLED,
 #endif
-    /* 默认TTL为3 */
+    /* The default TTL is 3 */
     .default_ttl = 3,
-    /* 底层发送数据重试7次，每次间隔10ms（不含内部随机数） */
+    /* The underlying data is sent 7 times and the interval is 10ms (excluding internal random numbers) */
     .net_transmit = BLE_MESH_TRANSMIT(7, 10),
-    /* 底层转发数据重试7次，每次间隔10ms（不含内部随机数） */
+    /* Retry the underlying forwarding data 7 times, each time interval is 10ms (excluding internal random numbers) */
     .relay_retransmit = BLE_MESH_TRANSMIT(7, 10),
 };
 
@@ -123,7 +123,7 @@ uint16_t cfg_cli_groups[CONFIG_MESH_MOD_GROUP_COUNT_DEF] = {BLE_MESH_ADDR_UNASSI
 uint16_t health_srv_keys[CONFIG_MESH_MOD_KEY_COUNT_DEF] = {BLE_MESH_KEY_UNUSED};
 uint16_t health_srv_groups[CONFIG_MESH_MOD_GROUP_COUNT_DEF] = {BLE_MESH_ADDR_UNASSIGNED};
 
-// root模型加载
+// root model loading
 static struct bt_mesh_model root_models[] = {
     BLE_MESH_MODEL_CFG_SRV(cfg_srv_keys, cfg_srv_groups, &cfg_srv),
     BLE_MESH_MODEL_CFG_CLI(cfg_cli_keys, cfg_cli_groups, &cfg_cli),
@@ -139,13 +139,13 @@ struct bt_mesh_vendor_model_cli vendor_model_cli = {
 uint16_t vnd_model_cli_keys[CONFIG_MESH_MOD_KEY_COUNT_DEF] = {BLE_MESH_KEY_UNUSED};
 uint16_t vnd_model_cli_groups[CONFIG_MESH_MOD_GROUP_COUNT_DEF] = {BLE_MESH_ADDR_UNASSIGNED};
 
-// 自定义模型加载
+// Custom model loading
 struct bt_mesh_model vnd_models[] = {
     BLE_MESH_MODEL_VND_CB(CID_WCH, BLE_MESH_MODEL_ID_WCH_CLI, vnd_model_cli_op, NULL, vnd_model_cli_keys,
                           vnd_model_cli_groups, &vendor_model_cli, NULL),
 };
 
-// 模型组成 elements
+// Model composition elements
 static struct bt_mesh_elem elements[] = {
     {
         /* Location Descriptor (GATT Bluetooth Namespace Descriptors) */
@@ -157,14 +157,14 @@ static struct bt_mesh_elem elements[] = {
     }
 };
 
-// elements 构成 Node Composition
+// elements composition Node Composition
 const struct bt_mesh_comp app_comp = {
-    .cid = 0x07D7, // WCH 公司id
+    .cid = 0x07D7, // WCH Company ID
     .elem = elements,
     .elem_count = ARRAY_SIZE(elements),
 };
 
-// 配网参数和回调
+// Distribution network parameters and callbacks
 static const struct bt_mesh_prov app_prov = {
     .uuid = dev_uuid,
     .link_open = link_open,
@@ -174,7 +174,7 @@ static const struct bt_mesh_prov app_prov = {
     .node_added = node_added,
 };
 
-// 配网者管理的节点，第0个为自己，第1，2依次为配网顺序的节点
+// The node managed by the distribution network operator, the 0th is itself, and the 1st and 2nd are the nodes in the distribution network sequence.
 node_t app_nodes[1 + CONFIG_MESH_PROV_NODE_COUNT_DEF] = {0};
 
 app_mesh_manage_t app_mesh_manage;
@@ -185,36 +185,34 @@ uint8_t settings_load_over = FALSE;
  * GLOBAL TYPEDEFS
  */
 
-/*********************************************************************
- * @fn      link_open
+/* ***************************************************************************
+ * @fn link_open
  *
- * @brief   配网时后的link打开回调
+ * @brief The link opens the callback after the network distribution time
  *
- * @param   bearer  - 当前link是PB_ADV还是PB_GATT
+ * @param bearer - Is the current link PB_ADV or PB_GATT
  *
- * @return  none
- */
+ * @return none */
 static void link_open(bt_mesh_prov_bearer_t bearer)
 {
     APP_DBG("");
 }
 
-/*********************************************************************
- * @fn      link_close
+/* ***************************************************************************
+ * @fn link_close
  *
- * @brief   配网后的link关闭回调
+ * @brief The link after the network is distributed to close the callback
  *
- * @param   bearer  - 当前link是PB_ADV还是PB_GATT
- * @param   reason  - link关闭原因
+ * @param bearer - Is the current link PB_ADV or PB_GATT
+ * @param reason - link close reason
  *
- * @return  none
- */
+ * @return none */
 static void link_close(bt_mesh_prov_bearer_t bearer, uint8_t reason)
 {
     APP_DBG("reason %x", reason);
     if(reason == CLOSE_REASON_RESOURCES)
     {
-        // 存储的节点已满，可选择 停止发起配网 或 清除全部节点 或 按地址清除节点(注意应用层管理的节点也需要对应清除)
+        // The stored node is full, you can choose to stop starting distribution network or clear all nodes or clear nodes by address (note that nodes managed by the application layer also need to be cleared correspondingly)
         bt_mesh_provisioner_disable(BLE_MESH_PROV_ADV, TRUE);
         //bt_mesh_node_clear();node_init();
         //bt_mesh_node_del_by_addr(app_nodes[1].node_addr);
@@ -225,13 +223,12 @@ static void link_close(bt_mesh_prov_bearer_t bearer, uint8_t reason)
     }
 }
 
-/*********************************************************************
- * @fn      node_unblock_get
+/* ***************************************************************************
+ * @fn node_unblock_get
  *
- * @brief   获取 一个未阻塞的 node
+ * @brief Get an unblocked node
  *
- * @return  node_t / NULL
- */
+ * @return node_t / NULL */
 static node_t *node_unblock_get(void)
 {
     for(int i = 0; i < ARRAY_SIZE(app_nodes); i++)
@@ -246,13 +243,12 @@ static node_t *node_unblock_get(void)
     return NULL;
 }
 
-/*********************************************************************
- * @fn      node_block_get
+/* ***************************************************************************
+ * @fn node_block_get
  *
- * @brief   获取一个正在阻塞的 node
+ * @brief Get a blocking node
  *
- * @return  node_t / NULL
- */
+ * @return node_t / NULL */
 static node_t *node_block_get(void)
 {
     for(int i = 0; i < ARRAY_SIZE(app_nodes); i++)
@@ -267,14 +263,13 @@ static node_t *node_block_get(void)
     return NULL;
 }
 
-/*********************************************************************
- * @fn      node_work_handler
+/* ***************************************************************************
+ * @fn node_work_handler
  *
- * @brief   node 任务到期执行，判断是否还有未配置完成的节点，调用节点配置函数
+ * @brief node The task expires and executes, determines whether there are still nodes that have not been configured, and calls the node configuration function
  *
- * @return  TRUE    继续执行配置节点
- *          FALSE   节点配置完成，停止任务
- */
+ * @return TRUE Continue to configure the node
+ * FALSE node configuration is completed, stop the task */
 static BOOL node_work_handler(void)
 {
     node_t *node;
@@ -289,7 +284,7 @@ static BOOL node_work_handler(void)
     if(node->retry_cnt-- == 0)
     {
         APP_DBG("Ran Out of Retransmit");
-        // 如果配置失败则删除节点
+        // If configuration fails, delete node
         bt_mesh_node_del_by_addr(node->node_addr);
         node = node_get(node->node_addr);
         node->stage.node = NODE_INIT;
@@ -317,13 +312,12 @@ unblock:
     return FALSE;
 }
 
-/*********************************************************************
- * @fn      node_init
+/* ***************************************************************************
+ * @fn node_init
  *
- * @brief   node 初始化
+ * @brief node initialization
  *
- * @return  none
- */
+ * @return none */
 static void node_init(void)
 {
     int i;
@@ -335,13 +329,12 @@ static void node_init(void)
     }
 }
 
-/*********************************************************************
- * @fn      free_node_get
+/* ***************************************************************************
+ * @fn free_node_get
  *
- * @brief   获取一个空的node
+ * @brief Get an empty node
  *
- * @return  node_t / NULL
- */
+ * @return node_t / NULL */
 static node_t *free_node_get(void)
 {
     for(int i = 0; i < ARRAY_SIZE(app_nodes); i++)
@@ -354,15 +347,14 @@ static node_t *free_node_get(void)
     return NULL;
 }
 
-/*********************************************************************
- * @fn      node_get
+/* ***************************************************************************
+ * @fn node_get
  *
- * @brief   获取匹配的node
+ * @brief Get matching node
  *
- * @param   node_addr   - node网络地址
+ * @param node_addr - node network address
  *
- * @return  node_t / NULL
- */
+ * @return node_t / NULL */
 static node_t *node_get(uint16_t node_addr)
 {
     for(int i = 0; i < ARRAY_SIZE(app_nodes); i++)
@@ -375,16 +367,15 @@ static node_t *node_get(uint16_t node_addr)
     return NULL;
 }
 
-/*********************************************************************
- * @fn      node_should_blocked
+/* ***************************************************************************
+ * @fn node_should_blocked
  *
- * @brief   判断此node配置流程是否阻塞
+ * @brief determines whether this node configuration process is blocking
  *
- * @param   node_addr   - node网络地址
+ * @param node_addr - node network address
  *
- * @return  TRUE    node未完成配置
- *          FALSE   node已经完成配置或不需要配置
- */
+ * @return TRUE node not completed configuration
+ * FALSE node has been configured or does not require configuration */
 static BOOL node_should_blocked(uint16_t node_addr)
 {
     for(int i = 0; i < ARRAY_SIZE(app_nodes); i++)
@@ -400,18 +391,17 @@ static BOOL node_should_blocked(uint16_t node_addr)
     return FALSE;
 }
 
-/*********************************************************************
- * @fn      node_cfg_process
+/* ***************************************************************************
+ * @fn node_cfg_process
  *
- * @brief   找一个空闲的节点，执行配置流程
+ * @brief Find an idle node and execute the configuration process
  *
- * @param   node        - 空节点指针
- * @param   net_idx     - 网络key编号
- * @param   addr        - 网络地址
- * @param   num_elem    - 元素数量
+ * @param node - empty node pointer
+ * @param net_idx - Network key number
+ * @param addr - Network address
+ * @param num_elem - Number of elements
  *
- * @return  node_t / NULL
- */
+ * @return node_t / NULL */
 static node_t *node_cfg_process(node_t *node, uint16_t net_idx, uint16_t addr, uint8_t num_elem)
 {
     if(!node)
@@ -436,48 +426,45 @@ static node_t *node_cfg_process(node_t *node, uint16_t net_idx, uint16_t addr, u
     return node;
 }
 
-/*********************************************************************
- * @fn      node_stage_set
+/* ***************************************************************************
+ * @fn node_stage_set
  *
- * @brief   设置远端node配置的下一个阶段
+ * @brief Set the next stage of remote node configuration
  *
- * @param   node        - 要配置的节点
- * @param   new_stage   - 下一个阶段
+ * @param node - the node to be configured
+ * @param new_stage - Next stage
  *
- * @return  none
- */
+ * @return none */
 static void node_stage_set(node_t *node, node_stage_t new_stage)
 {
     node->retry_cnt = 5;
     node->stage.node = new_stage;
 }
 
-/*********************************************************************
- * @fn      local_stage_set
+/* ***************************************************************************
+ * @fn local_stage_set
  *
- * @brief   设置本地node配置的下一个阶段（即配置自身）
+ * @brief Set the next stage of local node configuration (i.e., configure itself)
  *
- * @param   node        - 要配置的节点
- * @param   new_stage   - 下一个阶段
+ * @param node - the node to be configured
+ * @param new_stage - Next stage
  *
- * @return  none
- */
+ * @return none */
 static void local_stage_set(node_t *node, local_stage_t new_stage)
 {
     node->retry_cnt = 1;
     node->stage.local = new_stage;
 }
 
-/*********************************************************************
- * @fn      node_rsp
+/* ***************************************************************************
+ * @fn node_rsp
  *
- * @brief   每执行一个远端节点配置流程的回调，设置下一个配置阶段
+ * @brief Sets the next configuration stage for each callback of the remote node configuration process
  *
- * @param   p1      - 要配置的远端node
- * @param   p2      - 当前的状态
+ * @param p1 - The remote node to be configured
+ * @param p2 - Current status
  *
- * @return  none
- */
+ * @return none */
 static void node_rsp(void *p1, const void *p2)
 {
     node_t                 *node = p1;
@@ -503,16 +490,15 @@ static void node_rsp(void *p1, const void *p2)
     }
 }
 
-/*********************************************************************
- * @fn      local_rsp
+/* ***************************************************************************
+ * @fn local_rsp
  *
- * @brief   每执行一个本地节点配置流程的回调，设置下一个配置阶段
+ * @brief Sets the next configuration stage for each callback of the local node configuration process
  *
- * @param   p1      - 要配置的本地node
- * @param   p2      - 当前的状态
+ * @param p1 - local node to configure
+ * @param p2 - Current status
  *
- * @return  none
- */
+ * @return none */
 static void local_rsp(void *p1, const void *p2)
 {
     node_t                 *node = p1;
@@ -534,16 +520,15 @@ static void local_rsp(void *p1, const void *p2)
     }
 }
 
-/*********************************************************************
- * @fn      node_stage
+/* ***************************************************************************
+ * @fn node_stage
  *
- * @brief   远端节点配置，添加app key，并为自定义服务绑定app key，设置模型订阅
+ * @brief Configure remote nodes, add app key, bind app key for custom services, and set model subscription
  *
- * @param   p1      - 要配置的本地node
+ * @param p1 - local node to configure
  *
- * @return  TRUE    配置发送失败
- *          FALSE   配置发送正常
- */
+ * @return TRUE Configuration send failed
+ * FALSE configuration sends normally */
 static BOOL node_stage(void *p1)
 {
     int     err;
@@ -570,7 +555,7 @@ static BOOL node_stage(void *p1)
             }
             break;
 
-            // 设置模型订阅
+            // Set up a model subscription
         case NODE_MOD_SUB_SET:
             err = bt_mesh_cfg_mod_sub_add_vnd(node->net_idx, node->node_addr, node->node_addr, vendor_sub_addr, BLE_MESH_MODEL_ID_WCH_SRV, CID_WCH);
             if(err)
@@ -588,16 +573,15 @@ static BOOL node_stage(void *p1)
     return ret;
 }
 
-/*********************************************************************
- * @fn      local_stage
+/* ***************************************************************************
+ * @fn local_stage
  *
- * @brief   本地节点配置，添加app key，并为自定义客户端绑定app key
+ * @brief local node configuration, add app key, and bind app key for custom client
  *
- * @param   p1      - 要配置的本地node
+ * @param p1 - local node to configure
  *
- * @return  TRUE    配置发送失败
- *          FALSE   配置发送正常
- */
+ * @return TRUE Configuration send failed
+ * FALSE configuration sends normally */
 static BOOL local_stage(void *p1)
 {
     int     err;
@@ -642,18 +626,17 @@ static const cfg_cb_t local_cfg_cb = {
     local_stage,
 };
 
-/*********************************************************************
- * @fn      prov_complete
+/* ***************************************************************************
+ * @fn prov_complete
  *
- * @brief   配网完成回调，重新开始广播
+ * @brief The distribution network completes the callback and starts broadcasting again
  *
- * @param   net_idx     - 网络key的index
- * @param   addr        - link关闭原因网络地址
- * @param   flags       - 是否处于key refresh状态
- * @param   iv_index    - 当前网络iv的index
+ * @param net_idx - index of network key
+ * @param addr - link Close reason network address
+ * @param flags - Is it in key refresh state
+ * @param iv_index - index of the current network iv
  *
- * @return  none
- */
+ * @return none */
 static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32_t iv_index)
 {
     int     err;
@@ -678,7 +661,7 @@ static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32
         }
 
         node->cb = &local_cfg_cb;
-        // 判断当前是否已加载完成，如果还在加载中则说明上次运行已配置，直接认为已完成
+        // Determine whether the load has been completed. If it is still loading, it means that the last run was configured and it is directly considered to be completed.
         if( settings_load_over )
         {
             local_stage_set(node, LOCAL_APPKEY_ADD);
@@ -690,18 +673,17 @@ static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32
     }
 }
 
-/*********************************************************************
- * @fn      unprov_recv
+/* ***************************************************************************
+ * @fn unprov_recv
  *
- * @brief   收到未配网广播，发起配网
+ * @brief Received the unallocated network broadcast and initiated the distribution network
  *
- * @param   bearer      - 在PB_ADV/PB_GATT收到未配网广播
- * @param   uuid        - 未配网广播数据中包含的UUID，通过此数据判断设备信息
- * @param   oob_info    - 带外数据信息
- * @param   info        - 其他未配网信息
+ * @param bearer - Receive unallocated broadcast on PB_ADV/PB_GATT
+ * @param uuid - UUID included in the broadcast data of the unallocated network, and use this data to determine device information
+ * @param oob_info - Out-of-band data information
+ * @param info - Other unallocated network information
  *
- * @return  none
- */
+ * @return none */
 static void unprov_recv(bt_mesh_prov_bearer_t bearer,
                         const uint8_t uuid[16], bt_mesh_prov_oob_info_t oob_info,
                         const unprivison_info_t *info)
@@ -719,17 +701,16 @@ static void unprov_recv(bt_mesh_prov_bearer_t bearer,
     }
 }
 
-/*********************************************************************
- * @fn      node_added
+/* ***************************************************************************
+ * @fn node_added
  *
- * @brief   远端节点配网成功，添加到本地节点管理，并开始远端节点配置流程
+ * @brief The remote node distribution network is successful, added to local node management, and the remote node configuration process begins
  *
- * @param   net_idx     - 节点使用的网络key编号
- * @param   addr        - 节点的网络地址
- * @param   num_elem    - 节点包含的元素数量
+ * @param net_idx - The network key number used by the node
+ * @param addr - The network address of the node
+ * @param num_elem - The number of elements that a node contains
  *
- * @return  none
- */
+ * @return none */
 static void node_added(uint16_t net_idx, uint16_t addr, uint8_t num_elem)
 {
     node_t *node;
@@ -746,7 +727,7 @@ static void node_added(uint16_t net_idx, uint16_t addr, uint8_t num_elem)
         }
 
         node->cb = &node_cfg_cb;
-        // 判断当前是否已加载完成，如果还在加载中则说明上次运行已配置，直接认为已完成
+        // Determine whether the load has been completed. If it is still loading, it means that the last run was configured and it is directly considered to be completed.
         if( settings_load_over )
         {
             node_stage_set(node, NODE_APPKEY_ADD);
@@ -758,22 +739,21 @@ static void node_added(uint16_t net_idx, uint16_t addr, uint8_t num_elem)
     }
 }
 
-/*********************************************************************
- * @fn      cfg_cli_rsp_handler
+/* ***************************************************************************
+ * @fn cfg_cli_rsp_handler
  *
- * @brief   收到cfg命令的应答回调，此处例程只处理配置节点命令应答，
- *          如果超时则延迟1秒后再次执行配置节点流程
+ * @brief Received the answer callback from the cfg command. The routine here only handles the response of the configuration node command.
+ * If timeout, the node configuration process will be executed again after 1 second delay.
  *
- * @param   val     - 回调参数，包含命令类型和返回数据
+ * @param val - Callback parameter, containing command type and return data
  *
- * @return  none
- */
+ * @return none */
 static void cfg_cli_rsp_handler(const cfg_cli_status_t *val)
 {
     node_t *node;
     APP_DBG("");
 
-    // 通过协议栈删除节点的应答,由于有可能节点已被删除所以收不到应答，所以不管是否应答一律算成功。注意如果节点未在线则节点自身不会收到删除命令
+    // Delete the node's reply through the protocol stack. Since it is possible that the node has been deleted, the answer cannot be received, so it is considered successful regardless of whether the answer is answered or not. Note that if the node is not online, the node itself will not receive the delete command.
     if(val->cfgHdr.opcode == OP_NODE_RESET)
     {
         if(reset_node_addr != BLE_MESH_ADDR_UNASSIGNED)
@@ -807,33 +787,32 @@ end:
     tmos_start_task(App_TaskID, APP_NODE_EVT, K_SECONDS(1));
 }
 
-/*********************************************************************
- * @fn      vendor_model_cli_rsp_handler
+/* ***************************************************************************
+ * @fn vendor_model_cli_rsp_handler
  *
- * @brief   收到厂商模型数据的回调，
+ * @brief Received a callback from the manufacturer's model data.
  *
- * @param   val     - 回调参数，包含命令类型和返回数据内容，长度和来源地址
+ * @param val - Callback parameter, containing command type and return data content, length and source address
  *
- * @return  none
- */
+ * @return none */
 static void vendor_model_cli_rsp_handler(const vendor_model_cli_status_t *val)
 {
     if(val->vendor_model_cli_Hdr.status)
     {
-        // 有应答数据传输 超时未收到应答
+        // There is a response data transmission timeout no response was received
         APP_DBG("Timeout opcode 0x%02x", val->vendor_model_cli_Hdr.opcode);
         return;
     }
     if(val->vendor_model_cli_Hdr.opcode == OP_VENDOR_MESSAGE_TRANSPARENT_MSG)
     {
-        // 收到透传数据
+        // Transmission data received
         APP_DBG("trans len %d, data 0x%02x from 0x%04x", val->vendor_model_cli_Event.trans.len,
                 val->vendor_model_cli_Event.trans.pdata[0],
                 val->vendor_model_cli_Event.trans.addr);
         tmos_memcpy(&app_mesh_manage, val->vendor_model_cli_Event.trans.pdata, val->vendor_model_cli_Event.trans.len);
         switch(app_mesh_manage.data.buf[0])
         {
-            // 判断是否为应用层自定义删除命令应答
+            // Determine whether it is a custom delete command response to the application layer
             case CMD_DELETE_NODE_ACK:
             {
                 if(val->vendor_model_cli_Event.trans.len != DELETE_NODE_ACK_DATA_LEN)
@@ -855,14 +834,14 @@ static void vendor_model_cli_rsp_handler(const vendor_model_cli_status_t *val)
     }
     else if(val->vendor_model_cli_Hdr.opcode == OP_VENDOR_MESSAGE_TRANSPARENT_IND)
     {
-        // 收到indicate数据
+        // Received indicated data
         APP_DBG("ind len %d, data 0x%02x from 0x%04x", val->vendor_model_cli_Event.ind.len,
                 val->vendor_model_cli_Event.ind.pdata[0],
                 val->vendor_model_cli_Event.ind.addr);
     }
     else if(val->vendor_model_cli_Hdr.opcode == OP_VENDOR_MESSAGE_TRANSPARENT_WRT)
     {
-        // 收到write的应答
+        // Received a reply from write
     }
     else
     {
@@ -870,41 +849,39 @@ static void vendor_model_cli_rsp_handler(const vendor_model_cli_status_t *val)
     }
 }
 
-/*********************************************************************
- * @fn      vendor_model_cli_send
+/* ***************************************************************************
+ * @fn vendor_model_cli_send
  *
- * @brief   通过厂商自定义模型发送数据
+ * @brief send data through the manufacturer's custom model
  *
- * @param   addr    - 需要发送的目的地址
- *          pData   - 需要发送的数据指针
- *          len     - 需要发送的数据长度
+ * @param addr - The destination address to be sent
+ * pData - Data pointer to send
+ * len - length of data to be sent
  *
- * @return  参考Global_Error_Code
- */
+ * @return Reference Global_Error_Code */
 static int vendor_model_cli_send(uint16_t addr, uint8_t *pData, uint16_t len)
 {
     struct send_param param = {
-        .app_idx = self_prov_app_idx,     // 此消息使用的app key
-        .addr = addr,                     // 此消息发往的目的地地址，此处为第1个配网的节点
-        .trans_cnt = 0x01,                // 此消息的用户层发送次数
-        .period = K_MSEC(400),            // 此消息重传的间隔，建议不小于(200+50*TTL)ms，若数据较大则建议加长
-        .rand = (0),                      // 此消息发送的随机延迟
-        .tid = vendor_cli_tid_get(),      // tid，每个独立消息递增循环，cli使用0~127
-        .send_ttl = BLE_MESH_TTL_DEFAULT, // ttl，无特定则使用默认值
+        .app_idx = self_prov_app_idx,     // The app key used by this message
+        .addr = addr,                     // The destination address of this message is sent to, here is the node of the first distribution network
+        .trans_cnt = 0x01,                // The number of times this message is sent by the user layer
+        .period = K_MSEC(400),            // The interval for retransmission of this message is recommended to be no less than (200+50*TTL)ms. If the data is large, it is recommended to lengthen it.
+        .rand = (0),                      // Random delay of this message sending
+        .tid = vendor_cli_tid_get(),      // tid, each independent message increment loop, cli uses 0~127
+        .send_ttl = BLE_MESH_TTL_DEFAULT, // ttl, if there is no specific, use the default value
     };
-//    return vendor_message_cli_write(&param, pData, len);  // 调用自定义模型客户端的有应答写函数发送数据，默认超时2s
-    return vendor_message_cli_send_trans(&param, pData, len); // 或者调用自定义模型服务的透传函数发送数据，只发送，无应答机制
+// Return vendor_message_cli_write(&param, pData, len); // Call the reply write function of the custom model client to send data, the default timeout is 2s
+    return vendor_message_cli_send_trans(&param, pData, len); // Or call the custom model service's transparent transmission function to send data, only send, no response mechanism
 }
 
-/*********************************************************************
- * @fn      keyPress
+/* ***************************************************************************
+ * @fn keyPress
  *
- * @brief   按键回调
+ * @brief key callback
  *
- * @param   keys    - 按键类型
+ * @param keys - key type
  *
- * @return  none
- */
+ * @return none */
 void keyPress(uint8_t keys)
 {
     APP_DBG("%d", keys);
@@ -915,7 +892,7 @@ void keyPress(uint8_t keys)
         {
             if(0)
             {
-                // 发送数据
+                // Send data
                 if(app_nodes[1].node_addr)
                 {
                     uint8_t status;
@@ -930,14 +907,14 @@ void keyPress(uint8_t keys)
             }
             if(1)
             {
-                // 删除节点，可以通过协议栈写好的命令删除，也可以通过应用层自定协议删除
+                // Delete nodes can be deleted through commands written on the protocol stack, or through the application layer custom protocols.
                 if(app_nodes[1].node_addr)
                 {
                     uint8_t status;
                     APP_DBG("node1_addr %x", app_nodes[1].node_addr);
                     if(0)
                     {
-                        // 通过协议栈写好的命令删除
+                        // Delete the command written through the protocol stack
                         status = bt_mesh_cfg_node_reset(self_prov_net_idx, app_nodes[1].node_addr);
                         if(status)
                         {
@@ -950,7 +927,7 @@ void keyPress(uint8_t keys)
                     }
                     if(1)
                     {
-                        // 通过应用层自定协议删除
+                        // Delete via application layer custom protocol
                         app_mesh_manage.delete_node.cmd = CMD_DELETE_NODE;
                         app_mesh_manage.delete_node.addr[0] = app_nodes[1].node_addr&0xFF;
                         app_mesh_manage.delete_node.addr[1] = (app_nodes[1].node_addr>>8)&0xFF;
@@ -961,7 +938,7 @@ void keyPress(uint8_t keys)
                         }
                         else
                         {
-                            // 定时三秒，未收到应答就超时
+                            // Timed for three seconds, timeout without receiving a reply
                             tmos_start_task(App_TaskID, APP_DELETE_NODE_TIMEOUT_EVT, 4800);
                         }
                     }
@@ -972,15 +949,14 @@ void keyPress(uint8_t keys)
     }
 }
 
-/*********************************************************************
- * @fn      blemesh_on_sync
+/* ***************************************************************************
+ * @fn blemesh_on_sync
  *
- * @brief   同步mesh参数，启用对应功能，不建议修改
+ * @brief Synchronize mesh parameters, enable corresponding functions, and it is not recommended to modify them
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void blemesh_on_sync(void)
 {
     int        err;
@@ -1028,7 +1004,7 @@ void blemesh_on_sync(void)
 #endif /* PROXY || PB-GATT */
 
 #if(CONFIG_BLE_MESH_PROXY_CLI)
-    bt_mesh_proxy_client_init(cli); //待添加
+    bt_mesh_proxy_client_init(cli); // To be added
 #endif                              /* PROXY_CLI */
 
     bt_mesh_prov_retransmit_init();
@@ -1094,13 +1070,12 @@ void blemesh_on_sync(void)
     APP_DBG("Mesh initialized");
 }
 
-/*********************************************************************
- * @fn      App_Init
+/* ***************************************************************************
+ * @fn App_Init
  *
- * @brief   应用层初始化
+ * @brief Application layer initialization
  *
- * @return  none
- */
+ * @return none */
 void App_Init(void)
 {
     App_TaskID = TMOS_ProcessEventRegister(App_ProcessEvent);
@@ -1111,24 +1086,23 @@ void App_Init(void)
     HAL_KeyInit();
     HalKeyConfig(keyPress);
 
-    // 添加一个测试任务，定时向第一个配网的设备发送透传数据
+    // Add a test task to send transparent data to the first distribution network device regularly
     tmos_start_task(App_TaskID, APP_NODE_TEST_EVT, 4800);
 }
 
-/*********************************************************************
- * @fn      App_ProcessEvent
+/* ***************************************************************************
+ * @fn App_ProcessEvent
  *
- * @brief   应用层事件处理函数
+ * @brief application layer event handling function
  *
- * @param   task_id  - The TMOS assigned task ID.
- * @param   events - events to process.  This is a bit map and can
- *                   contain more than one event.
+ * @param task_id - The TMOS assigned task ID.
+ * @param events - events to process. This is a bit map and can
+ * contains more than one event.
  *
- * @return  events not processed
- */
+ * @return events not processed */
 static uint16_t App_ProcessEvent(uint8_t task_id, uint16_t events)
 {
-    // 节点配置任务事件处理
+    // Node configuration task event processing
     if(events & APP_NODE_EVT)
     {
         if(node_work_handler())
@@ -1137,7 +1111,7 @@ static uint16_t App_ProcessEvent(uint8_t task_id, uint16_t events)
             return (events ^ APP_NODE_EVT);
     }
 
-    // 测试任务事件处理
+    // Test task event handling
     if(events & APP_NODE_TEST_EVT)
     {
         if(app_nodes[1].node_addr)
@@ -1145,7 +1119,7 @@ static uint16_t App_ProcessEvent(uint8_t task_id, uint16_t events)
             uint8_t status;
             APP_DBG("app_nodes[1] ADDR %x", app_nodes[1].node_addr);
             uint8_t data[4] = {0, 1, 2, 3};
-            status = vendor_model_cli_send(app_nodes[1].node_addr, data, 4); // 调用自定义模型客户端的透传函数发送数据
+            status = vendor_model_cli_send(app_nodes[1].node_addr, data, 4); // Call the custom model client's transparent transmission function to send data
             if(status)
                 APP_DBG("trans failed %d", status);
         }
@@ -1155,7 +1129,7 @@ static uint16_t App_ProcessEvent(uint8_t task_id, uint16_t events)
 
     if(events & APP_DELETE_NODE_TIMEOUT_EVT)
     {
-        // 通过应用层自定协议删除超时，可添加其他流程
+        // Delete timeouts through the application layer custom protocol, and other processes can be added
         APP_DBG("Delete node failed ");
         return (events ^ APP_DELETE_NODE_TIMEOUT_EVT);
     }

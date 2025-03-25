@@ -1,19 +1,19 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : EXAM1.C
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2020/08/11
- * Description        : C语言的U盘创建长文件名文件例程
- * 支持: FAT12/FAT16/FAT32
- * 注意包含 CHRV3UFI.LIB/USBHOST.C/DEBUG.C
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: EXAM1.C
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2020/08/11
+ * Description: C language USB drive creation long file name routine
+ * Support: FAT12/FAT16/FAT32
+ * Note that CHRV3UFI.LIB/USBHOST.C/DEBUG.C is included
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
-/** 不使用U盘文件系统库，需要在工程属性预编译中修改 DISK_LIB_ENABLE=0        */
-/** U盘挂载USBhub下面，需要在工程属性预编译中修改 DISK_WITHOUT_USB_HUB=0  */
+/* * Do not use the U disk file system library, need to modify DISK_LIB_ENABLE=0 in precompilation of engineering properties. */
+/* * When the USB drive is mounted under USBhub, you need to modify DISK_WITHOUT_USB_HUB=0 in the precompilation of engineering properties. */
 
 #include "CH58x_common.h"
 #include "CHRV3UFI.H"
@@ -22,17 +22,17 @@ __attribute__((aligned(4))) uint8_t RxBuffer[MAX_PACKET_SIZE]; // IN, must even 
 __attribute__((aligned(4))) uint8_t TxBuffer[MAX_PACKET_SIZE]; // OUT, must even address
 
 typedef struct __attribute__((packed)) _LONG_NAME
-{                               //字节对齐
-    uint8_t  LDIR_Ord;          /*长文件名的组号，如果为0X40则表示最后一个组*/
-    uint16_t LDIR_Name1[5];     /*长文件名的前5个字节*/
-    uint8_t  LDIR_Attr;         /*属性必须为ATTR_LONG_NAME*/
-    uint8_t  LDIR_Type;         /* 为0表示长文件名的子项*/
-    uint8_t  LDIR_Chksum;       /*短文件名的校验和*/
-    uint16_t LDIR_Name2[6];     /*长文件名的6-11个字符*/
-    uint8_t  LDIR_FstClusLO[2]; /*为0*/
-    uint16_t LDIR_Name3[2];     /*长文件名的12-13各自。字符*/
+{                               // Byte Alignment
+    uint8_t  LDIR_Ord;          /* The group number of the long file name, if it is 0X40, it means the last group */
+    uint16_t LDIR_Name1[5];     /* The first 5 bytes of a long file name */
+    uint8_t  LDIR_Attr;         /* The attribute must be ATTR_LONG_NAME */
+    uint8_t  LDIR_Type;         /* A child with a long file name of 0 */
+    uint8_t  LDIR_Chksum;       /* Checksum of short file names */
+    uint16_t LDIR_Name2[6];     /* 6-11 characters of long file name */
+    uint8_t  LDIR_FstClusLO[2]; /* ä¸º0 */
+    uint16_t LDIR_Name3[2];     /* Long file names 12-13 are each. character */
 
-} F_LONG_NAME; /*定义长文件名*/
+} F_LONG_NAME; /* Define long file names */
 
 typedef F_LONG_NAME *P_LONG_NAME;
 
@@ -43,17 +43,16 @@ typedef F_LONG_NAME *P_LONG_NAME;
 uint8_t DATA_BASE_BUF0[DATA_BASE_BUF_LEN];
 uint8_t DATA_BASE_BUF1[DATA_BASE_BUF_LEN];
 
-uint16_t LongFileName[FILE_LONG_NAME]; /*长文件名空间只存储文件名不存路径*/
+uint16_t LongFileName[FILE_LONG_NAME]; /* Long file namespace only stores file names but not paths */
 
-/*********************************************************************
- * @fn      ChkSum
+/* ***************************************************************************
+ * @fn ChkSum
  *
- * @brief   计算短文件名的校验和
+ * @brief calculates the checksum of short file names
  *
- * @param   pDir1   - FAT数据区中文件目录信息
+ * @param pDir1 - File directory information in the FAT data area
  *
- * @return  校验和
- */
+ * @return Checksum */
 unsigned char ChkSum(PX_FAT_DIR_INFO pDir1)
 {
     unsigned char FcbNameLen;
@@ -67,17 +66,16 @@ unsigned char ChkSum(PX_FAT_DIR_INFO pDir1)
     return (Sum);
 }
 
-/*********************************************************************
- * @fn      mLDirCheck
+/* ***************************************************************************
+ * @fn mLDirCheck
  *
- * @brief   分析缓冲区的目录项和长文件名是否相同
+ * @brief analyzes whether the directory entry and long file names of the buffer are the same
  *
- * @param   pDir2   - FAT数据区中文件目录信息
- * @param   pLdir1  - 长文件名
+ * @param pDir2 - File directory information in the FAT data area
+ * @param pLdir1 - long file name
  *
- * @return  返回00-15为找到长文件名相同的文件00-15表示对应短文件名在目录项的位置,
- *          返回0X80-8F表示分析到目录项的结尾,以后都是未用的目录项,返回0FF表示此扇区无匹配的目录项
- */
+ * @return Return 00-15 is to find a file with the same long file name. 00-15 indicates the corresponding short file name in the directory entry.
+ * Return 0X80-8F to indicate that the analysis reaches the end of the directory item. After that, all directory items are unused. Return 0FF to indicate that there is no matching directory item in this sector. */
 uint8_t mLDirCheck(PX_FAT_DIR_INFO pDir2, F_LONG_NAME *pLdir1)
 {
     uint8_t      i, j, k, sum, nodir, nodir1;
@@ -89,49 +87,49 @@ uint8_t mLDirCheck(PX_FAT_DIR_INFO pDir2, F_LONG_NAME *pLdir1)
         {
             pDir2 += 1;
             continue;
-        } /*如果此项被删除继续分析下一目录*/ /*是被删除的文件名则跳过*/
+        } /* If this item is deleted, continue to analyze the next directory */ /* If the deleted file name is skipped */
         if(pDir2->DIR_Name[0] == 0x00)
         {
             return i | 0x80;
-        } /*分析到以下空间没有文件名存在退出*/
+        } /* Analysis: No file name exists in the following space. */
         if((pDir2->DIR_Attr == 0x0f) | (pDir2->DIR_Attr == 0x8))
         {
             pDir2 += 1;
             continue;
-        } /*如果找到的是卷标或者长文件名继续*/
-        /*找到一个短文件名*/
-        k = i - 1; /*长文件名项应在短文件名上面*/
+        } /* If the volume label or long file name is found, continue */
+        /* Find a short file name */
+        k = i - 1; /* The long file name should be on the short file name */
         if(i == 0)
-        {                    /*如果此短文件名在本扇区第一项*/
-            pLdir2 = pLdir1; /*长文件名应在上一扇区的最后一项*/
-            k = 15;          /*记录长文件名位置*/
-            pLdir2 += 15;    /*偏移到结尾*/
+        {                    /* If this short file name is in the first item in this sector */
+            pLdir2 = pLdir1; /* The long file name should be in the last item in the previous sector */
+            k = 15;          /* Record the location of the long file name */
+            pLdir2 += 15;    /* Offset to the end */
         }
         else
-            pLdir2 = (F_LONG_NAME *)(pDir2 - 1); /*取长文件名目录项*/
-        sum = ChkSum(pDir2);                     /*计算累加和*/
-        pLName = LongFileName;                   /*指项指定的长文件名*/
-        nodir = 0;                               /*初始化标志*/
+            pLdir2 = (F_LONG_NAME *)(pDir2 - 1); /* Take the long file name directory item */
+        sum = ChkSum(pDir2);                     /* Calculate the accumulated sum */
+        pLName = LongFileName;                   /* A long file name specified by the item */
+        nodir = 0;                               /* Initialize flags */
         nodir1 = 1;
         while(1)
         {
             if((pLdir2->LDIR_Ord != 0xe5) & (pLdir2->LDIR_Attr == ATTR_LONG_NAME) & (pLdir2->LDIR_Chksum == sum))
-            { /*找到一个长文件名*/
+            { /* Find a long file name */
                 for(j = 0; j != 5; j++)
                 {
                     if((pLdir2->LDIR_Name1[j] == 0x00) | (*pLName == 0))
-                        continue; /*分析到长文件名结尾*/
+                        continue; /* Analyze to the end of long filename */
                     if((pLdir2->LDIR_Name1[j] == 0xff) | (*pLName == 0))
-                        continue; /*分析到长文件名结尾*/
+                        continue; /* Analyze to the end of long filename */
                     if(pLdir2->LDIR_Name1[j] != *pLName)
-                    { /*不等则设置标志*/
+                    { /* Set flags if not */
                         nodir = 1;
                         break;
                     }
                     pLName++;
                 }
                 if(nodir == 1)
-                    break; /*文件名不同退出*/
+                    break; /* Exit with different file names */
                 for(j = 0; j != 6; j++)
                 {
                     if((pLdir2->LDIR_Name2[j] == 0x00) | (*pLName == 0))
@@ -146,7 +144,7 @@ uint8_t mLDirCheck(PX_FAT_DIR_INFO pDir2, F_LONG_NAME *pLdir1)
                     pLName++;
                 }
                 if(nodir == 1)
-                    break; /*文件名不同退出*/
+                    break; /* Exit with different file names */
                 for(j = 0; j != 2; j++)
                 {
                     if((pLdir2->LDIR_Name3[j] == 0x00) | (*pLName == 0))
@@ -161,15 +159,15 @@ uint8_t mLDirCheck(PX_FAT_DIR_INFO pDir2, F_LONG_NAME *pLdir1)
                     pLName++;
                 }
                 if(nodir == 1)
-                    break; /*文件名不同退出*/
+                    break; /* Exit with different file names */
                 if((pLdir2->LDIR_Ord & 0x40) == 0x40)
                 {
                     nodir1 = 0;
                     break;
-                } /*找到长文件名，并且比较结束*/
+                } /* Find the long file name and compare it to the end */
             }
             else
-                break; /*不是连续对应的长文件名退出*/
+                break; /* Exit without a continuous long file name */
             if(k == 0)
             {
                 pLdir2 = pLdir1;
@@ -183,69 +181,67 @@ uint8_t mLDirCheck(PX_FAT_DIR_INFO pDir2, F_LONG_NAME *pLdir1)
             }
         }
         if(nodir1 == 0)
-            return i; /*表示找到长文件名，返回短文件名在的目录项*/
+            return i; /* Indicates that the long file name is found, and returns the directory entry in which the short file name is located. */
         pDir2 += 1;
     }
-    return 0xff; /*指搜索完这一个扇区没找到响应的长文件名*/
+    return 0xff; /* Refers to the long file name that did not find the response after searching for this sector. */
 }
 
-/*********************************************************************
- * @fn      mChkName
+/* ***************************************************************************
+ * @fn mChkName
  *
- * @brief   检查上级子目录并打开
+ * @brief Check the previous subdirectory and open it
  *
- * @param   pJ      - 返回一组数据
+ * @param pJ - Return a set of data
  *
- * @return  状态
- */
+ * @return status */
 uint8_t mChkName(unsigned char *pJ)
 {
     uint8_t i, j;
     j = 0xFF;
     for(i = 0; i != sizeof(mCmdParam.Create.mPathName); i++)
-    { /* 检查目录路径 */
+    { /* Check directory path */
         if(mCmdParam.Create.mPathName[i] == 0)
             break;
         if(mCmdParam.Create.mPathName[i] == PATH_SEPAR_CHAR1 || mCmdParam.Create.mPathName[i] == PATH_SEPAR_CHAR2)
-            j = i; /* 记录上级目录 */
+            j = i; /* Record the previous directory */
     }
     i = ERR_SUCCESS;
     if((j == 0) || ((j == 2) && (mCmdParam.Create.mPathName[1] == ':')))
-    { /* 在根目录下创建 */
+    { /* Create in the root directory */
         mCmdParam.Open.mPathName[0] = '/';
         mCmdParam.Open.mPathName[1] = 0;
-        i = CHRV3FileOpen(); /*打开根目录*/
+        i = CHRV3FileOpen(); /* Open the root directory */
         if(i == ERR_OPEN_DIR)
-            i = ERR_SUCCESS; /* 成功打开上级目录 */
+            i = ERR_SUCCESS; /* Successfully opened the previous directory */
     }
     else
     {
         if(j != 0xFF)
-        { /* 对于绝对路径应该获取上级目录的起始簇号 */
+        { /* For the absolute path, the starting cluster number of the upper directory should be obtained. */
             mCmdParam.Create.mPathName[j] = 0;
-            i = CHRV3FileOpen(); /* 打开上级目录 */
+            i = CHRV3FileOpen(); /* Open the previous directory */
             if(i == ERR_SUCCESS)
-                i = ERR_MISS_DIR; /* 是文件而非目录 */
+                i = ERR_MISS_DIR; /* It's a file, not a directory */
             else if(i == ERR_OPEN_DIR)
-                i = ERR_SUCCESS;                              /* 成功打开上级目录 */
-            mCmdParam.Create.mPathName[j] = PATH_SEPAR_CHAR1; /* 恢复目录分隔符 */
+                i = ERR_SUCCESS;                              /* Successfully opened the previous directory */
+            mCmdParam.Create.mPathName[j] = PATH_SEPAR_CHAR1; /* Restore directory separator */
         }
     }
-    *pJ = j; /*指针中返回一组数据*/
+    *pJ = j; /* Return a set of data in the pointer */
     return i;
 }
 
-/*********************************************************************
- * @fn      CreatLongName
+/* ***************************************************************************
+ * @fn CreatLongName
  *
- * @brief   创建并打开文件的长文件名，在短文件名空间输入路径以及参考短文件名，在长文件名空间输入该文件长文件名的UNICODE代码
+ * @brief Create and open the long file name of the file, enter the path in the short file name space and reference the short file name, and enter the UNICODE code of the long file name of the file in the long file name space
  *
- * @return  返回00表示成功，并且在短文件名空间返回真实的短文件名，其他为不成功状态
- */
+ * @return Return 00 means success, and returns the real short file name in the short file namespace, others are unsuccessful */
 uint8_t CreatLongName()
 {
     uint8_t         ParData[MAX_PATH_LEN]; /**/
-    uint16_t        tempSec;               /*扇区偏移*/
+    uint16_t        tempSec;               /* Sector Offset */
     uint8_t         i, j, k, x, sum, y, z;
     P_LONG_NAME     pLDirName;
     PX_FAT_DIR_INFO pDirName, pDirName1;
@@ -257,18 +253,18 @@ uint8_t CreatLongName()
         ParData[k] = mCmdParam.Other.mBuffer[k];
     i = mChkName(&j);
     if(i == ERR_SUCCESS)
-    {             /* 成功获取上级目录的起始簇号 */
-        FBuf = 0; /*初始化*/
+    {             /* Successfully obtain the starting cluster number of the previous directory */
+        FBuf = 0; /* initialization */
         tempSec = 0;
-        DATA_BASE_BUF1[0] = 0xe5; /*无效上次缓冲区*/
+        DATA_BASE_BUF1[0] = 0xe5; /* Invalid last buffer */
         k = 0xff;
         while(1)
-        {                                                                                        /*下面是读取并分析目录项*/
-            pDirName = FBuf ? (PX_FAT_DIR_INFO)DATA_BASE_BUF1 : (PX_FAT_DIR_INFO)DATA_BASE_BUF0; /*短文件名指针指向缓冲区*/
+        {                                                                                        /* The following is to read and analyze the directory items */
+            pDirName = FBuf ? (PX_FAT_DIR_INFO)DATA_BASE_BUF1 : (PX_FAT_DIR_INFO)DATA_BASE_BUF0; /* Short file name pointer to buffer */
             pLDirName = FBuf ? (P_LONG_NAME)DATA_BASE_BUF0 : (P_LONG_NAME)DATA_BASE_BUF1;
-            mCmdParam.Read.mSectorCount = 1;                                     /*读取一扇区数据*/
-            mCmdParam.Read.mDataBuffer = FBuf ? DATA_BASE_BUF1 : DATA_BASE_BUF0; /*当前处理的文件缓冲区,这里使用双向缓冲区，去处理文件名*/
-            FBuf = !FBuf;                                                        /*缓冲区标志翻转*/
+            mCmdParam.Read.mSectorCount = 1;                                     /* Read a sector data */
+            mCmdParam.Read.mDataBuffer = FBuf ? DATA_BASE_BUF1 : DATA_BASE_BUF0; /* The file buffer currently processed, a two-way buffer is used here to process the file name. */
+            FBuf = !FBuf;                                                        /* Buffer flag flip */
             i = CHRV3FileRead();
             if(mCmdParam.Read.mSectorCount == 0)
             {
@@ -282,17 +278,17 @@ uint8_t CreatLongName()
             if(k != 0x0ff)
             {
                 break;
-            } /*找到文件或者找到文件结尾退出*/
+            } /* Find the file or find the end of the file to exit */
         }
         if(k < 16)
         {
-            pDirName += k; /*所找的文件短文件名在此目录项*/
+            pDirName += k; /* The file you are looking for is the short file name in this directory */
             if(j != 0xff)
             {
                 for(k = 0; k != j + 1; k++)
                     mCmdParam.Other.mBuffer[k] = ParData[k];
             }
-            pBuf1 = &mCmdParam.Other.mBuffer[j + 1]; /*取文件名的地址*/
+            pBuf1 = &mCmdParam.Other.mBuffer[j + 1]; /* Get the address of the file name */
             //else pBuf1=&mCmdParam.Other.mBuffer;
             for(i = 0; i != 8; i++)
             {
@@ -319,14 +315,14 @@ uint8_t CreatLongName()
                     pBuf1++;
                 }
 
-            } /*复制短文件名*/
+            } /* Copy the short file name */
             i = CHRV3FileClose();
-            i = CHRV3FileCreate(); /*疑惑这里要不要恢复到刚进入此函数时的簇号*/
+            i = CHRV3FileCreate(); /* I wonder if I should restore the cluster number when I first entered this function */
             PRINT("k<16\r\n");
-            return i; /*创建文件,返回状态*/
+            return i; /* Create a file and return to status */
         }
         else
-        { /*表示目录项枚举到结束位置，要创建文件*/
+        { /* Indicates that the directory entry enumeration is at the end and the file is to be created. */
             if(k == 0xff)
             {
                 z = 00;
@@ -334,9 +330,9 @@ uint8_t CreatLongName()
             }
             i = CHRV3FileClose();
             for(k = 0; k != MAX_PATH_LEN; k++)
-                mCmdParam.Other.mBuffer[k] = ParData[k]; /*试创建文件短文件名*/
+                mCmdParam.Other.mBuffer[k] = ParData[k]; /* Try to create a short file name */
             for(x = 0x31; x != 0x3a; x++)
-            { /*生成短文件名*/
+            { /* Generate short filenames */
                 for(y = 0x31; y != 0x3a; y++)
                 {
                     for(i = 0x31; i != 0x3a; i++)
@@ -353,47 +349,47 @@ uint8_t CreatLongName()
             }
             i = 0xff;
             goto XBB;
-        /*命名无法正确进行*/
+        /* The naming cannot be performed correctly */
         XAA1:
 
             i = CHRV3FileCreate();
             if(i != ERR_SUCCESS)
-                return i; //{goto XCC;}			/*出错则不能继续进行*/
+                return i; // {goto XCC;} /*If an error occurs, you cannot continue*/
             for(k = 0; k != MAX_PATH_LEN; k++)
-                ParData[k] = mCmdParam.Other.mBuffer[k]; /*试创建文件短文件名*/
+                ParData[k] = mCmdParam.Other.mBuffer[k]; /* Try to create a short file name */
             i = mChkName(&j);
             mCmdParam.Locate.mSectorOffset = tempSec - 1;
             i = CHRV3FileLocate();
             if(i != ERR_SUCCESS)
-                return i; //{goto XCC;}			/*出错则不能继续进行*/
+                return i; // {goto XCC;} /*If an error occurs, you cannot continue*/
             mCmdParam.Read.mSectorCount = 1;
             mCmdParam.Read.mDataBuffer = DATA_BASE_BUF0;
             pDirName = (PX_FAT_DIR_INFO)DATA_BASE_BUF0;
-            pDirName += z;       /*指向创建文件名的偏移*/
-            i = CHRV3FileRead(); /*读取一个扇区的数据，取第一个目录项就是刚才创建的短文件名*/
+            pDirName += z;       /* Offset to create filename */
+            i = CHRV3FileRead(); /* Read the data of a sector and take the first directory entry as the short file name you just created */
             if(i != ERR_SUCCESS)
-                return i; //{goto XCC;}				/*这里要做出错误处理*/
+                return i; // {goto XCC;} /*Error handling is required here*/
 
             for(i = 0; i != FILE_LONG_NAME; i++)
             {
                 if(LongFileName[i] == 00)
-                    break; /*计算长文件名的长度*/
+                    break; /* Calculate the length of a long file name */
             }
             for(k = i + 1; k != FILE_LONG_NAME; k++)
-            { /*将无效长目录处填充*/
+            { /* Fill in invalid long directory */
                 LongFileName[k] = 0xffff;
             }
-            k = i / 13; /*取长文件名组数*/
+            k = i / 13; /* Take the number of long file names and groups */
             i = i % 13;
             if(i != 0)
-                k = k + 1; /*有余数则算一组*/
+                k = k + 1; /* If there is a remainder, it will be calculated as a group */
             i = k;
-            k = i + z; /*z为短文件偏移,z-1为长文件偏移*/
+            k = i + z; /* z is short file offset, z-1 is long file offset */
             if(k < 16)
             {
                 pDirName1 = (PX_FAT_DIR_INFO)DATA_BASE_BUF0;
                 pDirName1 += k;
-                sum = ChkSum(pDirName1); /*计算累加和*/
+                sum = ChkSum(pDirName1); /* Calculate the accumulated sum */
                 pLDirName = (P_LONG_NAME)DATA_BASE_BUF0;
                 pLDirName += (k - 1);
             }
@@ -411,7 +407,7 @@ uint8_t CreatLongName()
                 pLDirName = (F_LONG_NAME *)DATA_BASE_BUF1;
                 pLDirName += (k - 1 - 16);
             }
-            /*复制短文件名,将短文件名复制到指定区域*/
+            /* Copy the short file name and copy the short file name to the specified area */
             pDirName1->DIR_NTRes = pDirName->DIR_NTRes;
             pDirName1->DIR_CrtTimeTenth = pDirName->DIR_CrtTimeTenth;
             pDirName1->DIR_CrtTime = pDirName->DIR_CrtTime;
@@ -435,8 +431,8 @@ uint8_t CreatLongName()
             pDirName1->DIR_Name[8] = pDirName->DIR_Name[8];
             pDirName1->DIR_Name[9] = pDirName->DIR_Name[9];
             pDirName1->DIR_Name[10] = pDirName->DIR_Name[10];
-            sum = ChkSum(pDirName1); /*计算累加和*/
-            pBuf = LongFileName;     /*指向长文件名空间*/
+            sum = ChkSum(pDirName1); /* Calculate the accumulated sum */
+            pBuf = LongFileName;     /* Point to long file namespace */
             y = 1;
             if(k > 16)
             {
@@ -584,14 +580,14 @@ uint8_t CreatLongName()
             CHRV3DirtyBuffer();
             i = CHRV3FileLocate();
             if(i != ERR_SUCCESS)
-                return i;                    /*出错则不能继续进行*/
-            mCmdParam.Read.mSectorCount = 1; /*下面重新*/
+                return i;                    /* If an error occurs, it cannot continue */
+            mCmdParam.Read.mSectorCount = 1; /* Next */
             mCmdParam.Read.mDataBuffer = DATA_BASE_BUF0;
             CHRV3DirtyBuffer();
-            i = CHRV3FileWrite(); /*读取下一个扇区的数据，取第一个目录项就是刚才创建的短文件名*/
+            i = CHRV3FileWrite(); /* Read the data of the next sector and take the first directory entry as the short file name you just created */
             CHRV3DirtyBuffer();
             if(i != ERR_SUCCESS)
-                return i;                      /*这里要做出错误处理*/
+                return i;                      /* Error handling is required here */
             pBuf = (uint16_t *)DATA_BASE_BUF1; /**/
             if(*pBuf != 0)
             {
@@ -600,12 +596,12 @@ uint8_t CreatLongName()
                 i = CHRV3FileWrite();
                 CHRV3DirtyBuffer();
             }
-            /*如果是在根目录下操作应关闭根目录*/
-            /*下面还要打开文件*/
+            /* If you are operating in the root directory, you should close the root directory */
+            /* The file needs to be opened below */
             i = CHRV3FileClose();
             for(k = 0; k != MAX_PATH_LEN; k++)
-                mCmdParam.Other.mBuffer[k] = ParData[k]; /*试创建文件短文件名*/
-            i = CHRV3FileOpen();                         /*打开创建的文件*/
+                mCmdParam.Other.mBuffer[k] = ParData[k]; /* Try to create a short file name */
+            i = CHRV3FileOpen();                         /* Open the created file */
             return i;
         }
     }
@@ -615,13 +611,12 @@ XBB:
 }
 }
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main()
 {
     uint8_t s, i;
@@ -639,33 +634,33 @@ int main()
     pHOST_RX_RAM_Addr = RxBuffer;
     pHOST_TX_RAM_Addr = TxBuffer;
     USB_HostInit();
-    CHRV3LibInit(); //初始化U盘程序库以支持U盘文件
+    CHRV3LibInit(); // Initialize the USB disk library to support USB disk files
 
     FoundNewDev = 0;
     while(1)
     {
         s = ERR_SUCCESS;
-        if(R8_USB_INT_FG & RB_UIF_DETECT) // 如果有USB主机检测中断则处理
+        if(R8_USB_INT_FG & RB_UIF_DETECT) // If there is a USB host detection interrupt, it will be handled
         {
-            R8_USB_INT_FG = RB_UIF_DETECT; // 清连接中断标志
-            s = AnalyzeRootHub();          // 分析ROOT-HUB状态
+            R8_USB_INT_FG = RB_UIF_DETECT; // Clear connection interrupt flag
+            s = AnalyzeRootHub();          // Analyze ROOT-HUB status
             if(s == ERR_USB_CONNECT)
                 FoundNewDev = 1;
         }
 
-        if(FoundNewDev || s == ERR_USB_CONNECT) // 有新的USB设备插入
+        if(FoundNewDev || s == ERR_USB_CONNECT) // There is a new USB device plugged in
         {
             FoundNewDev = 0;
-            mDelaymS(200);        // 由于USB设备刚插入尚未稳定,故等待USB设备数百毫秒,消除插拔抖动
-            s = InitRootDevice(); // 初始化USB设备
+            mDelaymS(200);        // Since the USB device has just been plugged in, it is not stable yet, so wait for the USB device to be hundreds of milliseconds to eliminate plug-in and unplug jitter
+            s = InitRootDevice(); // Initialize USB device
             if(s == ERR_SUCCESS)
             {
-                // U盘操作流程：USB总线复位、U盘连接、获取设备描述符和设置USB地址、可选的获取配置描述符，之后到达此处，由CHRV3子程序库继续完成后续工作
+                // USB drive operation process: USB bus reset, USB drive connection, obtain device descriptors and set USB address, optional obtain configuration descriptors, and then arrive here, and the CHRV3 subroutine library continues to complete the subsequent work.
                 CHRV3DiskStatus = DISK_USB_ADDR;
                 for(i = 0; i != 10; i++)
                 {
                     PRINT("Wait DiskReady\n");
-                    s = CHRV3DiskReady(); //等待U盘准备好
+                    s = CHRV3DiskReady(); // Wait for the USB drive to be ready
                     if(s == ERR_SUCCESS)
                     {
                         break;
@@ -679,11 +674,11 @@ int main()
 
                 if(CHRV3DiskStatus >= DISK_MOUNTED)
                 {
-                    //创建长文件名文件演示
+                    // Create a long file name file demonstration
                     PRINT("Create Long Name\n");
-                    strcpy((uint8_t *)mCmdParam.Create.mPathName, "/TCBD~1.CSV"); /* 新文件名,在根目录下,中文文件名 */
+                    strcpy((uint8_t *)mCmdParam.Create.mPathName, "/TCBD~1.CSV"); /* New file name, in the root directory, Chinese file name */
 
-                    LongFileName[0] = 0X0054; /*给出UNICODE的长文件名*/
+                    LongFileName[0] = 0X0054; /* Give UNICODE long file name */
                     LongFileName[1] = 0X0043; //TCBD_data_day.csv
                     LongFileName[2] = 0X0042;
                     LongFileName[3] = 0X0044;
@@ -702,7 +697,7 @@ int main()
                     LongFileName[16] = 0X0076;
                     LongFileName[17] = 0X0000;
 
-                    s = CreatLongName(); /*创建长文件名*/
+                    s = CreatLongName(); /* Create a long file name */
                     if(s != ERR_SUCCESS)
                         PRINT("Error: %02x\n", s);
                     else
@@ -710,7 +705,7 @@ int main()
                 }
             }
         }
-        mDelaymS(100);  // 模拟单片机做其它事
-        SetUsbSpeed(1); // 默认为全速
+        mDelaymS(100);  // Simulate a microcontroller to do other things
+        SetUsbSpeed(1); // Default is full speed
     }
 }

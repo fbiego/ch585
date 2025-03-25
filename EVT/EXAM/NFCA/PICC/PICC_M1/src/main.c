@@ -1,20 +1,20 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : main.c
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2024/07/22
- * Description        : NFC PCD Mifare Classic测试例程
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : main.c
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2024/07/22
+ * Description: NFC PCD Mifare Classic Test Routine
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+ ********************************************************************************************* */
 
 /******************************************************************************/
-/* 头文件包含 */
+/* The header file contains */
 #include "CH58x_common.h"
 #include "wch_nfca_picc_bsp.h"
 #include "wch_nfca_picc_m1.h"
 
-/* 每个文件单独debug打印的开关，置0可以禁止本文件内部打印 */
+/* Each file has a separate debug print switch, setting 0 can prohibit internal printing of this file. */
 #define DEBUG_PRINT_IN_THIS_FILE 1
 #if DEBUG_PRINT_IN_THIS_FILE
     #define PRINTF(...) PRINT(__VA_ARGS__)
@@ -26,13 +26,12 @@
  * GLOBAL TYPEDEFS
  */
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main(void)
 {
     UINT16 x;
@@ -48,7 +47,7 @@ int main(void)
     GPIOA_ModeCfg(GPIO_Pin_15, GPIO_ModeIN_PU);
     GPIOA_ModeCfg(GPIO_Pin_14, GPIO_ModeOut_PP_5mA);
     UART0_BaudRateCfg(115200);
-    R8_UART0_FCR = (2 << 6) | RB_FCR_TX_FIFO_CLR | RB_FCR_RX_FIFO_CLR | RB_FCR_FIFO_EN; // FIFO打开，触发点4字节
+    R8_UART0_FCR = (2 << 6) | RB_FCR_TX_FIFO_CLR | RB_FCR_RX_FIFO_CLR | RB_FCR_FIFO_EN; // FIFO is turned on, trigger point 4 bytes
     R8_UART0_LCR = RB_LCR_WORD_SZ;
     R8_UART0_IER = RB_IER_TXD_EN;
     R8_UART0_DIV = 1;

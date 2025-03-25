@@ -1,12 +1,12 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : central.h
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2018/11/12
- * Description        : 观察应用主函数及任务系统初始化
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : central.h
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2018/11/12
+ * Description: Observe the application main function and task system initialization
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #ifndef CENTRAL_H
 #define CENTRAL_H

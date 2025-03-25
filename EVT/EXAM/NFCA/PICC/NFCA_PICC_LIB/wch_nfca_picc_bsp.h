@@ -1,14 +1,14 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : wch_nfca_picc_bsp.h
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2024/10/29
- * Description        : nfc picc收发控制底层
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : wch_nfca_picc_bsp.h
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2024/10/29
+ * Description: nfc picc sending and receiving control underlying layer
+ ************************************************************************************************************
  * Copyright (c) 2023 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #ifndef _WCH_NFCA_PICC_BSP_H_
 #define _WCH_NFCA_PICC_BSP_H_

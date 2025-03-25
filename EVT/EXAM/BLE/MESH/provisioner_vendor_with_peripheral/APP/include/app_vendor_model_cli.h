@@ -34,9 +34,8 @@ extern "C" {
 #define VENDOR_MODEL_CLI_RSP_TIMEOUT_EVT     (1 << 1)
 #define VENDOR_MODEL_CLI_WRITE_EVT           (1 << 2)
 
-/**
- * @brief indicate 回调结构体
- */
+/* *
+ * @brief indicated callback structure */
 struct bt_mesh_vendor_model_ind
 {
     uint8_t *pdata;
@@ -44,9 +43,8 @@ struct bt_mesh_vendor_model_ind
     uint16_t addr;
 };
 
-/**
- * @brief trans 回调结构体
- */
+/* *
+ * @brief trans callback structure */
 struct bt_mesh_vendor_model_cli_trans
 {
     uint8_t *pdata;
@@ -83,9 +81,8 @@ typedef struct
 
 typedef void (*vendor_model_cli_rsp_handler_t)(const vendor_model_cli_status_t *val);
 
-/**
- * @brief 记录当前发送数据包的tid
- */
+/* *
+ * @brief record the tid of the currently sent packet */
 struct vendor_model_cli_tid
 {
     uint8_t trans_tid;
@@ -110,26 +107,24 @@ struct bt_mesh_vendor_model_cli
 extern const struct bt_mesh_model_op vnd_model_cli_op[];
 extern const struct bt_mesh_model_cb bt_mesh_vendor_model_cli_cb;
 
-/**
- * @brief   send_trans,透传数据通道
+/* *
+ * @brief send_trans,transparent data channel
  *
- * @param   param   - 发送参数.
- * @param   pData   - 数据指针.
- * @param   len     - 数据长度,最大为(APP_MAX_TX_SIZE).
+ * @param param - Send parameters.
+ * @param pData - Data pointer.
+ * @param len - Data length, maximum is (APP_MAX_TX_SIZE).
  *
- * @return  参考Global_Error_Code
- */
+ * @return Reference Global_Error_Code */
 int vendor_message_cli_send_trans(struct send_param *param, uint8_t *pData, uint16_t len);
 
-/**
- * @brief   write,有应答传输数据通道
+/* *
+ * @brief write, there is a reply transmission data channel
  *
- * @param   param   - 发送参数.
- * @param   pData   - 数据指针.
- * @param   len     - 数据长度,最大为(APP_MAX_TX_SIZE).
+ * @param param - Send parameters.
+ * @param pData - Data pointer.
+ * @param len - Data length, maximum is (APP_MAX_TX_SIZE).
  *
- * @return  参考Global_Error_Code
- */
+ * @return Reference Global_Error_Code */
 int vendor_message_cli_write(struct send_param *param, uint8_t *pData, uint16_t len);
 
 /**
@@ -139,18 +134,16 @@ int vendor_message_cli_write(struct send_param *param, uint8_t *pData, uint16_t 
  */
 uint8_t vendor_cli_tid_get(void);
 
-/**
- * @brief   复位厂商模型服务，取消所有正在发送的流程
- */
+/* *
+ * @brief Reset the vendor model service and cancel all sending processes */
 void vendor_message_cli_trans_reset(void);
 
-/**
- * @brief   厂商模型初始化
+/* *
+ * @brief vendor model initialization
  *
- * @param   model       - 指向厂商模型结构体
+ * @param model - Point to the manufacturer model structure
  *
- * @return  always SUCCESS
- */
+ * @return always SUCCESS */
 int vendor_model_cli_init(struct bt_mesh_model *model);
 
 

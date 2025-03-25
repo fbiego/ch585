@@ -11,7 +11,7 @@
 #include "wch_nfca_picc.h"
 #include "wch_nfca_crypto1.h"
 
-/* 每个文件单独debug打印的开关，置0可以禁止本文件内部打印 */
+/* Each file has a separate debug print switch, setting 0 can prohibit internal printing of this file. */
 #define DEBUG_PRINT_IN_THIS_FILE 0
 #if DEBUG_PRINT_IN_THIS_FILE
     #define PRINTF(...) PRINT(__VA_ARGS__)
@@ -19,9 +19,7 @@
     #define PRINTF(...) do {} while (0)
 #endif
 
-/*
- * Mifare Classic卡片命令字
-*/
+/* * Mifare Classic card command word */
 #define PICC_REQIDL                 0x26           
 #define PICC_REQALL                 0x52           
 #define PICC_ANTICOLL1              0x93           
@@ -121,13 +119,13 @@ static const uint8_t abTrailerAccessConditions[8][2] = {
     },
 };
 
-/* 回调函数会在中断里调用，所以需要注意和外部程序的线程安全代码处理*/
+/* The callback function will be called in the interrupt, so you need to pay attention to the thread-safe code processing of external programs. */
 static nfca_picc_cb_t gs_nfca_picc_cb_m1 =
 {
     .online = nfca_picc_m1_online,
     .data_handler = nfca_picc_m1_data_handler,
     .offline = nfca_picc_m1_offline,
-};   /* M1卡数据处理回调 */
+};   /* M1 card data processing callback */
 
 __attribute__((always_inline)) RV_STATIC_INLINE uint8_t get_access_condition(uint8_t block)
 {
@@ -530,7 +528,7 @@ void nfca_picc_m1_enable(uint8_t *uid)
     g_nfca_picc_m1_data.manufacturer_data.atqa[0] = 0x04;
     g_nfca_picc_m1_data.manufacturer_data.atqa[1] = 0;
 
-    /* 默认的数据 */
+    /* Default data */
     __MCPY((void *)g_nfca_picc_m1_data.blocks[1], (void *)block_data1, (void *)((uint32_t)block_data1 + 16));
     __MCPY((void *)g_nfca_picc_m1_data.blocks[2], (void *)block_data1, (void *)((uint32_t)block_data1 + 16));
     __MCPY((void *)g_nfca_picc_m1_data.blocks[3], (void *)sector_trailer, (void *)((uint32_t)sector_trailer + 16));

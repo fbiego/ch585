@@ -1,18 +1,18 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : Main.c
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2021/03/09
- * Description        : adc采样示例，包括温度检测、单通道检测、差分通道检测、TouchKey检测、中断方式采样、扫描功能。
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: Main.c
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2021/03/09
+ * Description: Adc sampling examples, including temperature detection, single channel detection, differential channel detection, TouchKey detection, interrupt method sampling, and scanning functions.
+ ************************************************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #include "CH58x_common.h"
 
-/* 注意当使用ADC扫描功能时，例程默认打印脚由PA14更改为PB7*/
+/* Note that when using the ADC scanning function, the default print pin of the routine is changed from PA14 to PB7. */
 #define ADC_SCAN_MODE_EXAM      0
 #define ADC_SCAN_CH_NUM            14
 
@@ -56,16 +56,15 @@ volatile uint8_t adclen;
 volatile uint8_t DMA_end = 0;
 
 
-/* 在应用上需要测量高精度的绝对值时，建议使用差分模式， 一端接地  */
+/* When it is necessary to measure the absolute value of high accuracy in applications, it is recommended to use differential mode, with one end grounded */
 
 
-/*********************************************************************
- * @fn      DebugInit
+/* ***************************************************************************
+ * @fn DebugInit
  *
- * @brief   调试初始化
+ * @brief debug initialization
  *
- * @return  none
- */
+ * @return none */
 void DebugInit(void)
 {
 #if(!ADC_SCAN_MODE_EXAM)
@@ -82,38 +81,37 @@ void DebugInit(void)
 #endif
 }
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main()
 {
 
     uint8_t      i;
-    signed short RoughCalib_Value = 0; // ADC粗调偏差值
+    signed short RoughCalib_Value = 0; // ADC coarse adjustment deviation value
     uint32_t temp = 0;
     uint8_t adcchidx = 0;
 
     HSECFG_Capacitance(HSECap_18p);
     SetSysClock(CLK_SOURCE_HSE_PLL_62_4MHz);
 
-    /* 配置串口调试 */
+    /* Configure serial debugging */
     DebugInit();
     PRINT("Start @ChipID=%02X\n", R8_CHIP_ID);
 
 #if(!ADC_SCAN_MODE_EXAM)
 
-    /* 温度采样并输出 */
+    /* Temperature sampling and output */
     PRINT("\n1.Temperature sampling...\n");
     ADC_InterTSSampInit();
 
-    ADC_ExcutSingleConver();//时间足够时建议再次转换并丢弃首次ADC数据
+    ADC_ExcutSingleConver();// When time is enough, it is recommended to convert and discard the first ADC data again.
     for(i = 0; i < 20; i++)
     {
-        adcBuff[i] = ADC_ExcutSingleConver(); // 连续采样20次
+        adcBuff[i] = ADC_ExcutSingleConver(); // Sampling 20 times in a row
     }
     for(i = 0; i < 20; i++)
     {
@@ -122,34 +120,34 @@ int main()
         PRINT("%d %d %d \n", adc_to_temperature_celsius(adcBuff[i]),adcBuff[i],C25);
     }
 
-    /* 单通道采样：选择adc通道0做采样，对应 PA4引脚， 带数据校准功能 */
+    /* Single channel sampling: select adc channel 0 for sampling, corresponding to PA4 pin, with data calibration function */
     PRINT("\n2.Single channel sampling...\n");
     GPIOA_ModeCfg(GPIO_Pin_4, GPIO_ModeIN_Floating);
-    // 采样率最高8M
+    // The highest sampling rate is 8M
     ADC_ExtSingleChSampInit(SampleFreq_8_or_4, ADC_PGA_0);
 
-    RoughCalib_Value = ADC_DataCalib_Rough(); // 用于计算ADC内部偏差，记录到全局变量 RoughCalib_Value中
+    RoughCalib_Value = ADC_DataCalib_Rough(); // Used to calculate the internal deviation of the ADC and record it in the global variable RoughCalib_Value
     PRINT("RoughCalib_Value =%d \n", RoughCalib_Value);
 
     ADC_ChannelCfg(0);
-    ADC_ExcutSingleConver();//时间足够时建议再次转换并丢弃首次ADC数据
+    ADC_ExcutSingleConver();// When time is enough, it is recommended to convert and discard the first ADC data again.
 
     for(i = 0; i < 20; i++)
     {
-        adcBuff[i] = ADC_ExcutSingleConver() + RoughCalib_Value; // 连续采样20次
+        adcBuff[i] = ADC_ExcutSingleConver() + RoughCalib_Value; // Sampling 20 times in a row
     }
     for(i = 0; i < 20; i++)
     {
-        PRINT("%d \n", adcBuff[i]); // 注意：由于ADC内部偏差的存在，当采样电压在所选增益范围极限附近的时候，可能会出现数据溢出的现象
+        PRINT("%d \n", adcBuff[i]); // Note: Due to the existence of internal deviation of ADC, data overflow may occur when the sampling voltage is near the selected gain range limit.
     }
 
-    /* DMA单通道采样：选择adc通道0做采样，对应 PA4引脚 */
+    /* DMA single channel sampling: select adc channel 0 for sampling, corresponding to PA4 pin */
     PRINT("\n3.Single channel DMA sampling...\n");
     GPIOA_ModeCfg(GPIO_Pin_4, GPIO_ModeIN_Floating);
     ADC_ExtSingleChSampInit(SampleFreq_8_or_4, ADC_PGA_0);
     ADC_ChannelCfg(0);
-    ADC_ExcutSingleConver();//时间足够时建议再次转换并丢弃首次ADC数据
-    ADC_AutoConverCycle(192); // 采样周期为 (256-192)*16个系统时钟
+    ADC_ExcutSingleConver();// When time is enough, it is recommended to convert and discard the first ADC data again.
+    ADC_AutoConverCycle(192); // The sampling period is (256-192)*16 system clocks
     ADC_DMACfg(ENABLE, (uint32_t)&adcBuff[0], (uint32_t)&adcBuff[40], ADC_Mode_Single);
     PFIC_EnableIRQ(ADC_IRQn);
     ADC_StartAutoDMA();
@@ -162,22 +160,22 @@ int main()
         PRINT("%d \n", adcBuff[i]);
     }
 
-    /* 差分通道采样：选择adc通道0做采样，对应 PA4(AIN0)、PA12(AIN2) */
+    /* Differential channel sampling: select adc channel 0 for sampling, corresponding to PA4 (AIN0), PA12 (AIN2) */
     PRINT("\n4.Diff channel sampling...\n");
     GPIOA_ModeCfg(GPIO_Pin_4 | GPIO_Pin_12, GPIO_ModeIN_Floating);
     ADC_ExtDiffChSampInit(SampleFreq_8_or_4, ADC_PGA_0);
     ADC_ChannelCfg(0);
-    ADC_ExcutSingleConver();//时间足够时建议再次转换并丢弃首次ADC数据
+    ADC_ExcutSingleConver();// When time is enough, it is recommended to convert and discard the first ADC data again.
     for(i = 0; i < 20; i++)
     {
-        adcBuff[i] = ADC_ExcutSingleConver(); // 连续采样20次
+        adcBuff[i] = ADC_ExcutSingleConver(); // Sampling 20 times in a row
     }
     for(i = 0; i < 20; i++)
     {
         PRINT("%d \n", adcBuff[i]);
     }
 
-    /* TouchKey采样：选择adc通道 2 做采样，对应 PA12 */
+    /* TouchKey sampling: select adc channel 2 for sampling, corresponding to PA12 */
     PRINT("\n5.TouchKey sampling...\n");
     GPIOA_ModeCfg(GPIO_Pin_12, GPIO_ModeIN_Floating);
     TouchKey_ChSampInit();
@@ -185,19 +183,19 @@ int main()
 
     for(i = 0; i < 20; i++)
     {
-        adcBuff[i] = TouchKey_ExcutSingleConver(0x10, 0); // 连续采样20次
+        adcBuff[i] = TouchKey_ExcutSingleConver(0x10, 0); // Sampling 20 times in a row
     }
     for(i = 0; i < 20; i++)
     {
         PRINT("%d \n", adcBuff[i]);
     }
 
-    /* 单通道采样：中断方式,选择adc通道1做采样，对应 PA5引脚， 不带数据校准功能 */
+    /* Single channel sampling: interrupt mode, select adc channel 1 for sampling, corresponding to PA5 pin, without data calibration function */
     PRINT("\n6.Single channel sampling in interrupt mode...\n");
     GPIOA_ModeCfg(GPIO_Pin_5, GPIO_ModeIN_Floating);
     ADC_ExtSingleChSampInit(SampleFreq_8_or_4, ADC_PGA_0);
     ADC_ChannelCfg(1);
-    ADC_ExcutSingleConver();//时间足够时建议再次转换并丢弃首次ADC数据
+    ADC_ExcutSingleConver();// When time is enough, it is recommended to convert and discard the first ADC data again.
     adclen = 0;
     ADC_ClearITFlag();
     PFIC_EnableIRQ(ADC_IRQn);
@@ -227,8 +225,8 @@ int main()
                       ADC_PIN[adc_ch_seq[13]],
                   GPIO_ModeIN_Floating);
 
-    ADC_ExtSingleChSampInit(SampleFreq_4_or_2, ADC_PGA_0);     //4M采样频率，0dB增益
-    R8_ADC_CONVERT |= RB_ADC_SAMPLE_TIME;                      //7个采样周期
+    ADC_ExtSingleChSampInit(SampleFreq_4_or_2, ADC_PGA_0);     // 4M sampling frequency, 0dB gain
+    R8_ADC_CONVERT |= RB_ADC_SAMPLE_TIME;                      // 7 sampling cycles
     ADC_ChannelCfg(adc_ch_seq[0]);
 
     temp = (adc_ch_seq[1] << ADC_SCAN1_CH_IDX_1) |
@@ -272,16 +270,15 @@ int main()
 #endif
 }
 
-/*********************************************************************
- * @fn      ADC_IRQHandler
+/* ***************************************************************************
+ * @fn ADC_IRQHandler
  *
- * @brief   ADC中断函数
+ * @brief ADC interrupt function
  *
- * @return  none
- */
+ * @return none */
 __INTERRUPT
 __HIGH_CODE
-void ADC_IRQHandler(void) //adc中断服务程序
+void ADC_IRQHandler(void) // adc interrupt service program
 {
 #if(!ADC_SCAN_MODE_EXAM)
     if(ADC_GetDMAStatus())
@@ -297,7 +294,7 @@ void ADC_IRQHandler(void) //adc中断服务程序
         if(adclen < 20)
         {
             adcBuff[adclen] = ADC_ReadConverValue();
-            ADC_StartUp(); // 作用清除中断标志并开启新一轮采样
+            ADC_StartUp(); // Use to clear the interrupt flag and start a new round of sampling
         }
         adclen++;
     }

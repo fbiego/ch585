@@ -1,18 +1,18 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : wch_nfca_pcd_bsp.c
- * Author             : WCH
- * Version            : V1.1
- * Date               : 2024/11/14
- * Description        : NFC-A PCD BSP底层接口
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name: wch_nfca_pcd_bsp.c
+ * Author: WCH
+ * Version: V1.1
+ * Date: 2024/11/14
+ * Description: NFC-A PCD BSP underlying interface
+ ************************************************************************************************************
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #include "wch_nfca_pcd_bsp.h"
 
-/* 每个文件单独debug打印的开关，置0可以禁止本文件内部打印 */
+/* Each file has a separate debug print switch, setting 0 can prohibit internal printing of this file. */
 #define DEBUG_PRINT_IN_THIS_FILE 1
 #if DEBUG_PRINT_IN_THIS_FILE
 #define PRINTF(...) PRINT(__VA_ARGS__)
@@ -41,13 +41,13 @@ void nfca_pcd_ctr_init(void)
 
 __always_inline static inline void nfca_pcd_ctr_on(void)
 {
-    /* 输出使能，输出低，不可输出高，天线峰峰值分压3分之一 */
+    /* Output enable, output is low, output cannot be high, antenna peak-to-peak voltage divided by one third */
     R32_PA_DIR |= (GPIO_Pin_7);
 }
 
 __always_inline static inline void nfca_pcd_ctr_off(void)
 {
-    /* 输出禁止，模拟输入，天线峰峰值几乎不分压 */
+    /* Output is disabled, analog input, antenna peak-to-peak value is almost indistinguishable */
     R32_PA_DIR &= ~(GPIO_Pin_7);
 }
 
@@ -55,7 +55,7 @@ void nfca_pcd_ctr_handle(void)
 {
     if(nfca_pcd_get_lp_status())
     {
-        /* 峰峰值过低 */
+        /* Peak-to-peak value is too low */
         PRINTF("LP\n");
         nfca_pcd_ctr_off();
     }
@@ -67,27 +67,26 @@ void nfca_pcd_ctr_handle(void)
 
 #endif
 
-/*********************************************************************
- * @fn      nfca_pcd_init
+/* ***************************************************************************
+ * @fn nfca_pcd_init
  *
- * @brief   nfc-a pcd读卡器初始化
+ * @brief nfc-a pcd card reader initialization
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void nfca_pcd_init(void)
 {
     nfca_pcd_config_t cfg;
 
-    /* NFC引脚初始化为模拟输入模式 */
+    /* NFC pin is initialized to analog input mode */
     GPIOB_ModeCfg(GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_16 | GPIO_Pin_17, GPIO_ModeIN_Floating);
 
-    /* 关闭GPIO数字输入功能 */
-    R32_PIN_IN_DIS |= ((GPIO_Pin_8 | GPIO_Pin_9) << 16);        /* 关闭GPIOB中GPIO_Pin_8和GPIO_Pin_9的数字输入功能 */
-    R16_PIN_CONFIG |= ((GPIO_Pin_16 | GPIO_Pin_17) >> 8);       /* 关闭GPIOB中GPIO_Pin_16和GPIO_Pin_17的数字输入功能 */
+    /* Turn off GPIO digital input function */
+    R32_PIN_IN_DIS |= ((GPIO_Pin_8 | GPIO_Pin_9) << 16);        /* Turn off the digital input functions of GPIO_Pin_8 and GPIO_Pin_9 in GPIOB */
+    R16_PIN_CONFIG |= ((GPIO_Pin_16 | GPIO_Pin_17) >> 8);       /* Turn off the digital input functions of GPIO_Pin_16 and GPIO_Pin_17 in GPIOB */
 
-    /* CH584F和CH585F内部PA9和PB9短接，需要将PA9也设置为模拟输入并关闭数字功能，M封装注释下面的两句代码，F封装取消注释 */
+    /* CH584F and CH585F are shorted internally, and PA9 needs to be set to analog input and turn off the digital function. M package comments the following two sentences of code, F package cancels the annotation */
 //    GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeIN_Floating);
 //    R32_PIN_IN_DIS |= GPIO_Pin_9;
 
@@ -103,7 +102,7 @@ void nfca_pcd_init(void)
     cfg.parity_buf = g_nfca_pcd_parity_buf;
     cfg.parity_buf_size = NFCA_PCD_MAX_PARITY_NUM;
 
-    /* 将数据区指针传入给NFC库内BUFFER指针 */
+    /* Pass the data area pointer to the BUFFER pointer in the NFC library */
     nfca_pcd_lib_init(&cfg);
 
 #if NFCA_PCD_USE_NFC_CTR_PIN
@@ -112,15 +111,14 @@ void nfca_pcd_init(void)
 
 }
 
-/*********************************************************************
- * @fn      nfca_pcd_start
+/* ***************************************************************************
+ * @fn nfca_pcd_start
  *
- * @brief   nfc-a pcd读卡器功能开始运行
+ * @brief nfc-a pcd card reader function starts running
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 void nfca_pcd_start(void)
 {
@@ -132,15 +130,14 @@ void nfca_pcd_start(void)
     PFIC_EnableIRQ(NFC_IRQn);
 }
 
-/*********************************************************************
- * @fn      nfca_pcd_stop
+/* ***************************************************************************
+ * @fn nfca_pcd_stop
  *
- * @brief   nfc-a pcd读卡器功能停止运行
+ * @brief nfc-a pcd reader function stops running
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 __HIGH_CODE
 void nfca_pcd_stop(void)
 {
@@ -148,15 +145,14 @@ void nfca_pcd_stop(void)
     PFIC_DisableIRQ(NFC_IRQn);
 }
 
-/*********************************************************************
- * @fn      nfca_pcd_wait_communicate_end
+/* ***************************************************************************
+ * @fn nfca_pcd_wait_communicate_end
  *
- * @brief   nfc-a pcd读卡器等待通讯结束
+ * @brief nfc-a pcd card reader waiting for communication to end
  *
- * @param   none
+ * @param none
  *
- * @return  nfca_pcd_controller_state_t 通讯状态
- */
+ * @return nfca_pcd_controller_state_t Communication status */
 nfca_pcd_controller_state_t nfca_pcd_wait_communicate_end(void)
 {
     nfca_pcd_controller_state_t status;
@@ -164,7 +160,7 @@ nfca_pcd_controller_state_t nfca_pcd_wait_communicate_end(void)
 
     overtimes = 0;
 
-    /* 可以在蓝牙任务中改写该函数，用任务查询结束状态，示例为死等 */
+    /* This function can be rewrite in a Bluetooth task, query the end status with the task, the example is dead, etc. */
     while (1)
     {
         status = nfca_pcd_get_communicate_status();
@@ -175,7 +171,7 @@ nfca_pcd_controller_state_t nfca_pcd_wait_communicate_end(void)
 
         if (overtimes > (NFCA_PCD_WAIT_MAX_MS * 10))
         {
-            /* 软件超时时间， */
+            /* Software timeout time, */
             break;
         }
 
@@ -189,31 +185,29 @@ nfca_pcd_controller_state_t nfca_pcd_wait_communicate_end(void)
     return status;
 }
 
-/*********************************************************************
- * @fn      nfca_pcd_rand
+/* ***************************************************************************
+ * @fn nfca_pcd_rand
  *
- * @brief   nfc-a pcd读卡器随机数生成函数
+ * @brief nfc-a pcd reader random number generation function
  *
- * @param   none
+ * @param none
  *
- * @return  nfca_pcd_controller_state_t 通讯状态
- */
+ * @return nfca_pcd_controller_state_t Communication status */
 uint32_t nfca_pcd_rand(void)
 {
-    /* 需要自行实现产生随机数的回调 */
-    /* 和蓝牙一起使用时可以使用返回tmos_rand() */
+    /* Need to implement a callback that generates random numbers by yourself */
+    /* When used with Bluetooth, you can use tmos_rand() to return */
     return 0;
 }
 
-/*********************************************************************
- * @fn      nfca_adc_get_ant_signal
+/* ***************************************************************************
+ * @fn nfca_adc_get_ant_signal
  *
- * @brief   nfca 检测天线信号强度
+ * @brief nfca Detect antenna signal strength
  *
- * @param   none
+ * @param none
  *
- * @return  检测的ADC值
- */
+ * @return Detected ADC value */
 __HIGH_CODE
 uint16_t nfca_adc_get_ant_signal(void)
 {
@@ -228,9 +222,9 @@ uint16_t nfca_adc_get_ant_signal(void)
 
     R8_TKEY_CFG &= ~RB_TKEY_PWR_ON;
     R8_ADC_CHANNEL = CH_INTE_NFC;
-    R8_ADC_CFG = RB_ADC_POWER_ON | RB_ADC_BUF_EN | (SampleFreq_8_or_4 << 6) | (ADC_PGA_1_4 << 4);   /* -12DB采样 ADC_PGA_1_4*/
+    R8_ADC_CFG = RB_ADC_POWER_ON | RB_ADC_BUF_EN | (SampleFreq_8_or_4 << 6) | (ADC_PGA_1_4 << 4);   /* -12DB sampling ADC_PGA_1_4 */
     R8_ADC_CONVERT &= ~RB_ADC_PGA_GAIN2;
-    R8_ADC_CONVERT &= ~(3 << 4);  /* 4个Tadc */
+    R8_ADC_CONVERT &= ~(3 << 4);  /* 4ä¸ªTadc */
 
     adc_data_all = 0;
 
@@ -250,15 +244,14 @@ uint16_t nfca_adc_get_ant_signal(void)
     return (adc_data);
 }
 
-/*********************************************************************
- * @fn      nfca_pcd_lpcd_calibration
+/* ***************************************************************************
+ * @fn nfca_pcd_lpcd_calibration
  *
- * @brief   nfca pcd低功耗检卡校准
+ * @brief nfca pcd low power card calibration
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void nfca_pcd_lpcd_calibration(void)
 {
     uint8_t  sensor, channel, config, tkey_cfg;
@@ -266,25 +259,25 @@ void nfca_pcd_lpcd_calibration(void)
     uint16_t adc_max, adc_min, adc_value;
     uint8_t i;
 
-    /* 中值滤波 */
+    /* Median filtering */
     adc_all = 0;
     adc_max = 0;
     adc_min = 0xffff;
 
     nfca_pcd_start();
-    mDelayuS(200);      /* 内部信号建立需要200us才趋于稳定 */
+    mDelayuS(200);      /* Internal signal establishment takes 200us to stabilize */
 
     tkey_cfg = R8_TKEY_CFG;
     sensor = R8_TEM_SENSOR;
     channel = R8_ADC_CHANNEL;
     config = R8_ADC_CFG;
 
-    /* adc配置保存 */
+    /* Adc configuration save */
     R8_TKEY_CFG &= ~RB_TKEY_PWR_ON;
     R8_ADC_CHANNEL = CH_INTE_NFC;
-    R8_ADC_CFG = RB_ADC_POWER_ON | RB_ADC_BUF_EN | (SampleFreq_8_or_4 << 6) | (ADC_PGA_1_4 << 4);   /* -12DB采样 ADC_PGA_1_4*/
+    R8_ADC_CFG = RB_ADC_POWER_ON | RB_ADC_BUF_EN | (SampleFreq_8_or_4 << 6) | (ADC_PGA_1_4 << 4);   /* -12DB sampling ADC_PGA_1_4 */
     R8_ADC_CONVERT &= ~RB_ADC_PGA_GAIN2;
-    R8_ADC_CONVERT &= ~(3 << 4);  /* 4个Tadc */
+    R8_ADC_CONVERT &= ~(3 << 4);  /* 4ä¸ªTadc */
 
     for(i = 0; i < 10; i++)
     {
@@ -303,7 +296,7 @@ void nfca_pcd_lpcd_calibration(void)
         adc_all = adc_all + adc_value;
     }
 
-    /* adc配置恢复 */
+    /* Adc configuration recovery */
     R8_TEM_SENSOR = sensor;
     R8_ADC_CHANNEL = channel;
     R8_ADC_CFG = config;
@@ -323,15 +316,14 @@ void nfca_pcd_lpcd_calibration(void)
     nfca_pcd_stop();
 }
 
-/*********************************************************************
- * @fn      nfca_pcd_lpcd_adc_filter_buf_add
+/* ***************************************************************************
+ * @fn nfca_pcd_lpcd_adc_filter_buf_add
  *
- * @brief   nfca pcd低功耗检卡adc值滤波器处理
+ * @brief nfca pcd low power detection card adc value filter processing
  *
- * @param   lpcd_adc - 需要添加的adc值
+ * @param lpcd_adc - Adc value that needs to be added
  *
- * @return  uint16_t - 新的低功耗检卡的ADC阈值基准
- */
+ * @return uint16_t - ADC threshold reference for new low power check cards */
 __HIGH_CODE
 static uint16_t nfca_pcd_lpcd_adc_filter_buf_add(uint16_t lpcd_adc)
 {
@@ -348,15 +340,14 @@ static uint16_t nfca_pcd_lpcd_adc_filter_buf_add(uint16_t lpcd_adc)
     return (uint16_t)lpcd_adc_all;
 }
 
-/*******************************************************************************
- * @fn              nfca_pcd_lpcd_check
+/* *********************************************************************************************
+ * @fn nfca_pcd_lpcd_check
  *
- * @brief           nfc-a pcd lpcd ADC检卡
+ * @brief nfc-a pcd lpcd ADC check card
  *
- * @param           None.
+ * @param None.
  *
- * @return          1 有卡，0无卡.
- */
+ * @return 1 has a card, 0 has no card. */
 __HIGH_CODE
 uint8_t nfca_pcd_lpcd_check(void)
 {
@@ -381,11 +372,9 @@ uint8_t nfca_pcd_lpcd_check(void)
     {
 
 #if 0
-        /*
-         * 此处可以考虑不判断变大也触发，
-         * 手机等同时做读卡器和卡的设备靠近时，会导致值增加。
-         * 当手机检测到天线有波形后，切换为卡模式，会降低天线信号。
-         */
+        /* * Here you can consider that it will trigger if it does not judge that it will increase.
+         * When the card reader and card device are close to each other, the value will increase.
+         * When the phone detects that the antenna has a waveform, switching to card mode will reduce the antenna signal. */
         if(adc_value_diff > NFCA_PCD_LPCD_THRESHOLD_PERMIL)
         {
             res = 1;
@@ -394,7 +383,7 @@ uint8_t nfca_pcd_lpcd_check(void)
 
         if(adc_value_diff > NFCA_PCD_LPCD_THRESHOLD_MAX_LIMIT_PERMIL)
         {
-            /* 阈值更新应当是缓慢的，根据检测间隔酌情修改该值，千分之二内基本为误差 */
+            /* The threshold value should be updated slowly. The value should be modified as appropriate according to the detection interval. The error is basically within two thousandths. */
             adc_value = ((uint32_t)gs_lpcd_adc_base_value * (1000 + NFCA_PCD_LPCD_THRESHOLD_MAX_LIMIT_PERMIL) / 1000);
         }
     }
@@ -405,16 +394,16 @@ uint8_t nfca_pcd_lpcd_check(void)
             res = 1;
         }
 #if 1
-        /* 每次限幅为1 */
+        /* Each limit is 1 */
         if(adc_value < gs_lpcd_adc_base_value)
         {
             adc_value = gs_lpcd_adc_base_value - 1;
         }
 #else
-        /* 按千分比限幅 */
+        /* Limit the range by a thousandth */
         if(adc_value_diff > NFCA_PCD_LPCD_THRESHOLD_MIN_LIMIT_PERMIL)
         {
-            /* 阈值更新应当是缓慢的，根据检测间隔酌情修改该值，千分之二内基本为误差 */
+            /* The threshold value should be updated slowly. The value should be modified as appropriate according to the detection interval. The error is basically within two thousandths. */
             adc_value = ((uint32_t)gs_lpcd_adc_base_value * (1000 - NFCA_PCD_LPCD_THRESHOLD_MIN_LIMIT_PERMIL) / 1000);
         }
 #endif
@@ -424,15 +413,14 @@ uint8_t nfca_pcd_lpcd_check(void)
     return res;
 }
 
-/*******************************************************************************
- * @fn              NFC_IRQHandler
+/* *********************************************************************************************
+ * @fn NFC_IRQHandler
  *
- * @brief           nfc-a 中断函数，PCD模式下必须保证800us内可以进入一次中断
+ * @brief nfc-a interrupt function, in PCD mode, one interrupt can be entered within 800us
  *
- * @param           None.
+ * @param None.
  *
- * @return          1 有卡，0无卡.
- */
+ * @return 1 has a card, 0 has no card. */
 __attribute__((interrupt("WCH-Interrupt-fast")))
 __attribute__((section(".highcode")))
 void NFC_IRQHandler(void)

@@ -29,16 +29,15 @@ extern "C" {
 #define PERIPHERAL_CMD_LEN             1
 #define ADDRESS_LEN                    2
 
-// 删除节点命令，包含 1字节命令码+2字节需要删除的节点地址
+// Delete node command, including 1 byte command code + 2 bytes of node address that needs to be deleted
 #define DELETE_NODE_DATA_LEN           (PERIPHERAL_CMD_LEN + ADDRESS_LEN)
-// 删除节点命令应答，包含 1字节命令码
+// Delete the node command response, including 1 byte command code
 #define DELETE_NODE_ACK_DATA_LEN       (PERIPHERAL_CMD_LEN)
 
 /******************************************************************************/
 
-/**
- * @brief 远端节点配置流程状态
- */
+/* *
+ * @brief Remote node configuration process status */
 typedef enum
 {
     NODE_INIT = 0,
@@ -49,9 +48,8 @@ typedef enum
     NODE_CONFIGURATIONED = 4,
 } node_stage_t;
 
-/**
- * @brief 本地节点配置流程状态
- */
+/* *
+ * @brief Local node configuration process status */
 typedef enum
 {
     LOCAL_INIT = 0,
@@ -61,9 +59,8 @@ typedef enum
     LOCAL_CONFIGURATIONED = 4,
 } local_stage_t;
 
-/**
- * @brief 节点配置流程组合体
- */
+/* *
+ * @brief node configuration process composition */
 typedef union
 {
     node_stage_t  node;
@@ -73,18 +70,16 @@ typedef union
 typedef void (*cfg_rsp_handler_t)(void *node, const void *rsp);
 typedef BOOL (*stage_handler_t)(void *node);
 
-/**
- * @brief 节点配置流程回调
- */
+/* *
+ * @brief node configuration process callback */
 typedef struct
 {
     cfg_rsp_handler_t rsp;
     stage_handler_t   stage;
 } cfg_cb_t;
 
-/**
- * @brief 配置节点的结构体
- */
+/* *
+ * @brief Configure the structure of the node */
 typedef struct
 {
     uint16_t node_addr;
@@ -102,16 +97,16 @@ typedef union
 {
     struct
     {
-        uint8_t cmd;                /* 命令码 CMD_DELETE_NODE */
-        uint8_t addr[ADDRESS_LEN];  /* 擦除地址 */
-    } delete_node;                  /* 删除节点命令 */
+        uint8_t cmd;                /* Command code CMD_DELETE_NODE */
+        uint8_t addr[ADDRESS_LEN];  /* Erase address */
+    } delete_node;                  /* Delete Node Command */
     struct
     {
-        uint8_t cmd;                /* 命令码 CMD_DELETE_NODE_ACK */
-    } delete_node_ack;              /* 删除节点命令应答 */
+        uint8_t cmd;                /* Command code CMD_DELETE_NODE_ACK */
+    } delete_node_ack;              /* Delete node command answer */
     struct
     {
-        uint8_t buf[20]; /* 接收数据包*/
+        uint8_t buf[20]; /* Receive packets */
     } data;
 }app_mesh_manage_t;
 
@@ -121,9 +116,8 @@ extern const uint16_t self_prov_app_idx;
 extern const uint32_t self_prov_iv_index;
 extern const uint16_t self_prov_addr;
 
-/**
- * @brief   应用层初始化
- */
+/* *
+ * @brief Application layer initialization */
 void App_Init(void);
 
 /******************************************************************************/

@@ -1,14 +1,14 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : wch_nfca_pcd.h
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2024/09/20
- * Description        : nfc picc库头文件
- *********************************************************************************
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : wch_nfca_pcd.h
+ * Author: WCH
+ * Version: V1.0
+ * Date: 2024/09/20
+ * Description: nfc picc library header file
+ ************************************************************************************************************
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+ ********************************************************************************************* */
 
 #ifndef _WCH_NFCA_PICC_H_
 #define _WCH_NFCA_PICC_H_
@@ -21,11 +21,11 @@ extern "C" {
 
 typedef __attribute__((aligned(4))) struct _nfca_picc_config_struct
 {
-    uint32_t    *signal_buf;        /* 用于NFC PICC发送和接收原始波形数据的缓冲区 */
-    uint8_t     *data_buf;          /* 用于NFC PICC发送和接收数据的缓冲区 */
-    uint8_t     *parity_buf;        /* 用于NFC PICC发送和接收数据校验位的缓冲区 */
-    uint16_t    signal_buf_len;     /* 用于NFC PICC发送和接收原始波形数据的缓冲区长度 */
-    uint16_t    data_buf_len;       /* data_buf和parity_buf长度必须一致 */
+    uint32_t    *signal_buf;        /* Buffer for NFC PICC to send and receive raw waveform data */
+    uint8_t     *data_buf;          /* Buffer for sending and receiving data in NFC PICC */
+    uint8_t     *parity_buf;        /* Buffer for NFC PICC sending and receiving data check bits */
+    uint16_t    signal_buf_len;     /* Buffer length for NFC PICC to send and receive raw waveform data */
+    uint16_t    data_buf_len;       /* Data_buf and parity_buf must be the same length */
 } nfca_picc_config_t;
 
 typedef __attribute__((aligned(4))) struct _nfca_picc_callback_struct

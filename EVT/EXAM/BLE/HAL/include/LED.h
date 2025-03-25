@@ -46,7 +46,7 @@ extern "C" {
  * TYPEDEFS
  */
 
-/* 连接一个LED用于监控演示程序的进度,低电平LED亮 */
+/* Connect an LED to monitor the progress of the demonstration program, and the low-level LED is on */
 
 /* 1 - LED */
 #define LED1_BV                 BV(15)

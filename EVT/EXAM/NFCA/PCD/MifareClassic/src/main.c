@@ -1,20 +1,20 @@
-/********************************** (C) COPYRIGHT *******************************
- * File Name          : main.c
- * Author             : WCH
- * Version            : V1.1
- * Date               : 2024/11/14
- * Description        : NFC PCD Mifare Classic测试例程
+/* ********************************* (C) COPYRIGHT ***************************
+ * File Name : main.c
+ * Author: WCH
+ * Version: V1.1
+ * Date: 2024/11/14
+ * Description: NFC PCD Mifare Classic Test Routine
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+ ********************************************************************************************* */
 
 /******************************************************************************/
-/* 头文件包含 */
+/* The header file contains */
 #include "CH58x_common.h"
 #include "wch_nfca_mifare_classic.h"
 #include "wch_nfca_pcd_bsp.h"
 
-/* 每个文件单独debug打印的开关，置0可以禁止本文件内部打印 */
+/* Each file has a separate debug print switch, setting 0 can prohibit internal printing of this file. */
 #define DEBUG_PRINT_IN_THIS_FILE 1
 #if DEBUG_PRINT_IN_THIS_FILE
     #define PRINTF(...) PRINT(__VA_ARGS__)
@@ -28,15 +28,14 @@
 uint8_t default_key[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 uint8_t picc_uid[4];
 
-/*********************************************************************
- * @fn      sys_get_vdd
+/* ***************************************************************************
+ * @fn sys_get_vdd
  *
- * @brief   系统电压检测
+ * @brief System voltage detection
  *
- * @param   none
+ * @param none
  *
- * @return  检测的ADC值
- */
+ * @return Detected ADC value */
 uint16_t sys_get_vdd(void)
 {
     uint8_t  sensor, channel, config, tkey_cfg;
@@ -49,9 +48,9 @@ uint16_t sys_get_vdd(void)
 
     R8_TKEY_CFG &= ~RB_TKEY_PWR_ON;
     R8_ADC_CHANNEL = CH_INTE_VBAT;
-    R8_ADC_CFG = RB_ADC_POWER_ON | RB_ADC_BUF_EN | (0 << 4);    /* 使用-12dB模式 */
+    R8_ADC_CFG = RB_ADC_POWER_ON | RB_ADC_BUF_EN | (0 << 4);    /* Use -12dB mode */
     R8_ADC_CONVERT &= ~RB_ADC_PGA_GAIN2;
-    R8_ADC_CONVERT |= (3 << 4);                                 /* 7个Tadc */
+    R8_ADC_CONVERT |= (3 << 4);                                 /* 7ä¸ªTadc */
     R8_ADC_CONVERT |= RB_ADC_START;
     while (R8_ADC_CONVERT & RB_ADC_START);
     adc_data = R16_ADC_DATA;
@@ -63,15 +62,14 @@ uint16_t sys_get_vdd(void)
     return (adc_data);
 }
 
-/*********************************************************************
- * @fn      nfca_pcd_test
+/* ***************************************************************************
+ * @fn nfca_pcd_test
  *
- * @brief   nfc-a pcd读卡器测试函数
+ * @brief nfc-a pcd card reader test function
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void nfca_pcd_test(void)
 {
     uint16_t res;
@@ -106,7 +104,7 @@ void nfca_pcd_test(void)
     {
         nfca_pcd_start();
 
-#if 1   /* 置1先进行超低功耗检卡，对天线信号幅度影响小的设备可能会无法唤醒 */
+#if 1   /* Set the ultra-low power card first to perform the ultra-low power card detection. Devices with little impact on the antenna signal amplitude may not be awakened. */
         if(nfca_pcd_lpcd_check() == 0)
         {
             PRINTF("NO CARD\n");
@@ -114,10 +112,10 @@ void nfca_pcd_test(void)
         }
         PRINTF("CARD DETECT\n");
 #endif
-        mDelaymS(5);   /* 手机等模拟卡设备需要长时间的连续波唤醒其卡功能，普通实体卡 1 ms 即可 */
+        mDelaymS(5);   /* Mobile phones and other analog card devices require long-term continuous wave wake-up of their card function, and ordinary physical cards can be 1 ms. */
 
 #if NFCA_PCD_USE_NFC_CTR_PIN
-        nfca_pcd_ctr_handle();  /* 对天线信号进行检测，使用NFC CTR引脚控制幅度 */
+        nfca_pcd_ctr_handle();  /* Detect the antenna signal and control the amplitude using the NFC CTR pin */
 #endif
 
         res = PcdRequest(PICC_REQALL);
@@ -137,7 +135,7 @@ void nfca_pcd_test(void)
                 {
                     PRINTF("\nselect OK, SAK:%02x\n", g_nfca_pcd_recv_buf[0]);
 
-#if 1   /* 读取前4个块数据测试 */
+#if 1   /* Read the first 4 blocks of data test */
                     res = PcdAuthState(PICC_AUTHENT1A, 0, default_key, picc_uid);
                     if (res != PCD_NO_ERROR)
                     {
@@ -160,7 +158,7 @@ void nfca_pcd_test(void)
                         PRINTF("\n");
                     }
 
-#if 0   /* 值块读取和初始化测试 */
+#if 0   /* Value block reading and initialization test */
 
                     res = PcdReadValueBlock(1);
                     if (res == PCD_VALUE_BLOCK_INVALID)
@@ -184,9 +182,9 @@ void nfca_pcd_test(void)
                         PRINTF("value:%d, adr:%d\n", PU32_BUF(g_nfca_pcd_recv_buf)[0], g_nfca_pcd_recv_buf[12]);
                     }
 
-#endif  /* 值块读取和初始化测试 */
+#endif  /* Value block reading and initialization test */
 
-#if 0   /* 值块扣款和备份测试 */
+#if 0   /* Value block deduction and backup test */
                     PRINTF("PcdValue\n");
                     uint32_t di_data = 1;
                     res = PcdValue(PICC_DECREMENT, 1, (uint8_t *)&di_data);
@@ -203,11 +201,11 @@ void nfca_pcd_test(void)
                         goto nfc_exit;
                     }
 
-#endif  /* 值块扣款和备份测试 */
+#endif  /* Value block deduction and backup test */
 
-#endif  /* 读取前4个块数据测试 */
+#endif  /* Read the first 4 blocks of data test */
 
-#if 1   /* 所有扇区读取测试 */
+#if 1   /* All sectors read test */
                     for (uint8_t l = 1; l < 16; l++)
                     {
                         res = PcdAuthState(PICC_AUTHENT1A, 4 * l, default_key, picc_uid);
@@ -234,7 +232,7 @@ void nfca_pcd_test(void)
                             PRINTF("\n");
                         }
                     }
-#endif  /* 所有扇区读取测试 */
+#endif  /* All sectors read test */
 
 nfc_exit:
                     PcdHalt();
@@ -247,13 +245,12 @@ next_loop:
     }
 }
 
-/*********************************************************************
- * @fn      main
+/* ***************************************************************************
+ * @fn main
  *
- * @brief   主函数
+ * @brief main function
  *
- * @return  none
- */
+ * @return none */
 int main(void)
 {
     UINT16 x;
@@ -271,7 +268,7 @@ int main(void)
 
     nfca_pcd_init();
 
-    nfca_pcd_lpcd_calibration();    /* 低功耗检卡ADC值校准，和天线等相关，可在生产时进行检测。 */
+    nfca_pcd_lpcd_calibration();    /* The ADC value calibration of the low-power inspection card is related to antennas, etc., and can be detected during production. */
 
     nfca_pcd_test();
 

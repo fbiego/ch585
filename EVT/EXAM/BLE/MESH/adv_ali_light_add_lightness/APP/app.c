@@ -103,14 +103,14 @@ static struct bt_mesh_elem elements[] = {
     }
 };
 
-// elements 构成 Node Composition
+// elements composition Node Composition
 const struct bt_mesh_comp app_comp = {
-    .cid = 0x07D7, // WCH 公司id
+    .cid = 0x07D7, // WCH Company ID
     .elem = elements,
     .elem_count = ARRAY_SIZE(elements),
 };
 
-// 配网参数和回调
+// Distribution network parameters and callbacks
 static const struct bt_mesh_prov app_prov = {
     .uuid = tm_uuid,
     .static_val_len = ARRAY_SIZE(static_key),
@@ -125,30 +125,28 @@ static const struct bt_mesh_prov app_prov = {
  * GLOBAL TYPEDEFS
  */
 
-/*********************************************************************
- * @fn      silen_adv_set
+/* ***************************************************************************
+ * @fn silen_adv_set
  *
- * @brief   设置静默广播
+ * @brief Set silent broadcast
  *
- * @param   flag   - 0（处于未配网广播状态），1（处于静默广播状态）.
+ * @param flag - 0 (in undistributed broadcast state), 1 (in silent broadcast state).
  *
- * @return  none
- */
+ * @return none */
 static void silen_adv_set(uint8_t flag)
 {
     tm_uuid[13] &= ~BIT(0);
     tm_uuid[13] |= (BIT_MASK(1) & flag);
 }
 
-/*********************************************************************
- * @fn      prov_enable
+/* ***************************************************************************
+ * @fn prov_enable
  *
- * @brief   使能配网功能
+ * @brief enable network distribution function
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 static void prov_enable(void)
 {
     silen_adv_set(SELENCE_ADV_OF);
@@ -171,15 +169,14 @@ static void prov_enable(void)
     tmos_start_task(App_TaskID, APP_SILENT_ADV_EVT, ADV_TIMEOUT);
 }
 
-/*********************************************************************
- * @fn      link_open
+/* ***************************************************************************
+ * @fn link_open
  *
- * @brief   配网时后的link打开回调
+ * @brief The link opens the callback after the network distribution time
  *
- * @param   bearer  - 当前link是PB_ADV还是PB_GATT
+ * @param bearer - Is the current link PB_ADV or PB_GATT
  *
- * @return  none
- */
+ * @return none */
 static void link_open(bt_mesh_prov_bearer_t bearer)
 {
     APP_DBG(" ");
@@ -187,16 +184,15 @@ static void link_open(bt_mesh_prov_bearer_t bearer)
     tmos_stop_task(App_TaskID, APP_SILENT_ADV_EVT);
 }
 
-/*********************************************************************
- * @fn      link_close
+/* ***************************************************************************
+ * @fn link_close
  *
- * @brief   配网后的link关闭回调
+ * @brief The link after the network is distributed to close the callback
  *
- * @param   bearer  - 当前link是PB_ADV还是PB_GATT
- * @param   reason  - link关闭原因
+ * @param bearer - Is the current link PB_ADV or PB_GATT
+ * @param reason - link close reason
  *
- * @return  none
- */
+ * @return none */
 static void link_close(bt_mesh_prov_bearer_t bearer, uint8_t reason)
 {
     APP_DBG("");
@@ -207,10 +203,10 @@ static void link_close(bt_mesh_prov_bearer_t bearer, uint8_t reason)
     }
     else
     {
-        /*天猫精灵不会下发Config_model_app_bind和Config_Model_Subscrption_Add消息。
-            IOT设备需要自行给所有Element的所有model绑定下发的AppKey，并根据产品类型为各个
-            model订阅相应的组播地址（具体品类组播地址请参阅各产品软件规范）。蓝牙Mesh设备
-            完成配网后需要进行消息上报，上报消息包括该设备所有支持的可上报的属性。*/
+        /* Tmall Genie will not issue Config_model_app_bind and Config_Model_Subscription_Add messages.
+            IOT devices need to bind all models of Element to all Elements and issue AppKeys according to the product type.
+            Model subscribes to the corresponding multicast address (see the software specifications of each product for specific multicast addresses in the category). Bluetooth Mesh Device
+            After completing the distribution network, a message reporting needs to be reported. The reporting message includes all the reported attributes supported by the device. */
 
         /* For Light Subscription group address */
         root_models[2].groups[0] = (uint16_t)0xC000;
@@ -238,21 +234,20 @@ static void link_close(bt_mesh_prov_bearer_t bearer, uint8_t reason)
     }
 }
 
-/*********************************************************************
- * @fn      prov_complete
+/* ***************************************************************************
+ * @fn prov_complete
  *
- * @brief   配网完成回调，重新开始广播
+ * @brief The distribution network completes the callback and starts broadcasting again
  *
- * @param   net_idx     - 网络key的index
- * @param   addr        - 网络地址
- * @param   flags       - 是否处于key refresh状态
- * @param   iv_index    - 当前网络iv的index
+ * @param net_idx - index of network key
+ * @param addr - Network address
+ * @param flags - Is it in key refresh state
+ * @param iv_index - index of the current network iv
  *
- * @return  none
- */
+ * @return none */
 static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32_t iv_index)
 {
-    /* 设备上电后，如果已配网，也需要在1~10s随机间隔后上报所有支持的属性状态。 */
+    /* After the device is powered on, if the network is already distributed, all supported attribute statuses need to be reported after a random interval of 1 to 10 seconds. */
     tmosTimer rand_timer;
     APP_DBG(" ");
 
@@ -260,15 +255,14 @@ static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32
     tmos_start_task(App_TaskID, APP_SILENT_ADV_EVT, rand_timer);
 }
 
-/*********************************************************************
- * @fn      prov_reset
+/* ***************************************************************************
+ * @fn prov_reset
  *
- * @brief   复位配网功能回调
+ * @brief reset network function callback
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 static void prov_reset(void)
 {
     APP_DBG("");
@@ -276,16 +270,15 @@ static void prov_reset(void)
     prov_enable();
 }
 
-/*********************************************************************
- * @fn      ind_end_cb
+/* ***************************************************************************
+ * @fn ind_end_cb
  *
- * @brief   发送复位事件完成回调
+ * @brief send reset event to complete callback
  *
- * @param   err     - 错误码
- * @param   cb_data - 回调参数
+ * @param err - Error code
+ * @param cb_data - callback parameters
  *
- * @return  none
- */
+ * @return none */
 static void ind_end_cb(int err, void *cb_data)
 {
     APP_DBG(" bt_mesh_reset ");
@@ -296,15 +289,14 @@ static const struct bt_adv_ind_send_cb reset_cb = {
     .end = ind_end_cb,
 };
 
-/*********************************************************************
- * @fn      send_support_attr
+/* ***************************************************************************
+ * @fn send_support_attr
  *
- * @brief   发送所有支持的可上报的属性给天猫精灵,此消息决定天猫精灵判断设备支持那些功能
+ * @brief Send all supported reporting attributes to Tmall Genie. This message determines which functions the Tmall Genie determines
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void send_support_attr(void)
 {
     struct bt_mesh_indicate *ind;
@@ -333,7 +325,7 @@ void send_support_attr(void)
     /* Add tid field */
     net_buf_simple_add_u8(&(ind->buf->b), ind->param.tid);
 
-    // 添加开关属性
+    // Add switch properties
     {
         /* Add generic onoff attrbute op */
         net_buf_simple_add_le16(&(ind->buf->b), ALI_GEN_ATTR_TYPE_POWER_STATE);
@@ -341,28 +333,27 @@ void send_support_attr(void)
         /* Add current generic onoff status */
         net_buf_simple_add_u8(&(ind->buf->b), read_led_state(MSG_PIN));
     }
-    // 可选根据阿里云设置的产品属性功能添加对应属性 ( BLE_MESH_MODEL_OP_LIGHT_LIGHTNESS_SET )
-    // 这里添加亮度属性留作参考,还需要添加对应的opcode处理函数,添加方式参考开关属性的 gen_onoff_op 结构
+    // Optionally add corresponding attributes according to the product attribute function set by Alibaba Cloud (BLE_MESH_MODEL_OP_LIGHT_LIGHTNESS_SET )
+    // Here you add the brightness attribute for reference, and you also need to add the corresponding opcode processing function. The gen_onoff_op structure of the switch attribute is added.
     {
         /* Add brightness attrbute opcode */
         net_buf_simple_add_le16(&(ind->buf->b), ALI_GEN_ATTR_TYPE_BRIGHTNESS);
 
-        /* Add brightness status (655~65535对应天猫控制1~100) */
+        /* Add brightness status (655~65535 corresponds to Tmall control 1~100) */
         net_buf_simple_add_le16(&(ind->buf->b), 65535);
     }
 
     bt_mesh_indicate_send(ind);
 }
 
-/*********************************************************************
- * @fn      send_led_state
+/* ***************************************************************************
+ * @fn send_led_state
  *
- * @brief   发送当前灯的状态给天猫精灵
+ * @brief Send the current light status to Tmall Elf
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void send_led_state(void)
 {
     APP_DBG("");
@@ -384,15 +375,14 @@ void send_led_state(void)
     send_led_indicate(&param);
 }
 
-/*********************************************************************
- * @fn      send_reset_indicate
+/* ***************************************************************************
+ * @fn send_reset_indicate
  *
- * @brief   发送复位事件给天猫精灵，发送完成后将清除配网状态，重置自身mesh网络
+ * @brief Send a reset event to Tmall Genie. After the sending is completed, the distribution network status will be cleared and the self-mesh network will be reset.
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void send_reset_indicate(void)
 {
     struct bt_mesh_indicate *ind;
@@ -434,15 +424,14 @@ void send_reset_indicate(void)
 #define HAL_KEY_SEND_MSG    BIT(0)
 #define HAL_KEY_RESET       BIT(1)
 
-/*********************************************************************
- * @fn      keyPress
+/* ***************************************************************************
+ * @fn keyPress
  *
- * @brief   按键回调
+ * @brief key callback
  *
- * @param   keys    - 按键类型
+ * @param keys - key type
  *
- * @return  none
- */
+ * @return none */
 void keyPress(uint8_t keys)
 {
     APP_DBG("keys : %d ", keys);
@@ -458,15 +447,14 @@ void keyPress(uint8_t keys)
     }
 }
 
-/*********************************************************************
- * @fn      app_silent_adv
+/* ***************************************************************************
+ * @fn app_silent_adv
  *
- * @brief   超时后如果还未配网成功，则进入静默广播模式,若已配网，发送支持的属性给天猫精灵
+ * @brief If the network is not successfully allocated after the timeout, enter silent broadcast mode. If the network is already allocated, send the supported attributes to the Tmall Elf
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 static void app_silent_adv(void)
 {
     APP_DBG("");
@@ -482,15 +470,14 @@ static void app_silent_adv(void)
     bt_mesh_scan_disable();
 }
 
-/*********************************************************************
- * @fn      blemesh_on_sync
+/* ***************************************************************************
+ * @fn blemesh_on_sync
  *
- * @brief   同步mesh参数，启用对应功能，不建议修改
+ * @brief Synchronize mesh parameters, enable corresponding functions, and it is not recommended to modify them
  *
- * @param   none
+ * @param none
  *
- * @return  none
- */
+ * @return none */
 void blemesh_on_sync(void)
 {
     int        err;
@@ -538,7 +525,7 @@ void blemesh_on_sync(void)
 #endif /* PROXY || PB-GATT */
 
 #if(CONFIG_BLE_MESH_PROXY_CLI)
-    bt_mesh_proxy_client_init(cli); //待添加
+    bt_mesh_proxy_client_init(cli); // To be added
 #endif                              /* PROXY_CLI */
 
     bt_mesh_prov_retransmit_init();
@@ -595,13 +582,12 @@ void blemesh_on_sync(void)
     APP_DBG("Mesh initialized");
 }
 
-/*********************************************************************
- * @fn      App_Init
+/* ***************************************************************************
+ * @fn App_Init
  *
- * @brief   应用层初始化
+ * @brief Application layer initialization
  *
- * @return  none
- */
+ * @return none */
 void App_Init(void)
 {
     App_TaskID = TMOS_ProcessEventRegister(App_ProcessEvent);
@@ -613,17 +599,16 @@ void App_Init(void)
     set_led_state(MSG_PIN, 0);
 }
 
-/*********************************************************************
- * @fn      App_ProcessEvent
+/* ***************************************************************************
+ * @fn App_ProcessEvent
  *
- * @brief   应用层事件处理函数
+ * @brief application layer event handling function
  *
- * @param   task_id  - The TMOS assigned task ID.
- * @param   events - events to process.  This is a bit map and can
- *                   contain more than one event.
+ * @param task_id - The TMOS assigned task ID.
+ * @param events - events to process. This is a bit map and can
+ * contains more than one event.
  *
- * @return  events not processed
- */
+ * @return events not processed */
 static uint16_t App_ProcessEvent(uint8_t task_id, uint16_t events)
 {
     if(events & APP_SILENT_ADV_EVT)
